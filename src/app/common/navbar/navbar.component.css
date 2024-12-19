@@ -1,0 +1,6 @@
+.navButton{
+    @apply flex items-center h-5 px-2 py-2 text-gray-100 hover:text-white font-semibold
+}
+.active{
+    @apply flex items-center h-5 px-2 py-2  text-white font-bold 
+}   
