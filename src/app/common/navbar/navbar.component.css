@@ -1,0 +1,14 @@
+.navButton{
+    @apply flex items-center h-5 px-2 py-2 text-gray-100 hover:text-white font-semibold leading-none
+}
+.active{
+    @apply flex items-center h-5 px-2 py-2  text-white font-bold  leading-none
+}   
+
+.dropDownButton{
+    @apply w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-center space-x-2 items-center
+}
+
+.dropDownButtonActive{
+    @apply w-full bg-red-300 hover:rounded-sm py-2 flex justify-center space-x-2 items-center
+}

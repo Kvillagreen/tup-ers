@@ -1,0 +1,20 @@
+{
+  "hosting": {
+    "public": "projects/tup-ers/browser",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/send-email",
+        "function": "app"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

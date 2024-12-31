@@ -1,0 +1,265 @@
+<div class="flex flex-col items-center justify-center w-full h-full py-2 md:px-0 px-2">
+    <div class="w-full md:w-3/4 min-h-screen bg-[#f5f3f4] rounded-md  p-4 space-y-2">
+        <div class="flex justify-start align-center">
+            <p class="text-3xl font-bold text-gray-900">All Petitions</p>
+        </div>
+        <div class="grid grid-cols-2 justify-between align-center w-full h-full gap-2">
+            <div class="grid grid-cols-2 col-span-2 md:col-span-1 justify-between align-center w-full gap-2">
+                <button #filterDownView (click)="extras.isFilterOn=!extras.isFilterOn"
+                    class="w-full col-span-1 h-12 py-2 rounded-md  bg-red-500  text-gray-50  hover:bg-red-800 hover:text-gray-300">
+                    <span class="flex justify-center items-center h-8">Filter
+                        <svg width="20px" height="20px" class="ml-2 fill-white hover:fill-gray-300" viewBox="0 0 24 24"
+                            fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M15 10.5A3.502 3.502 0 0 0 18.355 8H21a1 1 0 1 0 0-2h-2.645a3.502 3.502 0 0 0-6.71 0H3a1 1 0 0 0 0 2h8.645A3.502 3.502 0 0 0 15 10.5zM3 16a1 1 0 1 0 0 2h2.145a3.502 3.502 0 0 0 6.71 0H21a1 1 0 1 0 0-2h-9.145a3.502 3.502 0 0 0-6.71 0H3z" />
+                        </svg></span>
+                    <div *ngIf="extras.isFilterOn" class="relative w-full h-[250px] top-1  rounded-b-md bg-red-900">
+                        <div class=" grid grid-cols-1 gap-y-1 p-2 justify-start items-center">
+                            <button (click)="extras.onSortChange('date_created')"
+                                class=" h-8  text-gray-50   hover:text-gray-400">Date</button>
+                            <button (click)="extras.onSortChange('units')"
+                                class=" h-8 text-gray-50   hover:text-gray-400">Units</button>
+                            <button (click)="extras.onSortChange('subject_code')"
+                                class=" h-8 text-gray-50  hover:text-gray-400">Subject Code</button>
+                            <button (click)="extras.onSortChange('subject_name')"
+                                class=" h-8 text-gray-50   hover:text-gray-400">Subject Name</button>
+
+                            <button (click)="extras.onSortChange('petition_count')"
+                                class=" h-8 text-gray-50   hover:text-gray-400">No.of students</button>
+                        </div>
+                    </div>
+                </button>
+                <button (click)="isAddPetition=!isAddPetition"
+                    class="col-span-1 w-full h-full bg-red-500 py-2 rounded-md text-gray-50  hover:bg-red-800 hover:text-gray-300">
+                    <span class="flex justify-center items-center">
+                        Add Petition
+                        <svg width="20px" height="20px" class="ml-2 stroke-white hover:stroke-gray-300"
+                            viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle opacity="0.5" cx="12" cy="12" r="10" stroke-width="2   " />
+                            <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke-width="1.5"
+                                stroke-linecap="round" />
+                        </svg> </span> </button>
+            </div>
+            <div class="flex justify-between items-center w-full col-span-2 md:col-span-1 h-full">
+                <div class="relative w-full">
+                    <input type="text" placeholder="Search Petition" [(ngModel)]="extras.searchText"
+                        (ngModelChange)="extras.onSearchChange($event)"
+                        class="w-full outline-2 outline-red-950 border-red-950 border-2 rounded-md px-10 py-2">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="absolute top-1/2 left-3 transform -translate-y-1/2 w-5 h-5 text-red-950" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M11 4a7 7 0 100 14 7 7 0 000-14zM21 21l-4.35-4.35" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div
+            class="grid grid-cols-7 w-full h-12 bg-red-800 text-center  text-xs md:text-[16px] text-white rounded-t-md font-semibold justify-center items-center">
+            <div class="">Date</div>
+            <div class="">Subject Code</div>
+            <div class="col-span-2">Subject Name</div>
+            <div class="">No. of Units</div>
+            <div class="">No. of Students</div>
+            <div class="">Join</div>
+        </div>
+        <div *ngIf="extras.getViewPetitionToDisplay().length==0"
+            class="grid grid-cols-5 w-full h-12 bg-red-300 text-center text-xs md:text-[14px] text-gray-900 justify-center items-center">
+            <div class="col-span-5">No data found</div>
+        </div>
+        <div *ngIf="extras.getViewPetitionToDisplay().length!=0">
+            <div *ngFor="let class of extras.getViewPetitionToDisplay()">
+                <div *ngIf="program==class.program"
+                    class="mt-2 grid grid-cols-7 w-full h-12 bg-red-300 text-center text-[12px] md:text-[14px] text-gray-900 justify-center items-center">
+                    <div class="md:text-[14px] text-[10px]">{{extras.formatDate(class.date_created)}}</div>
+                    <div class="">{{class.subject_code}}</div>
+                    <div class="col-span-2">{{class.subject_name}}</div>
+                    <div class="">{{class.units}}</div>
+                    <div [ngClass]="{'text-red-600': class.petition_count >50,'text-green-600': class.petition_count <=50 }"
+                        class="font-bold">{{class.petition_count}}</div>
+                    <div class="">
+                        <button (click)="isApply=!isApply; classId=class.class_id" [disabled]="class.petition_count >50"
+                            [ngClass]="{'bg-gray-600 hover:bg-gray-700': class.petition_count >50 && isFourthYear !== 'yes', 'bg-red-500 hover:bg-red-800': class.petition_count <=50  }"
+                            class="w-3/4 h-full py-2 rounded-md text-gray-50  hover:text-gray-300">Join</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="w-full flex justify-between items-center text-black">
+            <button (click)="extras.prevList()"
+                class="bg-red-500 hover:bg-red-800 w-20 h-full py-2 rounded-md text-gray-50  hover:text-gray-300">
+                Prev
+            </button>
+            <button (click)="extras.nextList()"
+                class="bg-red-500 hover:bg-red-800 w-20 h-full py-2 rounded-md text-gray-50  hover:text-gray-300">
+                Next
+            </button>
+        </div>
+    </div>
+
+    <div *ngIf="isApply">
+        <div class="animate-fadeIn fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-[100]">
+            <div
+                class="w-[350px] h-5/6  bg-red-300 rounded-md overflow-y-auto text-red-800  flex flex-col align-center relative">
+                <!-- Header Section -->
+                <div class="flex w-[350px] h-12 justify-center rounded-md p-4 items-center bg-red-300 fixed ">
+                    <p class="text-left text-xl font-bold">Application Petition Form</p>
+                    <!-- Close Button -->
+                    <button (click)="isApply=!isApply;  isFail=''; isFourthYear=''"
+                        class="absolute top-2 right-2 w-8 h-8 py-1 bg-red-500 rounded-full text-white flex items-center justify-center text-[16px]">
+                        ×
+                    </button>
+                </div>
+                <!-- Timeline Section -->
+                <div class="flex flex-col w-full h-full mt-8 p-4">
+                    <form>
+                        <div class="flex flex-col justify-start items-start space-y-8 min-h-full">
+                            <div class="grid grid-cols-2 w-full">
+                                <label class="w-full">TUPV ID: </label>
+                                <input readonly value="{{tupvId}}" class="outline-none px-2 bg-transparent">
+                                <label class="w-full">Full Name: </label>
+                                <input readonly value="{{fullName}}" class="outline-none px-2 bg-transparent">
+                                <label class="w-full">Program:</label>
+                                <input readonly value="{{program}}" class="outline-none px-2 bg-transparent">
+                            </div>
+
+                            <div class="grid grid-cols-[75%_25%] w-full gap-y-2">
+                                <label class="w-full">Did you fail this subject ?</label>
+                                <select class="bg-transparent outline-none" name="isFail" [(ngModel)]="isFail">
+                                    <option *ngIf="!isFail" class="bg-gray-300" value="" disabled selected>No</option>
+                                    <option class="bg-gray-300 outline-none" value="yes" selected>Yes</option>
+                                    <option *ngIf="isFail" class="bg-gray-300 outline-none" value="no">No</option>
+                                </select>
+                                <label *ngIf="isFail==='no'" class="w-full">Are you a fourth year student ?</label>
+                                <select *ngIf="isFail==='no'" class="bg-transparent outline-none" name="isFourthYear"
+                                    [(ngModel)]="isFourthYear">
+                                    <option *ngIf="!isFourthYear" class="bg-gray-300" value="" disabled selected>No
+                                    </option>
+                                    <option class="bg-gray-300 outline-none" value="yes">Yes</option>
+                                    <option *ngIf="isFourthYear" class="bg-gray-300 outline-none" value="no">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 justify-center items-center">
+                            <div class="h-12 w-full flex flex-col justify-center items-center">
+                                <p *ngIf="isFail != 'yes' && isFourthYear != 'yes' " class="text-sm text-red-700">Your
+                                    are not
+                                    eligible to take this subject</p>
+                                <p *ngIf="extras.errorMessage" class="text-sm text-red-700">{{extras.errorMessage}}
+                                </p>
+                            </div>
+                            <div class="flex justify-center items-center">
+                                <button [disabled]="isFail != 'yes' && isFourthYear != 'yes' "
+                                    class="w-1/2 h-8  rounded-md text-gray-50  hover:text-gray-300 cursor-pointer"
+                                    (click)="submitPetitionApplication()"
+                                    [ngClass]="{'bg-gray-600 hover:bg-gray-700': isFail !== 'yes' && isFourthYear !== 'yes', 'bg-red-500 hover:bg-red-800': isFail === 'yes' || isFourthYear === 'yes' }">
+                                    Submit
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="hidden absolute inset-0 flex-col items-center justify-center  h-full w-full z-[100]">
+                <!-- Spinning Loader -->
+                <img src="/assets/images/tupSeal.png" class="animate-spin-5s rounded-full h-20 w-20 " />
+                <!-- Loading Text -->
+                <p class="mt-4 font-bold text-xs text-gray-50 animate-pulse">loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="isAddPetition">
+        <div class="animate-fadeIn fixed inset-0 flex  items-center justify-center bg-gray-900 bg-opacity-50 z-[100]">
+            <div
+                class="w-[350px] h-5/6  bg-red-300 rounded-md overflow-y-auto text-red-800  flex flex-col align-center relative">
+                <!-- Header Section -->
+                <div class="flex w-[350px] h-12 justify-center p-4 rounded-md items-center bg-red-300 fixed ">
+                    <p class="text-left text-xl font-bold">Create Petition Form</p>
+                    <!-- Close Button -->
+                    <button
+                        (click)="isAddPetition=!isAddPetition; subjectCode=''; subjectName=''; subjectUnits=''; isFail=''; isFourthYear=''"
+                        class="absolute top-2 right-2 w-8 h-8 py-1 bg-red-500 rounded-full text-white flex items-center justify-center text-[16px]">
+                        ×
+                    </button>
+                </div>
+                <!-- Timeline Section -->
+                <div class="flex flex-col w-full h-full mt-8 p-4">
+                    <form>
+                        <div class="flex flex-col justify-start items-start space-y-4 h-full">
+                            <div class="grid grid-cols-2 w-full">
+                                <label class="w-full">TUPV ID: </label>
+                                <input readonly value="{{tupvId}}" class="outline-none px-2 bg-transparent">
+                                <label class="w-full">Full Name: </label>
+                                <input readonly value="{{fullName}}" class="outline-none px-2 bg-transparent">
+                                <label class="w-full">Program:</label>
+                                <input readonly value="{{program}}" class="outline-none px-2 bg-transparent">
+                            </div>
+                            <div class="grid grid-cols-2 w-full gap-y-[2px]">
+                                <label class="w-full py-[1px]">Subject Code: </label>
+                                <select class="bg-transparent text-[14px] outline-none" name="subjectCode"
+                                    [(ngModel)]="subjectCode" (change)="saveData()">
+                                    <option *ngIf="!subjectCode" class="bg-gray-300" value="" disabled selected>Select
+                                        Subject Code</option>
+                                    <option *ngFor="let list of subject.getSubjects(program)"
+                                        class="bg-gray-300 outline-none" value="{{list.code}}">
+                                        {{list.code}}</option>
+                                </select>
+
+                                <label class="w-full ">Subject Name:</label>
+                                <input readonly value="{{subjectName}}"
+                                    class="outline-none text-[14px]  bg-transparent">
+                                <label class="w-full">No. of Units:</label>
+                                <input readonly value="{{subjectUnits}}"
+                                    class="outline-none text-[14px] bg-transparent">
+                            </div>
+
+                            <div class="grid grid-cols-[75%_25%] w-full gap-y-2">
+                                <label class="w-full">Did you fail this subject ?</label>
+                                <select class="bg-transparent outline-none" name="isFail" [(ngModel)]="isFail">
+                                    <option *ngIf="!isFail" class="bg-gray-300" value="" disabled selected>No</option>
+                                    <option class="bg-gray-300 outline-none" value="yes" selected>Yes</option>
+                                    <option *ngIf="isFail" class="bg-gray-300 outline-none" value="no">No</option>
+                                </select>
+                                <label *ngIf="isFail==='no'" class="w-full">Are you a fourth year student ?</label>
+                                <select *ngIf="isFail==='no'" class="bg-transparent outline-none" name="isFourthYear"
+                                    [(ngModel)]="isFourthYear">
+                                    <option *ngIf="!isFourthYear" class="bg-gray-300" value="" disabled selected>No
+                                    </option>
+                                    <option class="bg-gray-300 outline-none" value="yes">Yes</option>
+                                    <option *ngIf="isFourthYear" class="bg-gray-300 outline-none" value="no">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 h-full justify-center items-center">
+                            <div class="h-full w-full flex flex-col justify-center items-center">
+                                <p *ngIf="isFail != 'yes' && isFourthYear != 'yes' " class="text-sm text-red-700">
+                                    Your are not eligible to take this subject</p>
+                                <p *ngIf=" !subjectCode" class="text-sm text-red-700 text-center">
+                                    All fields are required
+                                </p>
+                                <p *ngIf="extras.errorMessage" class="text-sm text-red-700 text-center">
+                                    {{extras.errorMessage}}
+                                </p>
+                            </div>
+                            <div class="flex w-full h-full justify-center items-center">
+                                <button [disabled]="!subjectCode || (isFourthYear == 'yes' && isFail == 'no')"
+                                    (click)="submitCreatePetition()"
+                                    class="w-1/2 h-8 rounded-md text-gray-50 hover:text-gray-300 cursor-pointer"
+                                    [ngClass]="{
+                                        'bg-red-500 hover:bg-red-800': subjectCode &&( isFail==='yes' || isFourthYear==='yes'),
+                                        'bg-gray-600 hover:bg-gray-700': !subjectCode || isFail !=='yes',
+                                        
+                                    }">
+                                    Submit
+                                </button>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

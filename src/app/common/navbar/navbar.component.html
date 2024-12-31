@@ -1,0 +1,163 @@
+<!--For Dashboard-->
+<div *ngIf="!urlVerifier && userType==='student'"
+    class="flex justify-between items-center w-full h-full bg-gradient-to-r px-3  from-red-800 via-red-400 to-red-800 bg-fixed ">
+    <button #sideBar (click)="isSideBarHidden=!isSideBarHidden" class="md:hidden flex">
+        <div>
+            <svg class="size-8 stroke-gray-50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 7H19" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M5 12L19 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M5 17L19 17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </div>
+    </button>
+    <div class="flex items-center w-full ">
+        <img src="/assets/images/tupSeal.png" class="size-20 p-2 object-cover">
+        <p class="md:text-lg text-sm font-semibold text-red-100 leading-none">TECHNOLOGICAL UNIVERSITY OF THE
+            PHILIPPINES</p>
+    </div>
+    <div class="hidden md:flex w-[200px] md:w-full justify-end space-x-2">
+        <a [routerLink]="['/dashboard']" routerLinkActive="active" class="navButton">Home</a>
+        <a [routerLink]="['/receive-petition']" routerLinkActive="active" class="navButton">Recieve Petitions</a>
+        <a [routerLink]="['/view-petition']" routerLinkActive="active" class="navButton">View Petitions</a>
+        <a [routerLink]="['/track-petition']" routerLinkActive="active" class="navButton">Track Petitions</a>
+        <div #dropDown (click)="settingsDropdown=!settingsDropdown"
+            class="flex items-center h-5 px-2 py-2 cursor-pointer text-white font-bold leading-none">
+            {{tupvId}}<span><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="feather feather-chevron-down">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg></span></div>
+    </div>
+    <div *ngIf="settingsDropdown"
+        class="absolute flex flex-col text-center px-2 text-white py-5 top-16 right-4 rounded-md h-[350px] md:h-[280px] w-[200px] bg-[#c1121f] z-10 shadow-md shadow-black">
+        <div
+            class="absolute -top-3 right-2 w-0 h-0 border-l-[20px] border-r-[20px] border-b-[20px] border-l-transparent border-r-transparent border-[#c1121f]">
+        </div>
+        <p class="text-white text-lg font-semibold">{{fullName}}</p>
+        <p class="text-sm">{{program}}</p>
+        <hr class="mt-2">
+        <div class="flex flex-col w-full space-y-2 pt-2">
+            <a [routerLink]="['/profile']" routerLinkActive=""
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-center space-x-2 items-center">
+                <img src="/assets/svg/user.svg"><span>Profile</span>
+            </a>
+            <a (click)="logout()" routerLinkActive=""
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-center space-x-2 items-center"><img
+                    src="/assets/svg/logout.svg"><span>Logout</span></a>
+        </div>
+    </div>
+    <div #sideBar *ngIf="isSideBarHidden"
+        class="md:hidden fixed flex flex-col text-center px-2 text-white py-5 top-0 left-0 rounded-md min-h-screen w-[250px] bg-[#c1121f] z-10 shadow-md shadow-black">
+        <p class="text-white text-lg font-semibold">{{fullName}}</p>
+        <p class="text-sm">{{program}}</p>
+        <hr class="mt-2">
+        <div class="flex flex-col justify-between items-center w-full space-y-2 pt-2"><a [routerLink]="['/dashboard']"
+                routerLinkActive=""
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
+                <img src="/assets/svg/home.svg"><span>Home</span>
+            </a><a [routerLink]="['/receive-petition']" routerLinkActive=""
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
+                <img src="/assets/svg/receive.svg"><span>Recieve Petitions</span>
+            </a><a [routerLink]="['/view-petition']" routerLinkActive=""
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
+                <img src="/assets/svg/view.svg"><span>View Petitions</span>
+            </a><a [routerLink]="['/track-petition']" routerLinkActive=""
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
+                <img src="/assets/svg/tracking.svg"><span>Track Petitions</span>
+            </a>
+            <a [routerLink]="['/profile']" routerLinkActive=""
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
+                <img src="/assets/svg/user.svg"><span>Profile</span>
+            </a>
+            <a (click)="logout()" routerLinkActive=""
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
+                <img src="/assets/svg/logout.svg"><span>Logout</span></a>
+        </div>
+    </div>
+</div>
+
+
+<div *ngIf="!urlVerifier && userType==='faculty'"
+    class="flex justify-between items-center w-full h-full bg-gradient-to-r px-3  from-red-800 via-red-400 to-red-800 bg-fixed ">
+    <button #sideBar (click)="isSideBarHidden=!isSideBarHidden" class="md:hidden flex">
+        <div>
+            <svg class="size-8 stroke-gray-50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 7H19" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M5 12L19 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M5 17L19 17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </div>
+    </button>
+    <div class="flex items-center w-full ">
+        <img src="/assets/images/tupSeal.png" class="size-20 p-2 object-cover">
+        <p class="md:text-lg text-sm font-semibold text-red-100 leading-none">TECHNOLOGICAL UNIVERSITY OF THE
+            PHILIPPINES</p>
+    </div>
+    <div class="hidden md:flex w-[200px] md:w-full justify-end space-x-2">
+        <a [routerLink]="['/faculty/dashboard']" routerLinkActive="active" class="navButton">Home</a>
+        <a [routerLink]="['/faculty/dashboard']" routerLinkActive="active" class="navButton">Recieve Petitions</a>
+        <a [routerLink]="['/faculty/dashboard']" routerLinkActive="active" class="navButton">View Petitions</a>
+        <a [routerLink]="['/faculty/dashboard']" routerLinkActive="active" class="navButton">Track Petitions</a>
+        <div #dropDown (click)="settingsDropdown=!settingsDropdown"
+            class="flex items-center h-5 px-2 py-2 cursor-pointer text-white font-bold leading-none">
+            {{facultyType}}<span><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="feather feather-chevron-down">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg></span></div>
+    </div>
+    <div *ngIf="settingsDropdown"
+        class="absolute flex flex-col text-center px-2 text-white py-5 top-16 right-4 rounded-md h-[350px] md:h-[280px] w-[200px] bg-[#c1121f] z-10 shadow-md shadow-black">
+        <div
+            class="absolute -top-3 right-2 w-0 h-0 border-l-[20px] border-r-[20px] border-b-[20px] border-l-transparent border-r-transparent border-[#c1121f]">
+        </div>
+        <p class="text-white text-lg font-semibold">{{facultyFullName}}</p>
+        <p class="text-sm">{{facultyProgram}}</p>
+        <hr class="mt-2">
+        <div class="flex flex-col w-full space-y-2 pt-2">
+            <a [routerLink]="['/faculty/dashboard']" routerLinkActive=""
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-center space-x-2 items-center">
+                <img src="/assets/svg/user.svg"><span>Profile</span>
+            </a>
+            <a (click)="logout()" 
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-center space-x-2 items-center"><img
+                    src="/assets/svg/logout.svg"><span>Logout</span></a>
+        </div>
+    </div>
+    <div #sideBar *ngIf="isSideBarHidden"
+        class="md:hidden fixed flex flex-col text-center px-2 text-white py-5 top-0 left-0 rounded-md min-h-screen w-[250px] bg-[#c1121f] z-10 shadow-md shadow-black">
+        <p class="text-white text-lg font-semibold">{{facultyFullName}}</p>
+        <p class="text-sm">{{facultyProgram}}</p>
+        <hr class="mt-2">
+        <div class="flex flex-col justify-between items-center w-full space-y-2 pt-2"><a
+                [routerLink]="['/faculty/dashboard']" routerLinkActive=""
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
+                <img src="/assets/svg/home.svg"><span>Home</span>
+            </a><a [routerLink]="['/faculty/dashboard']" routerLinkActive=""
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
+                <img src="/assets/svg/receive.svg"><span>Recieve Petitions</span>
+            </a><a [routerLink]="['/faculty/dashboard']" routerLinkActive=""
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
+                <img src="/assets/svg/view.svg"><span>View Petitions</span>
+            </a><a [routerLink]="['/faculty/dashboard']" routerLinkActive=""
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
+                <img src="/assets/svg/tracking.svg"><span>Track Petitions</span>
+            </a>
+            <a [routerLink]="['/faculty/dashboard']" routerLinkActive=""
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
+                <img src="/assets/svg/user.svg"><span>Profile</span>
+            </a>
+            <a (click)="logout()"
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
+                <img src="/assets/svg/logout.svg"><span>Logout</span></a>
+        </div>
+    </div>
+</div>
+<!--For Login and Sign up -->
+<div *ngIf="urlVerifier "
+    class="flex w-full h-20 bg-gradient-to-r shadow-md shadow-red-950 from-red-800 via-red-400 to-red-800 items-center px-3 bg-cover bg-fixed ">
+    <div class="flex items-center">
+        <img src="/assets/images/tupSeal.png" class="size-20 p-2 object-cover">
+        <p class="md:text-lg text-sm font-semibold text-red-100">TECHNOLOGICAL UNIVERSITY OF THE PHILIPPINES</p>
+    </div>
+</div>

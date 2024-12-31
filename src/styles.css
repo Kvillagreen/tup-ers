@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+* {
+    user-select: none;  /* Prevents text selection */
+    -webkit-user-drag: none;  /* Prevents dragging in WebKit browsers (e.g., Chrome, Safari) */
+    -moz-user-select: none;  /* Prevents text selection in Firefox */
+    -ms-user-select: none;  /* Prevents text selection in IE/Edge */
+  }

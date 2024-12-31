@@ -1,0 +1,20 @@
+
+<nav class="w-full h-full">
+    <app-navbar></app-navbar>
+</nav>
+<section class="w-full min-h-screen flex-cols bg-gradient-to-b from-red-100 via-red-500 to-red-900">
+    <div class="min-h-screen">
+        <router-outlet></router-outlet>
+    </div>
+    <app-footer></app-footer>
+    <div *ngIf="extras.load">
+        <div class="animate-fadeIn fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-[100]">
+            <div class="absolute inset-0 flex flex-col items-center justify-center  h-full w-full z-[100]">
+                <!-- Spinning Loader -->
+                <img src="/assets/images/tupSeal.png" class="animate-spin-5s rounded-full h-20 w-20 " />
+                <!-- Loading Text -->
+                <p class="mt-4 font-bold text-xs text-gray-50 animate-pulse">loading...</p>
+            </div>
+        </div>
+    </div>
+</section>
