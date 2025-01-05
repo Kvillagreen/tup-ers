@@ -2,6 +2,8 @@
 // Enable error reporting
 require '../connection.php';
 // Load PHPMailer classes
+
+date_default_timezone_set('Asia/Manila');
 require 'PHPMailer-master/src/Exception.php';
 require 'PHPMailer-master/src/PHPMailer.php';
 require 'PHPMailer-master/src/SMTP.php';
@@ -14,6 +16,7 @@ $tupvId = $data['tupvId'] ?? '';
 $otp = $data['otpCode'] ?? '';  // OTP passed from the request
 $recepientEmail = '';
 $recepientName = '';
+$time = date('h:i A');
 
 if (!$tupvId || !$hostEmail || !$hostPassword || !$otp) {
   echo json_encode([
@@ -22,6 +25,9 @@ if (!$tupvId || !$hostEmail || !$hostPassword || !$otp) {
   ]);
   exit();
 }
+
+
+
 
 
 $sql = "SELECT * FROM tbl_student WHERE tupv_id = ?";
@@ -34,9 +40,26 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
   $student = $result->fetch_assoc();
   $recepientEmail = $student['email'];
-  $recepientName = $student['last_name'] . ' ' . $student['first_name'];
+  $recepientName = $student['first_name'] . ' ' . $student['last_name'];
+  $otpCode = json_encode([
+    'otp' => $otp,
+    'time' => $time,
+  ]);
+
+  // SQL to UPDATE the otp_code column
+  $updateSql = "UPDATE tbl_student SET otp_code = ? WHERE tupv_id = ?";
+  $updateStmt = $conn->prepare($updateSql);
+  $updateStmt->bind_param("ss", $otpCode, $tupvId);
+  $updateStmt->execute();
+  
 } else {
-  echo json_encode(['success' => false, 'message' => 'Invalid Credentials']);
+  echo json_encode([
+    'success' => false,
+    'message' => 'Invalid Credentials',
+    'otpCode' => null,
+  ]);
+
+  return false;
 }
 
 
@@ -69,8 +92,8 @@ try {
         <div style="border-bottom:1px solid #eee">
         <a href="" style="font-size:1.4em;color: #bc4749;text-decoration:none;font-weight:600">TUPV</a>
     </div>
-    <p style="font-size:1.1em">Hi ' . htmlspecialchars($recepientName) . ',</p>
-    <p>Thank you for using TUPV-petition. Use the following OTP to complete reseting your password. OTP is valid for 10 minutes</p>
+    <p style="font-size:1.1em">Hi ' . htmlspecialchars(ucwords(strtolower($recepientName))) . ',</p>
+    <p>Thank you for using TUPV-petition. Use the following OTP to complete reseting your password. OTP is valid for 5 minutes</p>
     <h2 style="background: #bc4749;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">' . htmlspecialchars($otp) . '</h2>
     <p style="font-size:0.9em;">Regards,<br />TUPV Admin</p>
     <hr style="border:none;border-top:1px solid #eee" />

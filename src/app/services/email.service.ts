@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Environment } from '../common/environments/environment';
+import { Environment } from '../common/environments/privateData';
 import { Extras } from '../common/environments/environment';
 import { CookieService } from 'ngx-cookie-service';
 @Injectable({
@@ -17,6 +17,15 @@ export class EmailService {
     const otpCode = Extras.generateOtpCode();
     const credentials = { tupvId, otpCode, hostPassword, hostEmail }
     return this.http.post<any[]>(`${this.apiUrl}/students-reset-password-service.php`, credentials);
+  }
+
+
+  temporaryPasswordSender(tupvId: string) {
+    const hostEmail = Environment.hostEmail;
+    const hostPassword = Environment.hostPassword;
+    const password = Extras.generateTemporaryPassword();
+    const credentials = { tupvId, password, hostPassword, hostEmail }
+    return this.http.post<any[]>(`${this.apiUrl}/temporary-password-sender.php`, credentials);
   }
 
 }

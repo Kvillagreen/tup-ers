@@ -3,23 +3,18 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { StudentService } from '../../services/student.service';
-import { Extras } from '../../common/environments/environment';
+import { Extras, Subjects } from '../../common/environments/environment';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientTestingModule],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.css'
 })
 export class SignupComponent {
-  constructor(public router: Router, private studentService: StudentService) { }
-  programList: string[] = ['BSME',
-    'COAC',
-    'BET-CHEMTECH',
-    'BET-ELECTRICAL',
-    'BET-ELECTRONICS',
-    'BET-MECHATRONICS',
-    'BET-MANUFACTURING'];
+  constructor(public router: Router, private studentService: StudentService) { } 
+  programList: string[] = Object.keys(Subjects.programs);
   firstName: string = '';
   lastName: string = '';
   password: string = '';
@@ -31,7 +26,7 @@ export class SignupComponent {
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
   extras = Extras;
-  
+
 
 
   onSubmit() {
@@ -71,7 +66,7 @@ export class SignupComponent {
       next: (response: any) => {
         Extras.load = false;
         if (response.success && response.tokenId) {
-          Extras.errorMessage = "Registration completed, you can now login your account.";
+          Extras.isError("Registration completed, you can now login your account.");
         } else {
           Extras.errorMessage = response.message;
         }

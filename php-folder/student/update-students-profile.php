@@ -31,6 +31,7 @@ if (!$tupvId || !$studentId || !$tokenId) {
 }
 
 
+
 try {
     if ($newPassword && $currentPassword && $email) {
         $sql = "SELECT * FROM tbl_student WHERE tupv_id = ? AND token_id = ?";
@@ -61,6 +62,22 @@ try {
             }
         }
     } else {
+
+        // Check if the email exists
+        $isEmailExist = $conn->prepare("SELECT * FROM `tbl_student` WHERE `email` = ?");
+        $isEmailExist->bind_param("s", $email);
+        $isEmailExist->execute();
+        $emailResult = $isEmailExist->get_result();
+
+
+        if ($emailResult && $emailResult->num_rows > 0) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Email already exists, please use another email.'
+            ]);
+            exit();
+        }
+
         $updateQuery = $conn->prepare(
             "UPDATE `tbl_student` SET  `email` = ? WHERE `student_id` = ? AND `tupv_id` = ? AND `token_id` = ? "
         );

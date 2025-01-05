@@ -1,4 +1,3 @@
-
 <?php
 // registration.php
 
@@ -21,9 +20,9 @@ $email = $data['email'] ?? '';
 $tupvId = $data['tupvId'] ?? '';
 $password = $data['password'] ?? '';
 $program = $data['program'] ?? '';
-$tokenId =  uniqid(); // Generate a unique token ID if not provided
+$tokenId = uniqid(); // Generate a unique token ID if not provided
 $dateCreated = date('Y-m-d H:i:s');
-if(!$lastName || !$firstName || !$email || !$tupvId || !$password ||!$program){
+if (!$lastName || !$firstName || !$email || !$tupvId || !$password || !$program) {
     echo json_encode([
         'success' => false,
         'message' => 'All fields are required',
@@ -32,16 +31,44 @@ if(!$lastName || !$firstName || !$email || !$tupvId || !$password ||!$program){
 }
 
 try {
-    // Check for existing username or email
-    $isIdExist = $conn->prepare("SELECT * FROM `tbl_student` WHERE `tupv_id` = ?");
-    $isIdExist->bind_param("s", $tupvId);
-    $isIdExist->execute();
-    $isIdExist = $isIdExist->get_result();
+    // Check if the tupv_id exists
+    $isTupvIdExist = $conn->prepare("SELECT * FROM `tbl_student` WHERE `tupv_id` = ?");
+    $isTupvIdExist->bind_param("s", $tupvId);
+    $isTupvIdExist->execute();
+    $tupvIdResult = $isTupvIdExist->get_result();
 
-    if ($isIdExist && $isIdExist->num_rows > 0) {
+    // Check if the email exists
+    $isEmailExist = $conn->prepare("SELECT * FROM `tbl_student` WHERE `email` = ?");
+    $isEmailExist->bind_param("s", $email);
+    $isEmailExist->execute();
+    $emailResult = $isEmailExist->get_result();
+
+
+    $isNameExist = $conn->prepare("SELECT * FROM `tbl_student` WHERE `first_name` = ? AND `last_name` = ?");
+    $isNameExist->bind_param("ss", $firstName, $lastName);
+    $isNameExist->execute();
+    $nameResult = $isNameExist->get_result();
+
+    if ($tupvIdResult && $tupvIdResult->num_rows > 0) {
         echo json_encode([
             'success' => false,
-            'message' => 'TUPV ID already exist, please login your account.'
+            'message' => 'TUPV ID already exists, please login to your account.'
+        ]);
+        exit();
+    }
+
+    if ($nameResult && $nameResult->num_rows > 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Name already exist, If you believe this is an error, please contact the registrar for assistance.'
+        ]);
+        exit();
+    }
+
+    if ($emailResult && $emailResult->num_rows > 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Email already exists, please login to your account.'
         ]);
         exit();
     }

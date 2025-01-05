@@ -24,21 +24,20 @@ $program = $data['program'] ?? Null;
 $classId = '';
 $date = date('Y-m-d');
 $time = date('h:i A');
-$status = 'pending';
+$status = "pending";
 $schedule = json_encode([
     [
     ]
 ]);
 $petitionTracker = json_encode([
     [
-        'receivedBy' => 'Department Head',
+        'receivedBy' => 'Program Head',
         'date' => $date,
         'time' => $time,
-        'remarks' => 'unread',
     ]
 ]);
 
-if (!$studentId || !$subjectCode || !$subjectName || !$subjectUnits) {
+if (!$studentId || !$subjectCode || !$subjectName || !$subjectUnits || !$program) {
     echo json_encode([
         'success' => false,
         'message' => 'All fields are required',
@@ -52,16 +51,22 @@ try {
     WHERE `subject_name` = ? 
     AND `subject_code` = ? 
     AND `units` = ? 
+    AND `program` = ? 
+    AND `status` = ?
     AND `capacity` < 50 ");
-    $checkStudentPetition->bind_param("sss", $subjectName, $subjectCode, $subjectUnits);
+    $checkStudentPetition->bind_param("sssss", $subjectName, $subjectCode, $subjectUnits, $program, $status);
     $checkStudentPetition->execute();
     $studentPetitionResult = $checkStudentPetition->get_result();
 
     if ($studentPetitionResult && $studentPetitionResult->num_rows > 0) {
         $row = $studentPetitionResult->fetch_assoc(); // Fetch the first matching row
         $classId = $row['class_id']; // Retrieve the `id` field from the row
-
-        $checkStudentPetition = $conn->prepare("SELECT * FROM `tbl_petition` WHERE `student_id` = ? AND `class_id` = ?");
+        $checkStudentPetition = $conn->prepare("
+        SELECT p.*, c.*
+        FROM `tbl_petition` p
+        JOIN `tbl_class` c ON p.class_id = c.class_id
+        WHERE p.student_id = ? AND p.class_id = ? AND c.status = 'pending'
+    ");
         $checkStudentPetition->bind_param("ss", $studentId, $classId);
         $checkStudentPetition->execute();
         $studentPetitionResult = $checkStudentPetition->get_result();

@@ -23,10 +23,9 @@ $time = date('h:i A');
 $status = 'pending';
 $petitionTracker = json_encode([
     [
-        'receivedBy' => 'Department Head',
+        'receivedBy' => 'Program Head',
         'date' => $date,
         'time' => $time,
-        'remarks' => 'unread',
     ]
 ]);
 
@@ -41,7 +40,12 @@ if (!$studentId) {
 
 try {
     // Check if the student has already petitioned for the class
-    $checkStudentPetition = $conn->prepare("SELECT * FROM `tbl_petition` WHERE `student_id` = ? AND `class_id` = ?");
+    $checkStudentPetition = $conn->prepare("
+        SELECT p.*, c.*
+        FROM `tbl_petition` p
+        JOIN `tbl_class` c ON p.class_id = c.class_id
+        WHERE p.student_id = ? AND p.class_id = ? AND c.status = 'pending'
+    ");
     $checkStudentPetition->bind_param("ss", $studentId, $classId);
     $checkStudentPetition->execute();
     $studentPetitionResult = $checkStudentPetition->get_result();
@@ -61,7 +65,7 @@ try {
     $petitionResult = $fetchPetition->get_result();
     $length = $petitionResult->num_rows;
 
-    if ($length > 30) {
+    if ($length >= 50) {
         // Create a new class if petitions exceed limit
         $fetchClassDetails = $conn->prepare("SELECT * FROM `tbl_class` WHERE `class_id` = ?");
         $fetchClassDetails->bind_param("s", $classId);

@@ -5,11 +5,12 @@ import { CookieService } from 'ngx-cookie-service';
 import { Extras } from '../../common/environments/environment';
 import { StudentService } from '../../services/student.service';
 import { Route, Router } from '@angular/router';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientTestingModule],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
 })
@@ -20,6 +21,9 @@ export class ProfileComponent implements OnInit {
   program: string = '';
   dateCreated: string = '';
   reportList: any[] = [];
+  password: boolean = false;
+  passwordText: string = 'Password';
+  isEditablePassword:boolean = false;
   passwordError: string = '';
   passwordStrength: string = '';
   currentPassword: string = '';
@@ -45,7 +49,6 @@ export class ProfileComponent implements OnInit {
   saveEmail() {
     const emailPattern: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     if (!emailPattern.test(this.email)) {
-      console.log(emailPattern.test(this.email))
       this.email = this.cookieService.get('email');
       Extras.isError("Invalid Email Format!");
       return false;
@@ -93,13 +96,15 @@ export class ProfileComponent implements OnInit {
 
   updateAccountDetails() {
     Extras.load = true;
-    if (this.newPassword.length > 0 || this.confirmPassword.length > 0) {
+    
+    if (this.newPassword.length > 0 && this.confirmPassword.length > 0 && this.currentPassword.length > 0) {
+      
+    // password validation checking if password is strong enough
       if (this.newPassword.length < 8 || this.confirmPassword.length < 8) {
         Extras.isError("Passwords must be 8 characters long.");
         Extras.load = false;
         return;
       }
-
       if (this.newPassword == this.currentPassword) {
         Extras.isError("Current, and new password must not be the same.");
         Extras.load = false;
@@ -112,8 +117,9 @@ export class ProfileComponent implements OnInit {
       }
     }
     else {
+      
+    // password validation checking if email is valid and doesnt resubmit the existing one
       if (this.email == this.cookieService.get('email')) {
-        Extras.isError("Current and new email must not be the same");
         Extras.load = false;
         return;
       }
@@ -123,6 +129,7 @@ export class ProfileComponent implements OnInit {
         return;
       }
     }
+    // submitting the updated information the user change, email or password
     const tokenId = this.cookieService.get('tokenId');
     const studentId = this.cookieService.get('studentId');
     const tupvId = this.cookieService.get('tupvId');
@@ -130,7 +137,12 @@ export class ProfileComponent implements OnInit {
       Extras.load = false;
       if (response.success) {
         this.isLoggedIn = true;
+        this.currentPassword = '';
+        this.newPassword = '';
+        this.confirmPassword = '';
         this.cookieService.set('email', this.email, 1 / 24);
+        this.isEditableEmail=false;
+        this.isEditablePassword=false;
       } else {
         Extras.isError(response.message);
       }

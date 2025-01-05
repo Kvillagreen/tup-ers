@@ -4,10 +4,11 @@ import { StudentService } from '../../services/student.service';
 import { CookieService } from 'ngx-cookie-service';
 import { Extras } from '../../common/environments/environment';
 import { FormsModule } from '@angular/forms';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 @Component({
   selector: 'app-receive-petition',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,HttpClientTestingModule],
   templateUrl: './receive-petition.component.html',
   styleUrl: './receive-petition.component.css'
 })
@@ -19,11 +20,13 @@ export class ReceivePetitionComponent implements OnInit, AfterViewInit {
   isFilterOn: boolean = false;
 
   @ViewChild('filterDownView') filterDownView!: ElementRef;
+  
   fetchTrackPetition() {
     const tokenId = this.cookieService.get('tokenId') ?? '';
     const studentId = this.cookieService.get('studentId') ?? '';
     this.studentService.trackPetition(tokenId, studentId).subscribe((response: any) => {
-      Extras.receiveList = response.data;
+      Extras.receiveList = response.data.filter((listOfTrack: any) => listOfTrack.status === 'approved');
+      console.log(Extras.receiveList)
     });
   }
 

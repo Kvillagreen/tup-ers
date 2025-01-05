@@ -1,56 +1,95 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, AfterContentInit } from '@angular/core';
 import { Extras } from '../../common/environments/environment';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EmailService } from '../../services/email.service';
 import { CookieService } from 'ngx-cookie-service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { StudentService } from '../../services/student.service';
+import { addMinutes, parse, isBefore } from 'date-fns';
 @Component({
   selector: 'app-forget-password',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientTestingModule],
   templateUrl: './forget-password.component.html',
   styleUrl: './forget-password.component.css'
 })
-export class ForgetPasswordComponent implements OnInit {
+export class ForgetPasswordComponent implements OnInit, AfterContentInit {
   showPassword: boolean = false;
   tupvId: string = '';
   extras = Extras
-  otp: string = ''; // OTP input value
-  timer: number = 0; // Timer value
-  timerActive: boolean = false; // Flag to check if timer is active
-  timerInterval: any; // Holds the interval ID
-  otpSent: boolean = false; // Flag to check if OTP is sent
-  validOtpCode: string = '0';
-  constructor(public router: Router, private emailService: EmailService, private cookieService: CookieService) { }
+  otp: string = '';
+  timer: number = 60;
+  timerActive: boolean = false;
+  timerInterval: any;
+  constructor(public router: Router, private emailService: EmailService, private cdRef: ChangeDetectorRef, private cookieService: CookieService, private studentService: StudentService) { }
 
-  ngOnInit(): void {
-    this.validOtpCode = this.cookieService.get('validOtpCode');
-    console.log(this.validOtpCode)
+
+  ngAfterContentInit(): void {
   }
+  ngOnInit(): void {
+    this.timer = Number(this.cookieService.get('timer'));
+    if (Boolean(this.cookieService.get('timerActive'))) {
+      this.timerActive = true;
+      Extras.isError('Kindly wait for timer to be finished, to be able to resend a new the code.')
+    }
+    this.sendOTP();
+  }
+
   onSubmit() {
     Extras.load = true;
-    console.log('click')
-    if (!this.otp) {
-      Extras.isError("OTP must not be empty");
+    if (!this.otp || !this.tupvId) {
+      Extras.isError("All fields are required");
       Extras.load = false;
       return;
     }
+    if(!Extras.formatID(this.tupvId)){
+      Extras.isError("Please input valid TUPV ID");
+      Extras.load = false;
+      return;
+    }
+    
     if (this.otp.length != 6) {
       Extras.isError("OTP must be 6 digits only");
       Extras.load = false;
       return;
     }
+    this.studentService.otpVerification(this.tupvId).subscribe({
+      next: (response: any) => {
+        console.log(response);
+        if (response.success) {
+          const expiryTime = parse(response.time, 'hh:mm a', new Date());
+          const extendedExpiryTime = addMinutes(expiryTime, 2);
+          const currentTime = new Date();
+          if (isBefore(currentTime, extendedExpiryTime) && response.otp == this.otp) {
+            Extras.load = true;
+            this.emailService.temporaryPasswordSender(this.tupvId).subscribe({
+              next: (response: any) => {
+                Extras.load = false;
+                Extras.isError(response.message)
+              },
+              error: (error: any) => {
+                console.log("Request error:", error);
+                Extras.load = false;
+                Extras.isError(error.message);
+              },
+            });
+          } else {
+            Extras.load = false;
+            Extras.isError("OTP is invalid");
+          }
+        } else {
+          Extras.load = false;
+          Extras.isError("OTP is invalid");
+        }
+      },
+      error: (error: any) => {
+        console.log("Request error:", error);
+        Extras.load = false;
+        Extras.isError(error.message);
+      },
+    });
 
-    if (this.cookieService.get('validOtpCode') == this.otp.toString()) {
-      Extras.isError("Temporary password was sent to your email");
-      Extras.load = false;
-      this.cookieService.set('otpCode','');
-      return;
-    } else {
-      Extras.isError("Invalid OTP");
-      Extras.load = false;
-      return;
-    }
   }
 
   disablerButton(): boolean {
@@ -65,29 +104,29 @@ export class ForgetPasswordComponent implements OnInit {
 
   sendOTP() {
     if (!this.timerActive) {
-      console.log('sent')
+      Extras.load = true;
       this.emailService.studentForgetPasswordEmail(this.tupvId).subscribe({
         next: (response: any) => {
-          console.log(response);
           Extras.load = false;
           if (response.success && response.otpCode) {
-            this.validOtpCode = response.otpCode;
-            this.cookieService.set('validOtpCode', this.validOtpCode.toString(), 3 / (24 * 60))
+            Extras.isError('OTP was already been sent to your email address')
           } else {
+            this.stopTimer();
             Extras.isError(response.message)
           }
         },
         error: (error: any) => {
+          this.stopTimer();
           console.log(error)
           Extras.load = false;
           Extras.isError(error.message)
         },
       });
     }
-    this.timer = 60; // Set the timer to 60 seconds
     this.timerActive = true;
-    this.otpSent = true;
     this.timerInterval = setInterval(() => {
+      this.cookieService.set('timer', this.timer.toString());
+      this.cookieService.set('timerActive', 'true');
       if (this.timer > 0) {
         this.timer--;
       } else {
@@ -97,14 +136,12 @@ export class ForgetPasswordComponent implements OnInit {
 
   }
 
-  // Function to stop the timer
   stopTimer() {
+    this.timer = 60;
     this.timerActive = false;
+    this.cookieService.set('timer', '10');
+    this.cookieService.set('timerActive', 'false');
     clearInterval(this.timerInterval); // Clear the interval
   }
 
-  // Function to disable the OTP input if the timer is active
-  getOtpButtonText() {
-    return this.timerActive ? `Resend OTP in ${this.timer}s` : 'Send OTP';
-  }
 }

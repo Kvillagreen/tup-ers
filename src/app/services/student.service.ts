@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { CookieService } from 'ngx-cookie-service';
-import { Environment } from '../common/environments/environment';
+import { Environment } from '../common/environments/privateData';
 @Injectable({
   providedIn: 'root'
 })
@@ -14,9 +13,19 @@ export class StudentService {
     return this.http.post<any[]>(`${this.apiUrl}/fetch-class.php`, credentials);
   }
 
+  getHistoryClass(tokenId: string) {
+    const credentials = { tokenId }
+    return this.http.post<any[]>(`${this.apiUrl}/fetch-class-history.php`, credentials);
+  }
   trackPetition(tokenId: string, studentId: string) {
     const credentials = { tokenId, studentId }
     return this.http.post<any[]>(`${this.apiUrl}/fetch-track-petition.php`, credentials);
+  }
+
+
+  otpVerification(tupvId: string) {
+    const credentials = { tupvId }
+    return this.http.post<any[]>(`${this.apiUrl}/otp-verification.php`, credentials);
   }
 
 

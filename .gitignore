@@ -38,5 +38,5 @@ testem.log
 
 # System files
 .DS_Store
-/src/app/common/environments
+/src/app/common/privateData
 Thumbs.db

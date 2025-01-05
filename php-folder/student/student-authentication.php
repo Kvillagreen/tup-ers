@@ -15,10 +15,15 @@ include '../connection.php'; // Include your database connection
 
 // Get POST data
 $data = json_decode(file_get_contents("php://input"), true);
-$tupvId = $data['tupvId'] ?? ''; // Input can be email or username
+$tupvId = $data['tupvId'] ?? ''; // Input can be email or usernames
 $password = $data['password'] ?? '';
-
+$tokenId = uniqid(45); // Generate a unique token ID if not provided
+$otpCode = json_encode([
+    'otp' => '',
+    'time' => '',
+]);
 // Validate input
+
 if (empty($tupvId) || empty($password)) {
     echo json_encode(['success' => false, 'message' => 'All fields are required']);
     http_response_code(400); // Bad Request
@@ -27,31 +32,41 @@ if (empty($tupvId) || empty($password)) {
 
 // Determine if input is email or username
 $sql = "SELECT * FROM tbl_student WHERE tupv_id = ?";
-
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $tupvId);
 $stmt->execute();
 $result = $stmt->get_result();
 
 // Check if user exists
+
 if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
+
     if (password_verify($password, $user['password'])) {
-        // Success response with user data and permissions
-        echo json_encode([
-            'success' => true,
-            'message' => 'Login successful',
-            'student' => [
-                'studentId' => $user['student_id'],
-                'tupvId' => $user['tupv_id'],
-                'email' => $user['email'],
-                'firstName' => $user['first_name'],
-                'lastName' => $user['last_name'],
-            ],
-            'tokenId' => $user['token_id'] ?? null, // Optional field
-            'program' => $user['program'],
-            'dateCreated' => $user['date_created'],
-        ]);
+
+        $updateSql = "UPDATE tbl_student SET otp_code = ?, token_id = ? WHERE tupv_id = ?";
+        $updateStmt = $conn->prepare($updateSql);
+        $updateStmt->bind_param("sss", $otpCode, $tokenId, $tupvId);
+
+
+        if ($updateStmt->execute()) {
+            echo json_encode([
+                'success' => true,
+                'message' => 'Login successful',
+                'student' => [
+                    'studentId' => $user['student_id'],
+                    'tupvId' => $user['tupv_id'],
+                    'email' => $user['email'],
+                    'firstName' => $user['first_name'],
+                    'lastName' => $user['last_name'],
+                ],
+                'tokenId' =>$tokenId, // Optional field
+                'program' => $user['program'],
+                'dateCreated' => $user['date_created'],
+            ]);
+        }else{
+            echo json_encode(['success' => false, 'message' => 'Error found']);
+        }
     } else {
         echo json_encode(['success' => false, 'message' => 'Invalid password']);
     }

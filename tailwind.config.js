@@ -7,7 +7,8 @@ module.exports = {
     extend: {
       animation: {
         'spin-5s': 'spin 5s linear infinite',
-        fadeIn: 'fadeIn 0.5s ease-in-out forwards', 
+        fadeIn: 'fadeIn 0.5s ease-in-out forwards infinite', 
+        BgfadeIn: 'fadeIn 5s linear infinite', 
       },
         fadeIn: {
           '0%': { opacity: '0', z: '100' },

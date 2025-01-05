@@ -52,7 +52,7 @@ try {
             c.units
         FROM tbl_petition p
         INNER JOIN tbl_class c ON p.class_id = c.class_id
-        WHERE p.student_id = ?";
+        WHERE p.student_id = ? AND c.status != 'finished'";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $studentId);
     $stmt->execute();

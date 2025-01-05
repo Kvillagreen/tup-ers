@@ -1,17 +1,20 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, DoCheck } from '@angular/core';
 import { RouterOutlet, Event, NavigationStart, NavigationEnd, NavigationCancel, NavigationError, Router } from '@angular/router';
 import { FooterComponent } from './common/footer/footer.component';
 import { NavbarComponent } from './common/navbar/navbar.component';
 import { CommonModule } from '@angular/common';
 import { Extras } from './common/environments/environment';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { DevToolsDetectorService } from './services/dev-tools-detector.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, CommonModule, FooterComponent],
+  imports: [RouterOutlet, NavbarComponent, CommonModule, FooterComponent, HttpClientTestingModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
+  title = 'tup-ers';
   extras = Extras;
   constructor(private router: Router) {
     this.router.events.subscribe((event: Event) => {
@@ -26,6 +29,7 @@ export class AppComponent implements OnInit {
       }
     });
   }
+
   /*
   @HostListener('document:contextmenu', ['$event'])
   disableRightClick(event: MouseEvent): void {
@@ -42,6 +46,17 @@ export class AppComponent implements OnInit {
     }
   }
   */
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent): void {
+    if (event.key === 'Tab') {
+      const activeElement = document.activeElement as HTMLElement;
+      const isInput = activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'BUTTON';
+
+      if (!isInput) {
+        event.preventDefault(); // Block Tab if not in input
+      }
+    }
+  }
   ngOnInit(): void {
     /*setInterval(() => {
       const before = new Date();

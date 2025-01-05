@@ -23,7 +23,7 @@
               <path fill-rule="evenodd" clip-rule="evenodd"
                 d="M15 10.5A3.502 3.502 0 0 0 18.355 8H21a1 1 0 1 0 0-2h-2.645a3.502 3.502 0 0 0-6.71 0H3a1 1 0 0 0 0 2h8.645A3.502 3.502 0 0 0 15 10.5zM3 16a1 1 0 1 0 0 2h2.145a3.502 3.502 0 0 0 6.71 0H21a1 1 0 1 0 0-2h-9.145a3.502 3.502 0 0 0-6.71 0H3z" />
             </svg></span>
-          <div *ngIf="extras.isFilterOn" class="relative w-full h-[250px] top-1  rounded-b-md bg-red-900">
+          <div *ngIf="extras.isFilterOn" class="relative w-full h-[250px] top-1 z-[10] rounded-b-md bg-red-900">
             <div class=" grid grid-cols-1 gap-y-1 p-2 justify-start items-center">
               <button (click)="extras.onSortChange('date_created')"
                 class=" h-8  text-gray-50   hover:text-gray-400">Date
@@ -31,6 +31,8 @@
               <button (click)="extras.onSortChange('subject_code')"
                 class=" h-8 text-gray-50  hover:text-gray-400">Subject
                 Code</button>
+              <button (click)="extras.onSortChange('status')" class=" h-8 text-gray-50   hover:text-gray-400">Status
+              </button>
               <button (click)="extras.onSortChange('subject_name')"
                 class=" h-8 text-gray-50   hover:text-gray-400">Subject Name
               </button>
@@ -40,10 +42,10 @@
 
       </div>
       <div class="flex justify-between items-center w-full col-span-2 md:col-span-1 h-full">
-        <div class="relative w-full">
+        <div class="relative w-full h-full">
           <input type="text" placeholder="Search Petition" [(ngModel)]="extras.searchText"
             (ngModelChange)="extras.onSearchChange($event)"
-            class="w-full outline-2 outline-red-950 border-red-950 border-2 rounded-md px-10 py-2">
+            class="w-full h-full outline-2 outline-red-950 border-red-950 border-2 rounded-md px-10 py-2">
           <svg xmlns="http://www.w3.org/2000/svg"
             class="absolute top-1/2 left-3 transform -translate-y-1/2 w-5 h-5 text-red-950" fill="none"
             viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -54,23 +56,23 @@
       </div>
     </div>
     <div
-      class="grid grid-cols-5 w-full h-12 bg-red-800 text-center  text-xs md:text-[16px] text-white rounded-t-md font-semibold justify-center items-center">
+      class="grid grid-cols-6 w-full h-12 bg-red-800 text-center  text-xs md:text-[16px] text-white rounded-t-md font-semibold justify-center items-center">
       <div class="">Date Created</div>
       <div class="">Subject Code</div>
       <div class="col-span-2">Subject Name</div>
+      <div class="">Status</div>
       <div class="">Track Petitions</div>
     </div>
 
-    <div *ngIf="extras.getTrackPetitionToDisplay().length==0"
-      class="grid grid-cols-5 w-full h-12 bg-red-300 text-center text-xs md:text-[14px] text-gray-900 justify-center items-center">
-      <div class="col-span-5">No data found</div>
-    </div>
     <div *ngIf="extras.getTrackPetitionToDisplay().length!=0">
-      <div *ngFor="let class of extras.getTrackPetitionToDisplay()"
-        class="mt-2 grid grid-cols-5 w-full h-12 bg-red-300 text-center text-xs md:text-[14px] text-gray-900 justify-center items-center">
+      <div *ngFor="let class of extras.getTrackPetitionToDisplay() let i=index"
+        class="mt-2 grid grid-cols-6 w-full h-12 bg-red-300 text-center text-xs md:text-[14px] text-gray-900 justify-center items-center">
         <div class="">{{extras.formatDate(class.date_created)}}</div>
         <div class="">{{class.subject_code}}</div>
-        <div class="col-span-2">{{class.subject_name}}</div>
+        <div class="col-span-2">{{extras.toTitleCaseSafe(class.subject_name)}}</div>
+        <div class="font-bold"
+          [ngClass]="{'text-orange-700 ':class.status=='pending' ,'text-red-700 ':class.status=='denied','text-green-700 ':class.status=='approved'}">
+          {{extras.toTitleCaseSafe(class.status)}}</div>
         <div class="flex justify-center items-center">
           <button (click)="isLocate=!isLocate; this.petitionTracker=extras.convertJson(class.petition_tracker)"
             class="w-3/4 h-full flex justify-center items-center bg-red-500 py-2 rounded-md text-gray-50  hover:bg-red-800 hover:text-gray-300">
@@ -85,12 +87,20 @@
         </div>
       </div>
     </div>
+
+    <div *ngIf="extras.multiplierCounter(extras.getTrackPetitionToDisplay().length).length !=0">
+      <div *ngFor="let class of extras.multiplierCounter(extras.getTrackPetitionToDisplay().length) let i=index" class="mt-2 grid grid-cols-7 w-full h-12 bg-red-300 text-center text-[12px] md:text-[14px] text-gray-900
+          justify-center items-center">
+        <div class="col-span-7 font-semibold" *ngIf="class==0 && extras.getTrackPetitionToDisplay().length==0">No
+          data found</div>
+      </div>
+    </div>
     <div class="w-full flex justify-between items-center text-black">
       <button (click)="extras.prevList()"
         class="bg-red-500 hover:bg-red-800 w-20 h-full py-2 rounded-md text-gray-50  hover:text-gray-300">
         Prev
       </button>
-      <button (click)="extras.nextList()"
+      <button (click)="extras.nextList(extras.trackList.length)"
         class="bg-red-500 hover:bg-red-800 w-20 h-full py-2 rounded-md text-gray-50  hover:text-gray-300">
         Next
       </button>
@@ -123,7 +133,7 @@
                 <p class="text-sm w-full text-left ml-2">Date: <span class="pl-2">
                     {{extras.formatDate(items.date)}}</span></p>
                 <p class="text-sm w-full text-left ml-2">Time: <span class="pl-2"> {{items.time}}</span></p>
-                <p class="text-sm w-full text-left ml-2">Remarks: <span class="pl-2">{{items.remarks}}</span></p>
+
               </div>
             </div>
           </div>

@@ -14,17 +14,18 @@ include '../connection.php';
 
 // Get POST data
 $data = json_decode(file_get_contents("php://input"), true);
-$tokenId = $data['tokenId'] ?? Null;
-$classId = '';
+$tokenId = $data['tokenId'] ?? null;
+
 if (!$tokenId) {
     echo json_encode([
         'success' => false,
         'message' => 'All fields are required',
     ]);
-    return 0;
+    return;
 }
 
-$sql = "SELECT * FROM tbl_student WHERE token_id = ?";
+// Validate token ID and retrieve the student ID
+$sql = "SELECT student_id FROM tbl_student WHERE token_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $tokenId);
 $stmt->execute();
@@ -35,53 +36,62 @@ if ($result->num_rows != 1) {
         'success' => false,
         'message' => 'Invalid Token',
     ]);
-    return 0;
+    return;
 }
 
-try {
-    // Fetch all classes and check the number of petitions
-    $sql = "SELECT 
-                c.class_id,
-                c.subject_code,
-                c.subject_name,
-                c.status,
-                c.units,
-                c.program,
-                c.date_created,
-                (SELECT COUNT(*) FROM tbl_petition p WHERE p.class_id = c.class_id) AS petition_count
-            FROM tbl_class c";
+$student = $result->fetch_assoc();
+$studentId = $student['student_id'];
 
-    $result = $conn->query($sql);
+try {
+    // Fetch class details and petition information
+    $sql = "SELECT 
+            c.class_id,
+            c.subject_code,
+            c.subject_name,
+            c.status,
+            c.units,
+            c.program,
+            c.date_created,
+            c.capacity,
+            (SELECT COUNT(*) FROM tbl_petition p WHERE p.class_id = c.class_id AND p.status!='denied') AS petition_count,
+            EXISTS(
+                SELECT 1 FROM tbl_petition p WHERE p.class_id = c.class_id AND p.student_id = ?
+            ) AS already_applied
+        FROM tbl_class c
+        ";
+
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $studentId);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $data = [];
         while ($row = $result->fetch_assoc()) {
-            // Check if the number of petitions exceeds 30
-            if ($row['petition_count']) {
-                // Update the class status to 'full'
-                $updateClassStatus = $conn->prepare(
-                    "UPDATE tbl_class SET capacity = ? WHERE class_id = ?"
-                );
-                $updateClassStatus->bind_param("ss", $row['petition_count'], $row['class_id']);
-                $updateClassStatus->execute();
-            }
+            // Check if the number of petitions exceeds the capacity
+            $updateClassStatus = $conn->prepare(
+                "UPDATE tbl_class SET capacity = ? WHERE class_id = ? "
+            );
+            $updateClassStatus->bind_param("ss", $row['petition_count'], $row['class_id']);
+            $updateClassStatus->execute();
             $data[] = $row;
         }
         echo json_encode([
-            'success' => false,
-            'message' => 'No data found.',
-            'data' => $data
+            'success' => true,
+            'message' => 'Data fetched successfully.',
+            'data' => $data,
         ]);
     } else {
         echo json_encode([
             'success' => false,
-            'message' => 'No data found.'
+            'message' => 'No data found.',
         ]);
     }
 } catch (Exception $e) {
     echo json_encode([
         'success' => false,
-        'message' => $e->getMessage()
+        'message' => $e->getMessage(),
     ]);
 } finally {
     // Close the database connection

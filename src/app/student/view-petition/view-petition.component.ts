@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ChangeDetectorRef, AfterViewInit, ElementRef, Renderer2, ViewChild } from '@angular/core';
-
 import { StudentService } from '../../services/student.service';
 import { CookieService } from 'ngx-cookie-service';
 import { FormsModule } from '@angular/forms';
 import { Extras, Subjects } from '../../common/environments/environment';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 @Component({
   selector: 'app-view-petition',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientTestingModule],
   templateUrl: './view-petition.component.html',
   styleUrl: './view-petition.component.css'
 })
@@ -25,7 +25,9 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
   isFourthYear: string = '';
   studentId: string = '';
   classId: string = '';
+  isSuccesful: boolean = false;
   isNotTyped: boolean = false;
+  successText: string = '';
   constructor(private studentService: StudentService, private renderer: Renderer2, private cookieService: CookieService, private cdr: ChangeDetectorRef) { }
   extras = Extras;
   subject = Subjects;
@@ -47,24 +49,17 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
     });
   }
 
+
   ngOnDestroy() {
     if (this.clickListener) {
       this.clickListener();
     }
   }
 
-  fetchTrackPetition() {
-    const tokenId = this.cookieService.get('tokenId') ?? '';
-    const studentId = this.cookieService.get('studentId') ?? '';
-    this.studentService.trackPetition(tokenId, studentId).subscribe((response: any) => {
-      Extras.receiveList = response.data;
-    });
-  }
-
   fetchClass() {
     const tokenId = this.cookieService.get('tokenId') ?? '';
     this.studentService.getClass(tokenId).subscribe((response: any) => {
-      Extras.classList = response.data;
+      Extras.classList = response.data.filter((listOfClass: any) => listOfClass.program === this.program && listOfClass.status == 'pending' || listOfClass.status == 'approved');
     });
   }
 
@@ -74,7 +69,12 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
     this.program = this.cookieService.get('program');
   }
 
+  changeSuccesful() {
 
+    this.isSuccesful = false;
+    this.cookieService.set('isSuccesful', '');
+    this.successText = '';
+  }
 
   submitPetitionApplication() {
     Extras.load = true;
@@ -83,7 +83,11 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
       next: (response: any) => {
         Extras.load = false;
         if (response.success) {
-          Extras.isErrorReload(response.message.toString());
+          this.isSuccesful = true;
+          this.cookieService.set('isSuccesful', 'true');
+          this.successText = 'You have successfully applied your petition';
+          this.cookieService.set('successText', this.successText);
+          window.location.reload();
         } else {
           Extras.isError(response.message.toString());
         }
@@ -103,7 +107,11 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
       next: (response: any) => {
         Extras.load = false;
         if (response.success) {
-          Extras.isErrorReload(response.message.toString());
+          this.isSuccesful = true;
+          this.cookieService.set('isSuccesful', 'true');
+          this.successText = 'You have successfully submitted your petition';
+          this.cookieService.set('successText', this.successText);
+          window.location.reload();
         } else {
           Extras.isError(response.message.toString());
         }
@@ -121,6 +129,11 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+
+    if (this.cookieService.get('isSuccesful') == 'true') {
+      this.isSuccesful = true;
+    }
+    this.successText = this.cookieService.get('successText') ?? '';
     this.fetchClass();
     this.loadStudentData();
     Extras.searchText = '';

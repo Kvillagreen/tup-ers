@@ -8,10 +8,6 @@
     ],
     "rewrites": [
       {
-        "source": "/send-email",
-        "function": "app"
-      },
-      {
         "source": "**",
         "destination": "/index.html"
       }

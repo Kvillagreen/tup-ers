@@ -1,0 +1,21 @@
+::ng-deep .canvasjs-chart-credit {
+    display: none !important;
+    /* Completely hide the watermark */
+}
+
+.scrollbar-container {
+    scrollbar-width: thin;
+    /* For Firefox */
+    scrollbar-color: white transparent;
+    /* For Firefox */
+}
+
+.scrollbar-container::-webkit-scrollbar-thumb {
+    background-color: white;
+    /* Scrollbar color */
+}
+
+.scrollbar-container::-webkit-scrollbar-track {
+    background-color: white;
+    /* Track color */
+}

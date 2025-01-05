@@ -14,6 +14,11 @@ import { PreventAdminLogin } from './services/preventAdmin-login.guard';
 import { FacultyDashboardComponent } from './faculty/faculty-dashboard/faculty-dashboard.component';
 import { AuthAdminGuard } from './services/authAdmin.guard';
 import { ForgetPasswordComponent } from './student/forget-password/forget-password.component';
+import { FacultyForgetPasswordComponent } from './faculty/faculty-forget-password/faculty-forget-password.component';
+import { FacultyProfileComponent } from './faculty/faculty-profile/faculty-profile.component';
+import { FacultyViewPetitionComponent } from './faculty/faculty-view-petition/faculty-view-petition.component';
+import { FacultyReportPetitionComponent } from './faculty/faculty-report-petition/faculty-report-petition.component';
+import { HistoryComponent } from './student/history/history.component';
 export const routes: Routes = [
   // Student routes
   {
@@ -22,11 +27,12 @@ export const routes: Routes = [
       { path: '', redirectTo: '/login', pathMatch: 'full' },
       { path: 'login', component: LoginComponent, canActivate: [PreventLoginGuard] },
       { path: 'signup', component: SignupComponent, canActivate: [PreventLoginGuard] },
-      { path: 'forget-password', component: ForgetPasswordComponent , canActivate: [PreventLoginGuard] },
+      { path: 'forget-password', component: ForgetPasswordComponent, canActivate: [PreventLoginGuard] },
       { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
       { path: 'receive-petition', component: ReceivePetitionComponent, canActivate: [AuthGuard] },
       { path: 'view-petition', component: ViewPetitionComponent, canActivate: [AuthGuard] },
       { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
+      { path: 'history', component: HistoryComponent, canActivate: [AuthGuard] },
       { path: 'track-petition', component: TrackPetitionComponent, canActivate: [AuthGuard] },
     ]
   },
@@ -37,8 +43,11 @@ export const routes: Routes = [
       { path: '', redirectTo: 'login', pathMatch: 'full' },
       { path: 'login', component: FacultyLoginComponent, canActivate: [PreventAdminLogin] },
       { path: 'signup', component: FacultySignupComponent, canActivate: [PreventAdminLogin] },
-     // { path: 'forget-password', component: FacultyForgetPasswordComponent, canActivate: [PreventAdminLogin] },
+      { path: 'forget-password', component: FacultyForgetPasswordComponent, canActivate: [PreventAdminLogin] },
+      { path: 'profile', component: FacultyProfileComponent, canActivate: [AuthAdminGuard] },
+      { path: 'view-petition', component: FacultyViewPetitionComponent, canActivate: [AuthAdminGuard] },
       { path: 'dashboard', component: FacultyDashboardComponent, canActivate: [AuthAdminGuard] },
+      { path: 'report', component: FacultyReportPetitionComponent, canActivate: [AuthAdminGuard] },
       { path: '**', redirectTo: '/faculty/login', pathMatch: 'full' },
     ]
   },

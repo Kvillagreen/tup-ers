@@ -4,11 +4,12 @@ import { StudentService } from '../../services/student.service';
 import { CookieService } from 'ngx-cookie-service';
 import { FormsModule } from '@angular/forms';
 import { Extras } from '../../common/environments/environment';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 @Component({
   selector: 'app-track-petition',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,HttpClientTestingModule],
   templateUrl: './track-petition.component.html',
   styleUrl: './track-petition.component.css'
 })
