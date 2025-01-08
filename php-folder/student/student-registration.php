@@ -14,12 +14,17 @@ include '../connection.php';
 
 // Get POST data
 $data = json_decode(file_get_contents("php://input"), true);
-$lastName = $data['lastName'] ?? '';
-$firstName = $data['firstName'] ?? '';
-$email = $data['email'] ?? '';
-$tupvId = $data['tupvId'] ?? '';
-$password = $data['password'] ?? '';
-$program = $data['program'] ?? '';
+$lastName = $data['lastName'] ?? Null;
+$firstName = $data['firstName'] ?? Null;
+$email = $data['email'] ?? Null;
+$tupvId = $data['tupvId'] ?? Null;
+$password = $data['password'] ?? Null;
+$program = $data['program'] ?? Null;
+$status = 'enable';
+$otpCode = json_encode([
+    'otp' => '',
+    'time' => '',
+]);
 $tokenId = uniqid(); // Generate a unique token ID if not provided
 $dateCreated = date('Y-m-d H:i:s');
 if (!$lastName || !$firstName || !$email || !$tupvId || !$password || !$program) {
@@ -76,10 +81,10 @@ try {
     // Hash the password for security
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
     $insertQuery = $conn->prepare(
-        "INSERT INTO `tbl_student` (`first_name`, `last_name`, `email`, `tupv_id`, `password`, `program`, `token_id`, `date_created`) 
-        VALUES (?,?,?,?,?,?,?,?)"
+        "INSERT INTO `tbl_student` (`first_name`, `last_name`, `email`, `tupv_id`, `password`, `program`, `token_id`,`status`, `date_created`,`otp_code`) 
+        VALUES (?,?,?,?,?,?,?,?,?,?)"
     );
-    $insertQuery->bind_param("ssssssss", $firstName, $lastName, $email, $tupvId, $hashedPassword, $program, $tokenId, $dateCreated);
+    $insertQuery->bind_param("ssssssssss", $firstName, $lastName, $email, $tupvId, $hashedPassword, $program, $tokenId, $status, $dateCreated,$otpCode);
 
     if ($insertQuery->execute()) {
         echo json_encode([

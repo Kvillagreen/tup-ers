@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { StudentService } from '../../services/student.service';
-import { Extras, Subjects } from '../../common/environments/environment';
+import { Extras, Subjects } from '../../common/libraries/environment';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 @Component({
   selector: 'app-signup',
@@ -12,7 +12,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.css'
 })
-export class SignupComponent {
+export class SignupComponent implements OnInit {
   constructor(public router: Router, private studentService: StudentService) { } 
   programList: string[] = Object.keys(Subjects.programs);
   firstName: string = '';
@@ -27,7 +27,10 @@ export class SignupComponent {
   showConfirmPassword: boolean = false;
   extras = Extras;
 
-
+  ngOnInit(): void {
+    
+    Extras.errorMessage='';
+  }
 
   onSubmit() {
     Extras.load = true;
@@ -68,7 +71,7 @@ export class SignupComponent {
         if (response.success && response.tokenId) {
           Extras.isError("Registration completed, you can now login your account.");
         } else {
-          Extras.errorMessage = response.message;
+          Extras.isError(response.message);
         }
       },
       error: (error: any) => {

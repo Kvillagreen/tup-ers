@@ -8,63 +8,126 @@
                 <img src="../../../assets/images/background.jpg" class="w-full h-40 rounded-t-lg object-cover">
             </div>
             <form class="relative w-full h-full flex flex-col z-10 space-y-2 p-6" (submit)="onSubmit()">
-                <p class="text-center font-bold text-xl">Welcome back TUPVian</p>
-                <div class="flex space-x-2">
-                    <div class="flex flex-col pt-2 w-full">
-                        <label>First Name</label>
-                        <input type="text" class="input" name="firstName" [(ngModel)]="firstName" required
-                            placeholder="First Name">
-                    </div>
-                    <div class="flex flex-col pt-2 w-full">
-                        <label>Last Name</label>
-                        <input type="text" class="input" name="lastName" [(ngModel)]="lastName" required
-                            placeholder="Last Name">
-                    </div>
-                </div>
+                <p class="text-center font-bold text-2xl">Student Registration</p>
+                <div class="flex gap-x-2">
+                    <div
+                        class="flex justify-center text-sm items-center rounded-md h-12 w-full border-red-700 border-2 p-2 gap-x-2">
+                        <div class="flex justify-center items-center h-full w-8 ">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                class="size-6">
+                                <path
+                                    d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
+                            </svg>
 
-                <div class="flex flex-col pt-2">
-                    <label>Email</label>
-                    <input type="text" email class="input" name="email" [(ngModel)]="email" required
-                        placeholder="Email">
+                        </div>
+                        <input required="" type="text"
+                            class=" bg-transparent placeholder:text-red-50 font-semibold outline-none w-full h-full"
+                            name="firstName" [(ngModel)]="firstName" required placeholder="First Name">
+                    </div>
+                    <div
+                        class="flex justify-center text-sm items-center rounded-md h-12 w-full border-red-700 border-2 p-2 gap-x-2">
+                        <div class="flex justify-center items-center h-full w-8 ">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                class="size-6">
+                                <path
+                                    d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
+                            </svg>
+
+                        </div>
+                        <input required type="text"
+                            class=" bg-transparent placeholder:text-red-50 font-semibold outline-none w-full h-full"
+                            name="lastName" [(ngModel)]="lastName" required placeholder="Last Name">
+                    </div>
                 </div>
-                <div class="flex flex-col pt-2">
-                    <label>TUPV ID</label>
-                    <input type="text" class="input" name="tupvId" [(ngModel)]="tupvId" required placeholder="TUPV ID">
+                <div
+                    class="flex justify-center text-sm items-center rounded-md h-12 w-full border-red-700 border-2 p-2 gap-x-2">
+                    <div class="flex justify-center items-center h-full w-8 ">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-6">
+                            <path fill-rule="evenodd"
+                                d="M5.404 14.596A6.5 6.5 0 1 1 16.5 10a1.25 1.25 0 0 1-2.5 0 4 4 0 1 0-.571 2.06A2.75 2.75 0 0 0 18 10a8 8 0 1 0-2.343 5.657.75.75 0 0 0-1.06-1.06 6.5 6.5 0 0 1-9.193 0ZM10 7.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <input required type="text"
+                        class=" bg-transparent placeholder:text-red-50 font-semibold outline-none w-full h-full"
+                        name="email" [(ngModel)]="email" required placeholder="Email">
                 </div>
-                <div class="flex flex-col pt-2">
-                    <label for="program">Program</label>
-                    <select id="program" class="input" name="program" [(ngModel)]="program" required>
-                        <option class="bg-red-700" value="" disabled selected>Select Your Program</option>
-                        <option *ngFor="let list of programList" [value]="list" class="bg-red-700">{{list}}</option>
+                <div
+                    class="flex justify-center text-sm items-center rounded-md h-12 w-full border-red-700 border-2 p-2 gap-x-2">
+                    <div class="flex justify-center items-center h-full w-8 ">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-6">
+                            <path fill-rule="evenodd"
+                                d="M9.664 1.319a.75.75 0 0 1 .672 0 41.059 41.059 0 0 1 8.198 5.424.75.75 0 0 1-.254 1.285 31.372 31.372 0 0 0-7.86 3.83.75.75 0 0 1-.84 0 31.508 31.508 0 0 0-2.08-1.287V9.394c0-.244.116-.463.302-.592a35.504 35.504 0 0 1 3.305-2.033.75.75 0 0 0-.714-1.319 37 37 0 0 0-3.446 2.12A2.216 2.216 0 0 0 6 9.393v.38a31.293 31.293 0 0 0-4.28-1.746.75.75 0 0 1-.254-1.285 41.059 41.059 0 0 1 8.198-5.424ZM6 11.459a29.848 29.848 0 0 0-2.455-1.158 41.029 41.029 0 0 0-.39 3.114.75.75 0 0 0 .419.74c.528.256 1.046.53 1.554.82-.21.324-.455.63-.739.914a.75.75 0 1 0 1.06 1.06c.37-.369.69-.77.96-1.193a26.61 26.61 0 0 1 3.095 2.348.75.75 0 0 0 .992 0 26.547 26.547 0 0 1 5.93-3.95.75.75 0 0 0 .42-.739 41.053 41.053 0 0 0-.39-3.114 29.925 29.925 0 0 0-5.199 2.801 2.25 2.25 0 0 1-2.514 0c-.41-.275-.826-.541-1.25-.797a6.985 6.985 0 0 1-1.084 3.45 26.503 26.503 0 0 0-1.281-.78A5.487 5.487 0 0 0 6 12v-.54Z"
+                                clip-rule="evenodd" />
+                        </svg>
+
+                    </div>
+                    <input required type="text"
+                        class=" bg-transparent placeholder:text-red-50 font-semibold outline-none w-full h-full"
+                        name="tupvId" maxlength="12" [(ngModel)]="tupvId" required placeholder="TUP-V ID">
+                </div>
+                <div
+                    class="flex justify-center text-sm items-center rounded-md h-12 w-full border-red-700 border-2 p-2 gap-x-2">
+                    <div class="flex justify-center items-center h-full w-8 ">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-6">
+                            <path
+                                d="M10.75 16.82A7.462 7.462 0 0 1 15 15.5c.71 0 1.396.098 2.046.282A.75.75 0 0 0 18 15.06v-11a.75.75 0 0 0-.546-.721A9.006 9.006 0 0 0 15 3a8.963 8.963 0 0 0-4.25 1.065V16.82ZM9.25 4.065A8.963 8.963 0 0 0 5 3c-.85 0-1.673.118-2.454.339A.75.75 0 0 0 2 4.06v11a.75.75 0 0 0 .954.721A7.506 7.506 0 0 1 5 15.5c1.579 0 3.042.487 4.25 1.32V4.065Z" />
+                        </svg>
+
+                    </div>
+                    <select required id="program" class="outline-none font-semibold w-full h-full bg-transparent " name="program"
+                        [(ngModel)]="program" required>
+                        <option class="w-full bg-gray-800" value="" disabled selected>Select Your Program</option>
+                        <option *ngFor="let list of programList" [value]="list" class="w-full bg-gray-800">{{list}}
+                        </option>
                     </select>
                 </div>
-                <div class="flex flex-col">
-                    <label for="password">Password</label>
-                    <div class="relative">
-                        <input [type]="showPassword ? 'text' : 'password'" id="password" name="password"
-                            [(ngModel)]="password" class="input" required placeholder="Password" />
+                <div
+                    class="flex rounded-md justify-between text-sm p-2 h-12 gap-x-2 w-full border-red-700 border-2 bg-transparent">
+                    <div class="flex justify-center items-center h-full w-8 ">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-6">
+                            <path fill-rule="evenodd"
+                                d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="w-full flex justify-between gap-x-2">
+                        <input required [type]="showPassword ? 'text' : 'password'" id="password" name="password"
+                            [(ngModel)]="password"
+                            class="w-full outline-none border-none h-full text-red-50 placeholder:text-red-50 font-semibold bg-transparent"
+                            required placeholder="Password" />
                         <button type="button" (click)="showPassword=!showPassword"
-                            class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500">
-                            <i class="text-white" [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                            class="flex justify-center items-center">
+                            <i class="text-white text-lg"
+                                [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
                         </button>
                     </div>
                 </div>
-
-                <div class="flex flex-col">
-                    <label for="passwordConfirm">Confirm Password</label>
-                    <div class="relative">
-                        <input [type]="showConfirmPassword ? 'text' : 'password'" id="passwordConfirm"
-                            name="passwordConfirm" [(ngModel)]="passwordConfirm" class="input" required
-                            placeholder="Confirm Password" />
+                <div
+                    class="flex rounded-md justify-between text-sm p-2 h-12 gap-x-2 w-full border-red-700 border-2 bg-transparent">
+                    <div class="w-full flex justify-between gap-x-2">
+                        <div class="flex justify-center items-center h-full w-8 ">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                class="size-6">
+                                <path fill-rule="evenodd"
+                                    d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <input required [type]="showConfirmPassword ? 'text' : 'password'" id="passwordConfirm"
+                            name="passwordConfirm" [(ngModel)]="passwordConfirm"
+                            class="w-full outline-none border-none h-full text-red-50 placeholder:text-red-50 font-semibold bg-transparent"
+                            required placeholder="Confirm Password" />
                         <button type="button" (click)="showConfirmPassword=!showConfirmPassword"
-                            class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500">
-                            <i class="text-white" [class]="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                            class="flex justify-center items-center">
+                            <i class="text-white text-lg"
+                                [class]="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
                         </button>
                     </div>
                 </div>
                 <div class="flex justify-between ">
                     <button type="submit"
-                        class="bg-red-600 border-[1px] w-full border-red-800 p-2 text-sm hover:bg-red-700">Register</button>
+                        class="bg-red-800 border-2 w-full h-12 rounded-md border-red-800 p-2 text-sm hover:bg-red-900">Register</button>
                 </div>
                 <div
                     class="h-5 py-2 text-center flex items-center justify-center w-full text-xs font-semibold text-red-50">

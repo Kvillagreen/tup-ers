@@ -13,8 +13,8 @@ include '../connection.php';
 
 // Get POST data
 $data = json_decode(file_get_contents("php://input"), true);
-$tokenId = $data['tokenId'] ?? '676416d844818';
-$studentId = $data['studentId'] ?? '2';
+$tokenId = $data['tokenId'] ?? Null;
+$studentId = $data['studentId'] ?? Null;
 
 if (!$tokenId) {
     echo json_encode([

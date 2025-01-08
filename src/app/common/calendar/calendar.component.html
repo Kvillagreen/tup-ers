@@ -1,47 +1,63 @@
-<div class="w-full p-4 bg-white shadow rounded-md ">
-    <p class="text-gray-700 text-lg text-center font-semibold">Calendar Schedule</p>
-    <p class="text-gray-700 text-xs text-center font-semibold">Number of Hours: {{numberOfHours}}</p>
-    <p class="text-gray-700 text-xs text-center font-semibold">Number of Units: {{numberOfHoursUnits}}</p>
+<div class="p-4 bg-white shadow rounded-md ">
+    <div class="flex sm:flex-row flex-col w-full justify-between items-center">
+        <p class="text-gray-700 text-[12px] text-center font-semibold">Total Consumed: {{numberOfHours |
+            number:'1.0-2'}}
+            <span *ngIf="numberOfHours <= 1">hr</span>
+            <span *ngIf="numberOfHours > 1">hrs</span>
+        </p>
+        <p class="text-gray-700 text-[12px] text-center font-semibold">Total Hours: {{totalHours() |
+            number:'1.0-2'}}
+            <span *ngIf="totalHours() <= 1">hr</span>
+            <span *ngIf="totalHours() > 1">hrs</span>
+        </p>
+
+    </div>
     <hr>
-    <div class="flex justify-between items-center h-6  bg-red-800 text-gray-50">
+    <div class="flex justify-between items-center h-8  bg-red-800 text-gray-50">
         <button (click)="prevMonth()" class="text-sm font-bold px-4 py-2 hover:text-gray-400 rounded">&lt;</button>
         <span class="text-sm font-bold">{{ months[currentMonth] }} {{ currentYear }}</span>
         <button (click)="nextMonth()" class="text-lg font-bold px-4 py-2 hover:text-gray-400 rounded">&gt;</button>
     </div>
-
     <div class="grid grid-cols-7 my-[2px] text-[10px] font-semibold text-center text-gray-50">
         <div *ngFor="let day of daysOfWeek" class="bg-red-700 py-1  md:px-2">{{
             day
             }}</div>
     </div>
-
     <div class="grid grid-cols-7 ">
         <div *ngFor="let day of calendarDays"
-            class="relative  text-center text-xs h-full w-full flex flex-col items-center justify-start bg-gray-50">
+            class="relative  text-center text-xs h-6 w-full flex flex-col items-center justify-start bg-gray-50">
             <!-- Day Number -->
             <button *ngIf="day.date && day.clicked==false"
-                (click)="calendar.isTime=!calendar.isTime; realDate=day.date.toString(); clickDate=day.clicked"
-                class="text-gray-50 w-full bg-red-600 font-semibold justify-center align-center border  ">
+                (click)="checkClick(); realDate=day.date.toString(); clickDate=day.clicked"
+                class="text-gray-50 w-full h-full bg-red-600 font-semibold justify-center align-center border  ">
                 {{ day.date }}
-            </button> 
+            </button>
             <button *ngIf="day.date && day.clicked==true"
-                (click)="calendar.isTime=!calendar.isTime; dayIsClicked(day.date.toString(),day.clicked)"
-                class="text-gray-50 w-full bg-red-800 font-semibold justify-center align-center border  ">
+                (click)="checkClick(); dayIsClicked(day.date.toString(),day.clicked)"
+                class="text-gray-50 w-full h-full bg-red-800 font-semibold justify-center align-center border  ">
                 {{ day.date }}
             </button>
         </div>
+        <div *ngIf="!fromTime && !toTime && calendar.calendarList.length==0 && totalHours()!=0"
+            class="w-full mt-2 col-span-7 text-center">
+            Please select schedule
+        </div>
     </div>
-
-    <div *ngIf="calendar.isTime" class="w-full h-full grid grid-cols-2 justify-center items-center">
-        <div class="w-full h-full flex flex-col">
-            <div class="w-20">
-                <input [(ngModel)]="fromTime" id="fromTime" name="fromTime" type="time">
+    <div *ngIf="calendar.isTime"
+        class="w-full h-full grid grid-cols-2 gap-x-2 gap-y-2 justify-center items-center pt-4">
+        <div class="w-full h-full text-xs md:text-sm overflow-hidden flex flex-col gap-y-2">
+            <div class="w-full  flex  justify-center gap-x-2 border-2 border-red-700 p-2">
+                <label>From:</label>
+                <input [(ngModel)]="fromTime" id="fromTime" class="w-full  outline-none" name="fromTime" type="time"
+                    min="06:00" max="21:00">
             </div>
-            <div class="w-20">
-                <input [(ngModel)]="toTime" id="toTime" name="toTime" type="time">
+            <div class="w-full flex justify-center gap-x-2 border-2 border-red-700 p-2">
+                <label>To:</label>
+                <input [(ngModel)]="toTime" id="toTime" class="w-full outline-none" name="toTime"
+                    type="time" min="06:00" max="21:00">
             </div>
         </div>
-        <div class="w-full h-full flex justify-center items-center">
+        <div class="w-full h-full flex justify-center items-center border-2 border-red-700">
             <button (click)="dayIsClicked(realDate.toString(),clickDate)">Submit</button>
         </div>
         <div class="w-full col-span-2 text-center">

@@ -1,3 +1,4 @@
+
 <?php
 // registration.php
 
@@ -14,14 +15,15 @@ include '../connection.php';
 
 // Get POST data
 $data = json_decode(file_get_contents("php://input"), true);
-$tokenId = $data['tokenId'] ?? '6778c1095500f';
-$classId = $data['classId'] ?? '2';
+$tokenId = $data['tokenId'] ?? Null;
+$classId = $data['classId'] ?? Null;
 
 if (empty($tokenId) || empty($classId)) {
     echo json_encode([
         'success' => false,
         'message' => 'All fields are required',
     ]);
+    header('Location: ../error/fields-required.php');
     exit(0);
 }
 
@@ -41,9 +43,15 @@ if ($result->num_rows !== 1) {
 }
 
 try {
-    // Fetch all petitions for the class
+    // Step 1: Fetch all petitions for the class
     $sqlQuery = "
-    SELECT s.first_name,s.last_name,s.student_id,s.tupv_id,s.email, p.*
+    SELECT 
+        s.first_name,
+        s.last_name,
+        s.student_id,
+        s.tupv_id,
+        s.email,
+        p.*  -- All columns from tbl_petition
     FROM tbl_petition p
     JOIN tbl_student s ON p.student_id = s.student_id
     WHERE p.class_id = ?
@@ -54,11 +62,36 @@ try {
     $stmt->execute();
     $result = $stmt->get_result();
 
+    $data = [];
     if ($result->num_rows > 0) {
-        $data = [];
         while ($row = $result->fetch_assoc()) {
             $data[] = $row;
         }
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'No petitions found.',
+        ]);
+        exit(0);
+    }
+
+    // Step 2: Fetch all class details for the class_id
+    $sqlClassQuery = "
+    SELECT * FROM tbl_class WHERE class_id = ?
+";
+
+    $stmt = $conn->prepare($sqlClassQuery);
+    $stmt->bind_param("s", $classId);
+    $stmt->execute();
+    $classResult = $stmt->get_result();
+
+    if ($classResult->num_rows > 0) {
+        // Add class data to the response
+        $classData = $classResult->fetch_assoc();
+        foreach ($data as &$row) {
+            $row['class_data'] = $classData; // Attach class data to each petition
+        }
+
         echo json_encode([
             'success' => true,
             'data' => $data,
@@ -66,7 +99,7 @@ try {
     } else {
         echo json_encode([
             'success' => false,
-            'message' => 'No data found.',
+            'message' => 'Class data not found.',
         ]);
     }
 } catch (Exception $e) {

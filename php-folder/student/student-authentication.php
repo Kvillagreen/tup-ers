@@ -15,9 +15,10 @@ include '../connection.php'; // Include your database connection
 
 // Get POST data
 $data = json_decode(file_get_contents("php://input"), true);
-$tupvId = $data['tupvId'] ?? ''; // Input can be email or usernames
-$password = $data['password'] ?? '';
-$tokenId = uniqid(45); // Generate a unique token ID if not provided
+$tupvId = $data['tupvId'] ?? Null; // Input can be email or usernames
+$password = $data['password'] ?? Null;
+$tokenId = substr(bin2hex(random_bytes(45)), 0, 45);
+$sessionId = substr(bin2hex(random_bytes(45)), 0, 45);  // Generate a unique token ID if not provided
 $otpCode = json_encode([
     'otp' => '',
     'time' => '',
@@ -59,12 +60,17 @@ if ($result->num_rows > 0) {
                     'email' => $user['email'],
                     'firstName' => $user['first_name'],
                     'lastName' => $user['last_name'],
+                    'tokenId' => $tokenId,
+                    'program' => $user['program'],
+                    'status' => $user['status'],
+                    'dateCreated' => $user['date_created'],
+                    'userType' => 'student',
+                    'isLoggedIn' => true,
                 ],
-                'tokenId' =>$tokenId, // Optional field
-                'program' => $user['program'],
-                'dateCreated' => $user['date_created'],
+                'sessionId' => $sessionId,
+                'tokenId' => $tokenId,
             ]);
-        }else{
+        } else {
             echo json_encode(['success' => false, 'message' => 'Error found']);
         }
     } else {

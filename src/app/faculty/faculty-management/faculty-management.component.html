@@ -1,0 +1,98 @@
+<div class="flex flex-col items-center justify-center w-full h-full py-2 md:px-0 px-2">
+    <div class="w-full md:w-3/4 min-h-screen bg-[#f5f3f4] rounded-md  p-4 space-y-2">
+        <div class="flex justify-start align-center">
+            <p class="text-3xl font-bold text-gray-900">Faculty Management</p>
+        </div>
+        <div class="grid grid-cols-2 justify-between align-center w-full h-full gap-2">
+            <div class="grid grid-cols-2 col-span-2 md:col-span-1 justify-between align-center w-full gap-2">
+                <button #filterDownView (click)="dataViewer.isFilterOn=!dataViewer  .isFilterOn"
+                    class="w-full h-12 col-span-1 py-2 rounded-md  bg-red-500  text-gray-50  hover:bg-red-800 hover:text-gray-300">
+                    <span class="flex justify-center h-8 items-center">Filter
+                        <svg width="20px" height="20px" class="ml-2 fill-white hover:fill-gray-300" viewBox="0 0 24 24"
+                            fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M15 10.5A3.502 3.502 0 0 0 18.355 8H21a1 1 0 1 0 0-2h-2.645a3.502 3.502 0 0 0-6.71 0H3a1 1 0 0 0 0 2h8.645A3.502 3.502 0 0 0 15 10.5zM3 16a1 1 0 1 0 0 2h2.145a3.502 3.502 0 0 0 6.71 0H21a1 1 0 1 0 0-2h-9.145a3.502 3.502 0 0 0-6.71 0H3z" />
+                        </svg></span>
+                    <div *ngIf="dataViewer.isFilterOn"
+                        class="relative w-full h-[250px] top-1 z-[10] rounded-b-md bg-red-900">
+                        <div class=" grid grid-cols-1 gap-y-1 p-2 justify-start items-center">
+                            <button (click)="dataViewer.onSortChange('date_created')"
+                                class=" h-8  text-gray-50   hover:text-gray-400">Date</button>
+                            <button (click)="dataViewer.onSortChange('first_name')"
+                                class=" h-8 text-gray-50  hover:text-gray-400">Full Name</button>
+                            <button (click)="dataViewer.onSortChange('email')"
+                                class=" h-8 text-gray-50   hover:text-gray-400">Email</button>
+                            <button (click)="dataViewer.onSortChange('faculty_type')"
+                                class=" h-8 text-gray-50   hover:text-gray-400">Faculty Type</button>
+                            <button (click)="dataViewer.onSortChange('program')"
+                                class=" h-8 text-gray-50   hover:text-gray-400">program</button>
+                        </div>
+                    </div>
+                </button>
+            </div>
+
+            <div class="flex justify-between items-center w-full col-span-2 md:col-span-1 h-full">
+                <div class="relative w-full h-full">
+                    <input type="text" placeholder="Search Petition" [(ngModel)]="dataViewer.searchText"
+                        (ngModelChange)="dataViewer.onSearchChange($event)"
+                        class="w-full h-full outline-2 outline-red-950 border-red-950 border-2 rounded-md px-10 py-2">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="absolute top-1/2 left-3 transform -translate-y-1/2 w-5 h-5 text-red-950" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M11 4a7 7 0 100 14 7 7 0 000-14zM21 21l-4.35-4.35" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div
+            class="grid grid-cols-12 px-2 w-full h-12 bg-red-800 text-center  text-xs md:text-[16px] text-white rounded-t-md font-semibold justify-center items-center">
+            <div class="col-span-2">Date</div>
+            <div class="col-span-3">Full Name</div>
+            <div class="col-span-3">Email</div>
+            <div class="col-span-2">Details</div>
+            <div class="col-span-2">Status</div>
+        </div>
+
+        <div *ngIf="dataViewer.getFacultyToDisplay().length!=0">
+            <div *ngFor="let class of dataViewer.getFacultyToDisplay()let i=index"
+                class="mt-2 grid grid-cols-12 w-full h-12 bg-red-300 text-center text-xs md:text-[14px] text-gray-900 justify-center items-center">
+                <div class="col-span-2"> {{extras.formatDate(class.date_created)}}</div>
+                <div class="col-span-3 "> {{extras.toTitleCaseSafe(class.first_name+' '+class.last_name)}}</div>
+                <div class="col-span-3"> {{extras.toTitleCaseSafe(class.email)}}</div>
+                <div class="col-span-2 flex flex-col text-left text-[10px] justify-center w-full">
+                    <p>Faculty: {{extras.toTitleCaseSafe(class.faculty_type)}}</p>
+                    <p> Program: {{extras.toTitleCaseSafe(class.program)}}</p>
+                </div>
+                <div class="col-span-2 flex justify-center items-centers overflow-hidden">
+                    <select (change)="statusChange($event,class.faculty_id)" class="w-1/2 select border-red-500 border-2  outline-none bg-red-50">
+                        <option selected disabled>{{extras.toTitleCaseSafe(class.status)}}</option>
+                        <option value="approved">Approve</option>
+                        <option value="denied">Denied</option>
+                    </select>
+                    <p>
+
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="dataViewer.multiplierCounter(dataViewer.getFacultyToDisplay().length).length !=0">
+            <div *ngFor="let class of dataViewer.multiplierCounter(dataViewer.getFacultyToDisplay().length) let i=index"
+                class="mt-2 grid grid-cols-7 w-full h-12 bg-red-300 text-center text-[12px] md:text-[14px] text-gray-900
+                justify-center items-center">
+                <div class="col-span-7 font-semibold" *ngIf="class==0 && dataViewer.getFacultyToDisplay().length==0">No
+                    data found</div>
+            </div>
+        </div>
+        <div class="w-full flex justify-between items-center text-black">
+            <button (click)="dataViewer.prevList()"
+                class="bg-red-500 hover:bg-red-800 w-20 h-full py-2 rounded-md text-gray-50  hover:text-gray-300">
+                Prev
+            </button>
+            <button (click)="dataViewer.nextList(dataViewer.facultyManagement.length)"
+                class="bg-red-500 hover:bg-red-800 w-20 h-full py-2 rounded-md text-gray-50  hover:text-gray-300">
+                Next
+            </button>
+        </div>
+    </div>
+</div>

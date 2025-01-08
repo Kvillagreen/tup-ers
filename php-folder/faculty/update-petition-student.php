@@ -14,15 +14,16 @@ include '../connection.php';
 
 // Get POST data
 $data = json_decode(file_get_contents("php://input"), true);
-$tokenId = $data['tokenId'] ?? null;
-$classId = $data['classId'] ?? null;
-$petitionId = $data['petitionId'] ?? null;
-$status = $data['status'] ?? null;
-$studentId = $data['studentId'] ?? null;
-$notedBy = $data['notedBy'] ?? null;
-$reasons = $data['reasons'] ?? null;
-$message = $data['message'] ?? null;
+$tokenId = $data['tokenId'] ?? Null;
+$classId = $data['classId'] ?? Null;
+$petitionId = $data['petitionId'] ?? Null;
+$status = $data['status'] ?? Null;
+$studentId = $data['studentId'] ?? Null;
+$notedBy = $data['notedBy'] ?? Null;
+$reasons = $data['reasons'] ?? Null;
+$message = $data['message'] ?? Null;
 $messageStatus = 'unread' ;
+$title = 'Update Student Petition' ;
 $dateCreated = date('Y-m-d H:i:s');
 
 if (!$tokenId) {
@@ -30,6 +31,7 @@ if (!$tokenId) {
         'success' => false,
         'message' => 'All fields are required',
     ]);
+    header('Location: ../error/fields-required.php');
     return 0;
 }
 
@@ -53,16 +55,16 @@ try {
 
         $updateClassStatus = $conn->prepare(
             "UPDATE tbl_petition 
-                SET status = ? 
-                WHERE class_id = ? 
-                AND petition_id = ? 
+                SET status = ? , class_id = ? 
+                WHERE 
+                 petition_id = ? AND student_id = ?
                 AND EXISTS (
                 SELECT 1 FROM tbl_class 
                 WHERE tbl_class.class_id = tbl_petition.class_id 
                 AND tbl_class.capacity < 50
                 )"
         );
-        $updateClassStatus->bind_param("sss", $status, $classId, $petitionId);
+        $updateClassStatus->bind_param("ssss", $status, $classId, $petitionId, $studentId);
 
         if ($updateClassStatus->execute()) {
             echo json_encode([
@@ -78,19 +80,16 @@ try {
 
     } else {
 
-
         $updateClassStatus = $conn->prepare(
             "UPDATE tbl_petition SET status = ? WHERE class_id = ? AND petition_id = ?"
         );
         $updateClassStatus->bind_param("sss", $status, $classId, $petitionId);
 
         $insertMessage = $conn->prepare(
-            "INSERT INTO `tbl_notification` (`student_id`, `message`, `reasons`, `noted_by`, `status`, `date_created`) 
-            VALUES (?,?,?,?,?,?)"
+            "INSERT INTO `tbl_notification` (`student_id`, `message`, `reasons`, `noted_by`, `status`, `date_created`, `title`) 
+            VALUES (?,?,?,?,?,?,?)"
         );
-
-        $insertMessage->bind_param("ssssss", $studentId, $message, $reasons, $notedBy, $messageStatus, $dateCreated);
-
+        $insertMessage->bind_param("sssssss", $studentId, $message, $reasons, $notedBy, $messageStatus, $dateCreated,$title);
         if ($updateClassStatus->execute() && $insertMessage->execute()) {
             echo json_encode([
                 'success' => true,

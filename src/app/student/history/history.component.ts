@@ -3,8 +3,10 @@ import { Component, OnInit, ChangeDetectorRef, AfterViewInit, ElementRef, Render
 import { StudentService } from '../../services/student.service';
 import { CookieService } from 'ngx-cookie-service';
 import { FormsModule } from '@angular/forms';
-import { Extras, Subjects } from '../../common/environments/environment';
+import { Extras, Subjects } from '../../common/libraries/environment';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { dataViewer } from '../../common/libraries/data-viewer';
+import { EncryptData } from '../../common/libraries/encrypt-data';
 
 @Component({
   selector: 'app-history',
@@ -18,9 +20,8 @@ export class HistoryComponent implements OnInit, AfterViewInit {
   fullName: string = '';
   studentId: string = '';
   classId: string = '';
-  isSuccesful: boolean = false;
-  isNotTyped: boolean = false;
-  constructor(private studentService: StudentService, private renderer: Renderer2, private cookieService: CookieService, private cdr: ChangeDetectorRef) { }
+  dataViewer = dataViewer;
+  constructor(private studentService: StudentService, private encryptData: EncryptData, private renderer: Renderer2, private cookieService: CookieService, private cdr: ChangeDetectorRef) { }
   extras = Extras;
   subject = Subjects;
 
@@ -34,9 +35,9 @@ export class HistoryComponent implements OnInit, AfterViewInit {
       if (
         this.filterDownView?.nativeElement &&
         !this.filterDownView.nativeElement.contains(event.target) &&
-        Extras.isFilterOn
+        dataViewer.isFilterOn
       ) {
-        Extras.isFilterOn = false;
+        dataViewer.isFilterOn = false;
       }
     });
   }
@@ -48,25 +49,25 @@ export class HistoryComponent implements OnInit, AfterViewInit {
   }
 
   fetchClassHistory() {
-    const tokenId = this.cookieService.get('tokenId') ?? '';
+    const data = this.encryptData.decryptData('student') ?? ''
+    const tokenId = data.tokenId;
     this.studentService.getClass(tokenId).subscribe((response: any) => {
-      Extras.classListHistory = response.data.filter((listOfClass: any) => listOfClass.program === this.program && listOfClass.status == 'approved' || listOfClass.status == 'denied');
+      dataViewer.classListHistory = response.data.filter((listOfClass: any) => listOfClass.program === this.program && listOfClass.status == 'approved' || listOfClass.status == 'denied');
     });
   }
 
   loadStudentData() {
-    this.fullName = this.cookieService.get('firstName') + ' ' + this.cookieService.get('lastName');
-    this.tupvId = this.cookieService.get('tupvId');
-    this.program = this.cookieService.get('program');
+    const data = this.encryptData.decryptData('student') ?? ''
+    this.tupvId = data.tupvId;
+    this.fullName = `${data.firstName}` + ' ' + `${data.lastName}`;
+    this.program = data.program;
   }
-  ngOnInit(): void {
 
-    if (this.cookieService.get('isSuccesful') == 'true') {
-      this.isSuccesful = true;
-    }
+  ngOnInit(): void {
     this.fetchClassHistory();
     this.loadStudentData();
-    Extras.searchText = '';
-    Extras.isFilterOn = false;
+    dataViewer.searchText = '';
+    dataViewer.pageIndex = 0;
+    dataViewer.isFilterOn = false;
   }
 }

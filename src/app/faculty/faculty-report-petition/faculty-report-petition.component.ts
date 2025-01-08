@@ -1,13 +1,14 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CanvasJSAngularChartsModule } from '@canvasjs/angular-charts';
-import { CookieService } from 'ngx-cookie-service';
-import { Extras } from '../../common/environments/environment';
+import { Extras } from '../../common/libraries/environment';
 import { StudentService } from '../../services/student.service';
 import { CanvasJS } from '@canvasjs/angular-charts';
 import { FormsModule } from '@angular/forms';
 import { FacultyService } from '../../services/faculty.service';
 import { Router } from '@angular/router';
+import { restrictService } from '../../common/libraries/environment';
+import { EncryptData } from '../../common/libraries/encrypt-data';
 
 interface DataPoint {
   label: string; // Use string if class_id is a string, or change to number if it's numeric
@@ -15,6 +16,7 @@ interface DataPoint {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-faculty-report-petition',
   imports: [CommonModule, CanvasJSAngularChartsModule, FormsModule],
   templateUrl: './faculty-report-petition.component.html',
@@ -28,15 +30,20 @@ export class FacultyReportPetitionComponent implements OnInit {
   studentList: any[] = [];
   program: string = '';
   counter: number = 0;
+  data: any = this.encryptData.decryptData('faculty')
   @ViewChild('chartContainer', { static: false }) chartContainer!: ElementRef;
 
-  constructor(private cookieService: CookieService, private facultyService: FacultyService, private router: Router) { }
+  constructor(
+    private restrict: restrictService,
+    private facultyService: FacultyService,
+    private router: Router,
+    private encryptData: EncryptData) { }
   fetchStudent() {
-    const tokenId = this.cookieService.get('facultyTokenId');
+    const tokenId = this.data.tokenId;
     this.facultyService.getStudent(tokenId).subscribe((response: any) => {
       if (response.success && response.data) {
         this.studentList = response.data;
-      } 
+      }
     });
   }
 
@@ -47,13 +54,13 @@ export class FacultyReportPetitionComponent implements OnInit {
 
   fetchClass(program: string) {
     Extras.load = true;
-    const tokenId = this.cookieService.get('facultyTokenId');
+    const tokenId = this.data.tokenId;
     this.facultyService.getClass(tokenId).subscribe((response: any) => {
       if (response.success) {
         Extras.load = false;
         this.programList = response.data;
         this.programReportList = response.data;
-        this.classList = response.data.filter((listOfClass: any) => listOfClass.program === program && listOfClass.status=='pending' || listOfClass.status=='approved');
+        this.classList = response.data.filter((listOfClass: any) => listOfClass.program === program && listOfClass.status == 'pending' || listOfClass.status == 'approved');
         this.programList = this.programList.reduce((acc: any, item: any) => {
           const existingProgram = acc.find((entry: any) => entry.program === item.program);
           if (existingProgram) {
@@ -168,9 +175,7 @@ export class FacultyReportPetitionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.cookieService.get('facultyType') !== 'Registrar') {
-      this.router.navigate(['/faculty/login']);
-    }
+    this.restrict.isAdmin();
     this.fetchClass('');
     this.fetchStudent();
   }

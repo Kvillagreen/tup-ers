@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Injectable } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
-import { Extras } from '../../common/environments/environment';
+import { Extras } from '../../common/libraries/environment';
 import { StudentService } from '../../services/student.service';
 import { Route, Router } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { EncryptData } from '../../common/libraries/encrypt-data';
 
 @Component({
   selector: 'app-profile',
@@ -23,7 +24,7 @@ export class ProfileComponent implements OnInit {
   reportList: any[] = [];
   password: boolean = false;
   passwordText: string = 'Password';
-  isEditablePassword:boolean = false;
+  isEditablePassword: boolean = false;
   passwordError: string = '';
   passwordStrength: string = '';
   currentPassword: string = '';
@@ -36,20 +37,29 @@ export class ProfileComponent implements OnInit {
   extras = Extras;
   strengthScore: number = 1;
   isLoggedIn: boolean = false;
-  constructor(private cookieService: CookieService, private router: Router, private studentService: StudentService) { }
+
+  constructor(
+    private cookieService: CookieService,
+    private router: Router,
+    private studentService: StudentService,
+    private encryptData: EncryptData
+  ) { }
+
   ngOnInit(): void {
-    this.tupvId = this.cookieService.get('tupvId');
-    this.fullName = this.cookieService.get('firstName') + ' ' + this.cookieService.get('lastName');
-    this.email = this.cookieService.get('email');
-    this.program = this.cookieService.get('program');
-    this.dateCreated = this.cookieService.get('dateCreated');
+    const data = this.encryptData.decryptData('student') ?? ''
+    this.tupvId = data.tupvId;
+    this.fullName = data.firstName + ' ' + data.lastName;
+    this.email = data.email;
+    this.program = data.program;
+    this.dateCreated = data.dateCreated;
     this.fetchTrackPetition();
   }
 
   saveEmail() {
+    const data = this.encryptData.decryptData('student') ?? ''
     const emailPattern: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     if (!emailPattern.test(this.email)) {
-      this.email = this.cookieService.get('email');
+      this.email = data.email;
       Extras.isError("Invalid Email Format!");
       return false;
     }
@@ -96,10 +106,10 @@ export class ProfileComponent implements OnInit {
 
   updateAccountDetails() {
     Extras.load = true;
-    
+    const data = this.encryptData.decryptData('student') ?? ''
     if (this.newPassword.length > 0 && this.confirmPassword.length > 0 && this.currentPassword.length > 0) {
-      
-    // password validation checking if password is strong enough
+
+      // password validation checking if password is strong enough
       if (this.newPassword.length < 8 || this.confirmPassword.length < 8) {
         Extras.isError("Passwords must be 8 characters long.");
         Extras.load = false;
@@ -117,9 +127,9 @@ export class ProfileComponent implements OnInit {
       }
     }
     else {
-      
-    // password validation checking if email is valid and doesnt resubmit the existing one
-      if (this.email == this.cookieService.get('email')) {
+
+      // password validation checking if email is valid and doesnt resubmit the existing one
+      if (this.email == data.email) {
         Extras.load = false;
         return;
       }
@@ -130,9 +140,10 @@ export class ProfileComponent implements OnInit {
       }
     }
     // submitting the updated information the user change, email or password
-    const tokenId = this.cookieService.get('tokenId');
-    const studentId = this.cookieService.get('studentId');
-    const tupvId = this.cookieService.get('tupvId');
+
+    const tokenId = data.tokenId;
+    const studentId = data.studentId;
+    const tupvId = data.tupvId;
     this.studentService.updateStudentsProfile(tupvId, studentId, tokenId, this.email, this.currentPassword, this.newPassword).subscribe((response: any) => {
       Extras.load = false;
       if (response.success) {
@@ -140,26 +151,26 @@ export class ProfileComponent implements OnInit {
         this.currentPassword = '';
         this.newPassword = '';
         this.confirmPassword = '';
-        this.cookieService.set('email', this.email, 1 / 24);
-        this.isEditableEmail=false;
-        this.isEditablePassword=false;
+        data.email = this.email;
+        this.encryptData.encryptAndStoreData('student', data)
+        this.isEditableEmail = false;
+        this.isEditablePassword = false;
       } else {
         Extras.isError(response.message);
       }
     });
   }
 
-  logout() {
-    ['tupvId', 'firstName', 'lastName', 'email', 'studentId', 'program', 'tokenId', 'dateCreated', 'isLoggedIn']
-      .forEach((key) => this.cookieService.set(key, '', 7));
-    this.router.navigate(['/login']);
-  }
-
   fetchTrackPetition() {
-    const tokenId = this.cookieService.get('tokenId') ?? '';
-    const studentId = this.cookieService.get('studentId') ?? '';
+    const data = this.encryptData.decryptData('student') ?? ''
+    const tokenId = data.tokenId;
+    const studentId = data.studentId;
     this.studentService.getStudentsReport(tokenId, studentId).subscribe((response: any) => {
       this.reportList = response.data;
     });
+  }
+  logout() {
+    this.cookieService.delete('student')
+    this.router.navigate(['/login']);
   }
 }

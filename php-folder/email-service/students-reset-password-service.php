@@ -10,10 +10,10 @@ require 'PHPMailer-master/src/SMTP.php';
 
 // Get POST data (you would typically pass the email and OTP in the POST request)
 $data = json_decode(file_get_contents("php://input"), true);
-$hostEmail = $data['hostEmail'] ?? '';
-$hostPassword = $data['hostPassword'] ?? '';
-$tupvId = $data['tupvId'] ?? '';
-$otp = $data['otpCode'] ?? '';  // OTP passed from the request
+$hostEmail = $data['hostEmail'] ?? Null;
+$hostPassword = $data['hostPassword'] ?? Null;
+$tupvId = $data['tupvId'] ?? Null;
+$otp = $data['otpCode'] ?? Null;  // OTP passed from the request
 $recepientEmail = '';
 $recepientName = '';
 $time = date('h:i A');

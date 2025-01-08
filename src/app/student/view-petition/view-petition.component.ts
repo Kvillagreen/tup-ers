@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ChangeDetectorRef, AfterViewInit, ElementRef, Renderer2, ViewChild } from '@angular/core';
 import { StudentService } from '../../services/student.service';
-import { CookieService } from 'ngx-cookie-service';
 import { FormsModule } from '@angular/forms';
-import { Extras, Subjects } from '../../common/environments/environment';
+import { Extras, Subjects } from '../../common/libraries/environment';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { dataViewer } from '../../common/libraries/data-viewer';
+import { EncryptData } from '../../common/libraries/encrypt-data';
 @Component({
   selector: 'app-view-petition',
   standalone: true,
@@ -15,6 +16,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 export class ViewPetitionComponent implements OnInit, AfterViewInit {
   isApply: boolean = false;
   isAddPetition: boolean = false;
+  dataViewer = dataViewer;
   program: string = '';
   subjectCode: string = '';
   subjectName: string = '';
@@ -28,7 +30,8 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
   isSuccesful: boolean = false;
   isNotTyped: boolean = false;
   successText: string = '';
-  constructor(private studentService: StudentService, private renderer: Renderer2, private cookieService: CookieService, private cdr: ChangeDetectorRef) { }
+  constructor(private studentService: StudentService, private encryptData: EncryptData,
+    private renderer: Renderer2, private cdr: ChangeDetectorRef) { }
   extras = Extras;
   subject = Subjects;
 
@@ -42,9 +45,9 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
       if (
         this.filterDownView?.nativeElement &&
         !this.filterDownView.nativeElement.contains(event.target) &&
-        Extras.isFilterOn
+        dataViewer.isFilterOn
       ) {
-        Extras.isFilterOn = false;
+        dataViewer.isFilterOn = false;
       }
     });
   }
@@ -57,36 +60,40 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
   }
 
   fetchClass() {
-    const tokenId = this.cookieService.get('tokenId') ?? '';
-    this.studentService.getClass(tokenId).subscribe((response: any) => {
-      Extras.classList = response.data.filter((listOfClass: any) => listOfClass.program === this.program && listOfClass.status == 'pending' || listOfClass.status == 'approved');
+    const data = this.encryptData.decryptData('student') ?? ''
+    this.studentService.getClass(data.tokenId).subscribe((response: any) => {
+      dataViewer.classList = response.data.filter((listOfClass: any) => listOfClass.program === this.program && listOfClass.status == 'pending' || listOfClass.status == 'approved');
     });
   }
 
   loadStudentData() {
-    this.fullName = this.cookieService.get('firstName') + ' ' + this.cookieService.get('lastName');
-    this.tupvId = this.cookieService.get('tupvId');
-    this.program = this.cookieService.get('program');
+    const data = this.encryptData.decryptData('student') ?? ''
+    this.tupvId = data.tupvId;
+    this.fullName = `${data.firstName}` + ' ' + `${data.lastName}`;
+    this.program = data.program;
   }
 
   changeSuccesful() {
-
+    const data = this.encryptData.decryptData('student') ?? ''
     this.isSuccesful = false;
-    this.cookieService.set('isSuccesful', '');
     this.successText = '';
+    data.isSuccesful = this.isSuccesful
+    data.successText = this.successText
+    this.encryptData.encryptAndStoreData('student', data)
   }
 
   submitPetitionApplication() {
+    let data = this.encryptData.decryptData('student') ?? ''
     Extras.load = true;
-    const studentId = this.cookieService.get('studentId');
-    this.studentService.petitionApplicatipon(studentId, this.classId).subscribe({
+    this.studentService.petitionApplicatipon(data.studentId, this.classId).subscribe({
       next: (response: any) => {
         Extras.load = false;
         if (response.success) {
           this.isSuccesful = true;
-          this.cookieService.set('isSuccesful', 'true');
           this.successText = 'You have successfully applied your petition';
-          this.cookieService.set('successText', this.successText);
+          data.isSuccesful = this.isSuccesful
+          data.successText = this.successText
+          this.encryptData.encryptAndStoreData('student', data)
           window.location.reload();
         } else {
           Extras.isError(response.message.toString());
@@ -100,17 +107,17 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
   }
 
   submitCreatePetition() {
+    let data = this.encryptData.decryptData('student') ?? ''
     Extras.load = true;
-    const studentId = this.cookieService.get('studentId');
-    const program = this.cookieService.get('program');
-    this.studentService.petitionCreation(studentId, this.subjectCode, this.subjectName, this.subjectUnits, program).subscribe({
+    this.studentService.petitionCreation(data.studentId, this.subjectCode, this.subjectName, this.subjectUnits, data.program).subscribe({
       next: (response: any) => {
         Extras.load = false;
         if (response.success) {
           this.isSuccesful = true;
-          this.cookieService.set('isSuccesful', 'true');
           this.successText = 'You have successfully submitted your petition';
-          this.cookieService.set('successText', this.successText);
+          data.isSuccesful = this.isSuccesful
+          data.successText = this.successText
+          this.encryptData.encryptAndStoreData('student', data)
           window.location.reload();
         } else {
           Extras.isError(response.message.toString());
@@ -129,14 +136,12 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-
-    if (this.cookieService.get('isSuccesful') == 'true') {
-      this.isSuccesful = true;
-    }
-    this.successText = this.cookieService.get('successText') ?? '';
+    const data = this.encryptData.decryptData('student') ?? ''
+    this.isSuccesful = data.isSuccesful;
+    this.successText = data.successText;
     this.fetchClass();
     this.loadStudentData();
-    Extras.searchText = '';
-    Extras.isFilterOn = false;
+    dataViewer.searchText = '';
+    dataViewer.isFilterOn = false;
   }
 }

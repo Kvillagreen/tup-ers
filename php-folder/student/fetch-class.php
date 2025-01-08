@@ -14,7 +14,7 @@ include '../connection.php';
 
 // Get POST data
 $data = json_decode(file_get_contents("php://input"), true);
-$tokenId = $data['tokenId'] ?? null;
+$tokenId = $data['tokenId'] ?? Null;
 
 if (!$tokenId) {
     echo json_encode([
@@ -24,7 +24,6 @@ if (!$tokenId) {
     return;
 }
 
-// Validate token ID and retrieve the student ID
 $sql = "SELECT student_id FROM tbl_student WHERE token_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $tokenId);

@@ -1,24 +1,48 @@
-import { Component } from '@angular/core';
-import { Extras } from '../../common/environments/environment';
+import { Component, OnInit } from '@angular/core';
+import { Extras } from '../../common/libraries/environment';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 import { FacultyService } from '../../services/faculty.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { EncryptData } from '../../common/libraries/encrypt-data';
 @Component({
+  standalone: true,
   selector: 'app-faculty-login',
-  imports: [CommonModule, FormsModule,HttpClientTestingModule],
+  imports: [CommonModule, FormsModule, HttpClientTestingModule],
   templateUrl: './faculty-login.component.html',
   styleUrl: './faculty-login.component.css'
 })
-export class FacultyLoginComponent {
+export class FacultyLoginComponent implements OnInit {
   showPassword: boolean = false;
   email: string = '';
   password: string = '';
+  rememberMe: boolean = false
 
   extras = Extras
-  constructor(public router: Router, private cookieService: CookieService, private facultyService: FacultyService) { }
+  constructor(public router: Router, private cookieService: CookieService, private encrypData: EncryptData,
+    private facultyService: FacultyService) { }
+
+  rememberMeFunction(event: boolean) {
+    this.rememberMe = event
+    if (this.rememberMe) {
+      this.rememberMe = false;
+      localStorage.setItem('isFacultyRemember', '');
+      localStorage.setItem('email', '')
+    } else {
+      this.rememberMe = true;
+    }
+  }
+
+  ngOnInit(): void {
+    if (localStorage.getItem('isFacultyRemember') == 'true') {
+      this.rememberMe = localStorage.getItem('isFacultyRemember') == 'true';
+      this.email = localStorage.getItem('email') ?? ''
+    }
+    
+    Extras.errorMessage='';
+  }
   onSubmit() {
     Extras.load = true;
     if (!this.email || !this.password) {
@@ -32,23 +56,17 @@ export class FacultyLoginComponent {
       Extras.load = false;  // Stop loading
       return;
     }
-
+    if (this.rememberMe) {
+      localStorage.setItem('isFacultyRemember', this.rememberMe.toString())
+      localStorage.setItem('email', this.email.toString())
+    }
     this.facultyService.login(this.email, this.password).subscribe({
       next: (response: any) => {
         Extras.load = false;
         if (response.success && response.tokenId) {
-          this.cookieService.set('facultyId', response.faculty.facultyId, 2 / 24);
-          this.cookieService.set('facultyType', response.faculty.facultyType, 2 / 24);
-          this.cookieService.set('facultyFirstName', response.faculty.firstName, 2 / 24);
-          this.cookieService.set('facultyLastName', response.faculty.lastName, 2 / 24);
-          this.cookieService.set('facultyEmail', response.faculty.email, 2 / 24);
-          this.cookieService.set('facultyStatus', response.status, 2 / 24);
-          this.cookieService.set('facultyProgram', response.program, 2 / 24);
-          this.cookieService.set('facultyTokenId', response.tokenId, 2 / 24);
-          this.cookieService.set('facultyDateCreated', response.dateCreated, 2 / 24);
-          this.cookieService.set('facultyIsLoggedIn', 'true', 2 / 24);
-          this.cookieService.set('userType', 'faculty', 2 / 24);
+          this.encrypData.encryptAndStoreData('faculty', response.faculty);
           this.router.navigate(['/faculty/dashboard']);
+          window.location.reload()
         } else {
           Extras.isError(response.message)
         }

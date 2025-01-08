@@ -1,24 +1,26 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, OnInit, Renderer2, ElementRef, ViewChild } from '@angular/core';
 import { StudentService } from '../../services/student.service';
-import { CookieService } from 'ngx-cookie-service';
 import { FormsModule } from '@angular/forms';
-import { Extras } from '../../common/environments/environment';
+import { Extras } from '../../common/libraries/environment';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-
+import { dataViewer } from '../../common/libraries/data-viewer';
+import { EncryptData } from '../../common/libraries/encrypt-data';
 @Component({
   selector: 'app-track-petition',
   standalone: true,
-  imports: [CommonModule, FormsModule,HttpClientTestingModule],
+  imports: [CommonModule, FormsModule, HttpClientTestingModule],
   templateUrl: './track-petition.component.html',
   styleUrl: './track-petition.component.css'
 })
 export class TrackPetitionComponent implements OnInit, AfterViewInit {
-  constructor(private studentService: StudentService, private cookieService: CookieService, private renderer: Renderer2) { }
+  constructor(private studentService: StudentService,
+    private encryptData: EncryptData,
+    private renderer: Renderer2) { }
   isLocate: boolean = false;
   petitionTracker: any[] = [];
   extras = Extras;
-
+  dataViewer = dataViewer;
   @ViewChild('filterDownView') filterDownView!: ElementRef;
 
   private clickListener: (() => void) | undefined = undefined;
@@ -29,9 +31,9 @@ export class TrackPetitionComponent implements OnInit, AfterViewInit {
       if (
         this.filterDownView?.nativeElement &&
         !this.filterDownView.nativeElement.contains(event.target) &&
-        Extras.isFilterOn
+        dataViewer.isFilterOn
       ) {
-        Extras.isFilterOn = false;
+        dataViewer.isFilterOn = false;
       }
     });
   }
@@ -43,17 +45,19 @@ export class TrackPetitionComponent implements OnInit, AfterViewInit {
   }
 
   fetchTrackPetition() {
-    const tokenId = this.cookieService.get('tokenId') ?? '';
-    const studentId = this.cookieService.get('studentId') ?? '';
+    const data = this.encryptData.decryptData('student') ?? ''
+    const tokenId = data.tokenId;
+    const studentId = data.studentId;
     this.studentService.receivePetition(tokenId, studentId).subscribe((response: any) => {
-      Extras.trackList = response.data;
+      dataViewer.trackList = response.data;
     });
   }
 
 
   ngOnInit() {
     this.fetchTrackPetition();
-    Extras.searchText = '';
-    Extras.isFilterOn = false;
+    dataViewer.searchText = '';
+    dataViewer.pageIndex = 0;
+    dataViewer.isFilterOn = false;
   }
 }

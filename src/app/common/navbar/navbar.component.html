@@ -38,32 +38,45 @@
                 </svg></span></div>
     </div>
     <div *ngIf="settingsDropdown"
-        class=" absolute hidden md:flex flex-col text-center px-2 text-white py-5 top-16 right-4 rounded-md h-[350px] md:h-[280px] w-[200px] bg-[#c1121f] z-10 shadow-md shadow-black">
+        class=" absolute hidden md:flex flex-col text-center px-2 text-white py-5 top-16 right-4 rounded-md h-[350px] md:h-[285px] w-[200px] bg-[#c1121f] z-10 shadow-md shadow-gray-800">
         <div
             class="absolute -top-3 right-2 w-0 h-0 border-l-[20px] border-r-[20px] border-b-[20px] border-l-transparent border-r-transparent border-[#c1121f]">
         </div>
         <p class="text-white text-lg font-semibold">{{extras.toTitleCaseSafe(fullName)}}</p>
         <p class="text-sm">{{program}}</p>
         <hr class="mt-2">
-        <div class="flex flex-col w-full space-y-2 pt-2">
+        <div class="flex flex-col w-full h-full space-y-2 py-2">
+            <a [routerLink]="['/messages']" routerLinkActive=""
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-between px-8 space-x-2 items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-8">
+                    <path
+                        d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z" />
+                    <path
+                        d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z" />
+                </svg>
+                <div
+                    class="absolute  flex size-4 justify-center font-bold items-center top-[95px] right-[150px] text-[8px] rounded-full bg-red-800 z-10">
+                    {{checkLength()}}</div>
+                <span class="w-full">Messages</span>
+            </a>
             <a [routerLink]="['/profile']" routerLinkActive=""
-                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-center space-x-2 items-center">
-                <img src="/assets/svg/user.svg"><span>Profile</span>
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-between px-8 space-x-2 items-center">
+                <img src="/assets/svg/user.svg" class="size-6"><span class="w-full">Profile</span>
             </a>
             <a [routerLink]="['/history']" routerLinkActive=""
-                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-center space-x-2 items-center">
-                <img src="/assets/svg/history.svg"><span>History</span>
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-between px-8 space-x-2 items-center">
+                <img src="/assets/svg/history.svg" size-6><span class="w-full">History</span>
             </a>
             <a (click)="isLoggedIn=!isLoggedIn" routerLinkActive=""
-                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-center space-x-2 items-center"><img
-                    src="/assets/svg/logout.svg"><span>Logout</span></a>
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-between px-8 space-x-2 items-center"><img
+                    src="/assets/svg/logout.svg" size-6><span class="w-full">Logout</span></a>
         </div>
     </div>
     <div #sideBar *ngIf="isSideBarHidden"
-        class="md:hidden fixed flex flex-col text-center px-2 text-white py-5 top-0 left-0 rounded-md min-h-screen w-[250px] bg-[#c1121f] z-10 shadow-md shadow-black">
+        class="md:hidden fixed flex flex-col text-center px-2 text-white py-5 top-0 left-0 rounded-md min-h-screen w-[250px] bg-red-800 z-10 shadow-md shadow-gray-800">
         <p class="text-white text-lg font-semibold">{{extras.toTitleCaseSafe(fullName)}}</p>
         <p class="text-sm">{{program}}</p>
-        <hr class="mt-2">
+        <hr class="mt-[12px]">
         <div class="flex flex-col justify-between items-center w-full space-y-2 pt-2"><a [routerLink]="['/dashboard']"
                 routerLinkActive=""
                 class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
@@ -81,6 +94,17 @@
             <a [routerLink]="['/profile']" routerLinkActive=""
                 class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
                 <img src="/assets/svg/user.svg"><span>Profile</span>
+            </a> <a [routerLink]="['/messages']" routerLinkActive=""
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                    <path
+                        d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z" />
+                    <path
+                        d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z" />
+                </svg><span>Messages</span>
+                <div
+                    class="absolute  flex size-4 justify-center font-bold items-center top-[328px] left-[10px] text-[8px] rounded-full bg-red-800 z-0">
+                    {{checkLength()}}</div>
             </a>
             <a [routerLink]="['/history']" routerLinkActive=""
                 class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
@@ -121,6 +145,14 @@
         <a [routerLink]="['/faculty/view-petition']" routerLinkActive="active" class="navButton">
             <p class="leading-none">Petitions</p>
         </a>
+        <a *ngIf="restrictService.isAdminViewable()" [routerLink]="['/faculty/faculty-management']"
+            routerLinkActive="active" class="navButton">
+            <p class="leading-none">Faculty Managament</p>
+        </a>
+        <a *ngIf="restrictService.isAdminViewable()" [routerLink]="['/faculty/student-management']"
+            routerLinkActive="active" class="navButton">
+            <p class="leading-none">Student Managament</p>
+        </a>
         <a [routerLink]="['/faculty/track-petition']" routerLinkActive="active" class="hidden">
             <p class="leading-none">Track Petitions</p>
         </a>
@@ -133,11 +165,11 @@
                 </svg></span></div>
     </div>
     <div *ngIf="settingsDropdown"
-        class="absolute hidden md:flex flex-col text-center px-2 text-white py-5 top-16 right-4 rounded-md h-[350px] md:h-[280px] w-[200px] bg-[#c1121f] z-10 shadow-md shadow-black">
+        class="absolute hidden md:flex flex-col text-center px-2 text-white py-5 top-16 right-4 rounded-md h-[350px] md:h-[280px] w-[200px] bg-[#c1121f] z-10 shadow-md shadow-gray-800">
         <div
             class="absolute -top-3 right-2 w-0 h-0 border-l-[20px] border-r-[20px] border-b-[20px] border-l-transparent border-r-transparent border-[#c1121f]">
         </div>
-        <p class="text-white text-lg font-semibold">{{facultyFullName}}</p>
+        <p class="text-white text-lg font-semibold">{{extras.toTitleCaseSafe(facultyFullName)}}</p>
         <p class="text-sm">{{facultyProgram}}</p>
         <hr class="mt-2">
         <div class="flex flex-col w-full space-y-2 pt-2">
@@ -145,7 +177,7 @@
                 class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-center space-x-2 items-center">
                 <img src="/assets/svg/user.svg"><span>Profile</span>
             </a>
-            <div *ngIf="facultyType=='Registrar'">
+            <div *ngIf="restrictService.isAdminViewable()">
                 <a [routerLink]="['/faculty/report']" routerLinkActive=""
                     class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-center space-x-2 items-center">
                     <img src="/assets/svg/report.svg"><span>Report</span>
@@ -157,10 +189,10 @@
         </div>
     </div>
     <div #sideBar *ngIf="isSideBarHidden"
-        class="md:hidden fixed flex flex-col text-center px-2 text-white py-5 top-0 left-0 rounded-md min-h-screen w-[250px] bg-[#c1121f] z-10 shadow-md shadow-black">
+        class="md:hidden fixed flex flex-col text-center px-2 text-white py-5 top-0 left-0 rounded-md min-h-screen w-[250px] bg-red-800 z-10 shadow-md shadow-gray-800">
         <p class="text-white text-lg font-semibold">{{facultyFullName}}</p>
         <p class="text-sm">{{facultyProgram}}</p>
-        <hr class="mt-2">
+        <hr class="mt-[12px]">
         <div class="flex flex-col justify-between items-center w-full space-y-2 pt-2"><a
                 [routerLink]="['/faculty/dashboard']" routerLinkActive=""
                 class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
@@ -179,7 +211,17 @@
                 class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
                 <img src="/assets/svg/user.svg"><span>Profile</span>
             </a>
-            <a *ngIf="facultyType=='Registrar'" [routerLink]="['/faculty/report']" routerLinkActive=""
+            <a *ngIf="restrictService.isAdminViewable()" [routerLink]="['/faculty/faculty-management']"
+                routerLinkActive=""
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
+                <img src="/assets/svg/report.svg"><span>Faculty Management</span>
+            </a>
+            <a *ngIf="restrictService.isAdminViewable()" [routerLink]="['/faculty/student-management']"
+                routerLinkActive=""
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
+                <img src="/assets/svg/report.svg"><span>Student Management</span>
+            </a>
+            <a *ngIf="restrictService.isAdminViewable()" [routerLink]="['/faculty/report']" routerLinkActive=""
                 class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
                 <img src="/assets/svg/report.svg"><span>Report</span>
             </a>
@@ -236,5 +278,12 @@
                 </button>
             </div>
         </div>
+    </div>
+</div>
+
+
+<div *ngIf="isSideBarHidden">
+    <div
+        class="md:hidden animate-fadeIn fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-[1]">
     </div>
 </div>

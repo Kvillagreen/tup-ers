@@ -14,13 +14,13 @@ include '../connection.php';
 
 // Get POST data
 $data = json_decode(file_get_contents("php://input"), true);
-$tokenId = $data['tokenId'] ?? '6778c1095500f';
-$classId = '2';
+$tokenId = $data['tokenId'] ?? Null;
 if (!$tokenId) {
     echo json_encode([
         'success' => false,
         'message' => 'All fields are required',
     ]);
+    header('Location: ../error/fields-required.php');
     return 0;
 }
 

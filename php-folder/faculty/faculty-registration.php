@@ -14,12 +14,12 @@ include '../connection.php';
 
 // Get POST data
 $data = json_decode(file_get_contents("php://input"), true);
-$lastName = $data['lastName'] ?? '';
-$firstName = $data['firstName'] ?? '';
-$email = $data['email'] ?? '';
-$password = $data['password'] ?? '';
-$faculty = $data['faculty'] ?? '';
-$program = $data['program'] ?? '';
+$lastName = $data['lastName'] ?? Null;
+$firstName = $data['firstName'] ?? Null;
+$email = $data['email'] ?? Null;
+$password = $data['password'] ?? Null;
+$faculty = $data['faculty'] ?? Null;
+$program = $data['program'] ?? Null;
 $status = 'pending';
 $tokenId = uniqid(); // Generate a unique token ID if not provided
 $dateCreated = date('Y-m-d H:i:s');
@@ -28,9 +28,14 @@ if (!$lastName || !$firstName || !$email || !$faculty || !$password || !$program
         'success' => false,
         'message' => 'All fields are required',
     ]);
+    header('Location: ../error/fields-required.php');
     exit();
 }
 
+$otpCode = json_encode([
+    'otp' => '',
+    'time' => '',
+]);
 try {
     // Check if the email exists
     $isEmailExist = $conn->prepare("SELECT * FROM `tbl_admin` WHERE `email` = ?");
@@ -63,10 +68,10 @@ try {
     // Hash the password for security
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
     $insertQuery = $conn->prepare(
-        "INSERT INTO `tbl_admin` (`first_name`, `last_name`, `email`, `password`, `program`, `faculty_type`, `status`, `token_id`, `date_created`) 
-        VALUES (?,?,?,?,?,?,?,?,?)"
+        "INSERT INTO `tbl_admin` (`first_name`, `last_name`, `email`, `password`, `program`, `faculty_type`, `status`, `token_id`, `date_created`, `otp_code`) 
+        VALUES (?,?,?,?,?,?,?,?,?,?)"
     );
-    $insertQuery->bind_param("sssssssss", $firstName, $lastName, $email, $hashedPassword, $program, $faculty, $status, $tokenId, $dateCreated);
+    $insertQuery->bind_param("ssssssssss", $firstName, $lastName, $email, $hashedPassword, $program, $faculty, $status, $tokenId, $dateCreated, $otpCode);
 
     if ($insertQuery->execute()) {
         echo json_encode([

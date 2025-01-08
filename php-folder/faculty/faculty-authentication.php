@@ -15,9 +15,10 @@ include '../connection.php'; // Include your database connection
 
 // Get POST data
 $data = json_decode(file_get_contents("php://input"), true);
-$email = $data['email'] ?? 'kmv@tupv.edu'; // Input can be email or username
-$password = $data['password'] ?? 'Villagreen23';
-$tokenId = substr(bin2hex(random_bytes(45)), 0, 45);// Generate a unique token ID if not provided
+$email = $data['email'] ?? Null; // Input can be email or username
+$password = $data['password'] ?? Null;
+$tokenId = substr(bin2hex(random_bytes(45)), 0, 45);
+$sessionId = substr(bin2hex(random_bytes(45)), 0, 45);// Generate a unique token ID if not provided
 $otpCode = json_encode([
     'otp' => '',
     'time' => '',
@@ -25,6 +26,7 @@ $otpCode = json_encode([
 // Validate input
 if (empty($email) || empty($password)) {
     echo json_encode(['success' => false, 'message' => 'All fields are required']);
+    header('Location: ../error/fields-required.php');
     http_response_code(400); // Bad Request
     exit;
 }
@@ -57,11 +59,15 @@ if ($result->num_rows > 0) {
                     'lastName' => $user['last_name'],
                     'facultyType' => $user['faculty_type'],
                     'status' => $user['status'],
+                    'program' => $user['program'],
+                    'dateCreated' => $user['date_created'],
+                    'tokenId' => $tokenId,
+                    'userType' => 'faculty',
+                    'facultyIsLoggedIn' => true,
+                    'totalHours' => '',
                 ],
-                'tokenId' => $tokenId, 
-                'program' => $user['program'],
-                'status' => $user['status'],
-                'dateCreated' => $user['date_created'],
+                'sessionId' => $sessionId,
+                'tokenId' => $tokenId,
             ]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Status not yet approved, Kindly contact registrar for assistance.']);

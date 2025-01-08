@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { StudentService } from '../../services/student.service';
-import { Extras, Subjects } from '../../common/environments/environment';
+import { Extras, Subjects } from '../../common/libraries/environment';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FacultyService } from '../../services/faculty.service';
 @Component({
@@ -31,6 +31,8 @@ export class FacultySignupComponent implements OnInit {
 
 
   ngOnInit(): void {
+    
+    Extras.errorMessage='';
   }
   clearData() {
     this.firstName = "";

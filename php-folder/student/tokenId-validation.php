@@ -15,8 +15,8 @@ include '../connection.php'; // Include your database connection
 
 // Get POST data
 $data = json_decode(file_get_contents("php://input"), true);
-$tupvId = $data['tupvId'] ?? ''; // Input can be email or username
-$tokenId = $data['tokenId'] ?? '';
+$tupvId = $data['tupvId'] ?? Null; // Input can be email or username
+$tokenId = $data['tokenId'] ?? Null;
 
 // Validate input
 if (empty($tupvId) || empty($tokenId)) {

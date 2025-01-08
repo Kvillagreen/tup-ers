@@ -3,7 +3,7 @@ import { RouterOutlet, Event, NavigationStart, NavigationEnd, NavigationCancel, 
 import { FooterComponent } from './common/footer/footer.component';
 import { NavbarComponent } from './common/navbar/navbar.component';
 import { CommonModule } from '@angular/common';
-import { Extras } from './common/environments/environment';
+import { Extras } from './common/libraries/environment';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { DevToolsDetectorService } from './services/dev-tools-detector.service';
 @Component({

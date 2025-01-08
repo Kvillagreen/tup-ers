@@ -2,10 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, ChangeDetectorRef, AfterViewInit, ElementRef, Renderer2, ViewChild } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { FormsModule } from '@angular/forms';
-import { Extras, Subjects } from '../../common/environments/environment';
+import { Extras, restrictService, Subjects } from '../../common/libraries/environment';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FacultyService } from '../../services/faculty.service';
 import { CalendarComponent } from '../../common/calendar/calendar.component';
+import { Calendar } from '../../common/libraries/environment';
+import { dataViewer } from '../../common/libraries/data-viewer';
+import { EncryptData } from '../../common/libraries/encrypt-data';
 @Component({
   selector: 'app-faculty-view-petition',
   imports: [CommonModule, FormsModule, HttpClientTestingModule, CalendarComponent],
@@ -15,10 +18,15 @@ import { CalendarComponent } from '../../common/calendar/calendar.component';
 export class FacultyViewPetitionComponent {
   isCalendarOpen: boolean = false;
   isView: boolean = false;
-  program: string = '';
+  facultyProgram: string = '';
   subjectCode: string = '';
   subjectName: string = '';
   subjectUnits: string = '';
+  modalfacultyProgram: string = '';
+  modalsubjectCode: string = '';
+  modalsubjectName: string = '';
+  modalsubjectUnits: string = '';
+  modalclassId: string = '';
   fullName: string = '';
   message: string = '';
   reasons: string = '';
@@ -28,14 +36,22 @@ export class FacultyViewPetitionComponent {
   isSuccesful: boolean = false;
   isNotTyped: boolean = false;
   successText: string = '';
-  petitionList: any[] = [];
+  petitionListDenied: any[] = [];
+  totalHours: string = '';
   openModal: boolean = false;
-  constructor(private facultyService: FacultyService, private renderer: Renderer2, private cookieService: CookieService, private cdr: ChangeDetectorRef) { }
+  facultyType: string = '';
+  data: any;
+  dataViewer = dataViewer;
+  constructor(private facultyService: FacultyService,
+    private renderer: Renderer2, private cookieService: CookieService, private restrictService: restrictService,
+    private encryptData: EncryptData
+  ) { }
   extras = Extras;
   subject = Subjects;
+  calendar = Calendar;
+
 
   @ViewChild('filterDownView') filterDownView!: ElementRef;
-
   private clickListener: (() => void) | undefined = undefined;
 
   ngAfterViewInit() {
@@ -43,9 +59,9 @@ export class FacultyViewPetitionComponent {
       if (
         this.filterDownView?.nativeElement &&
         !this.filterDownView.nativeElement.contains(event.target) &&
-        Extras.isFilterOn
+        dataViewer.isFilterOn
       ) {
-        Extras.isFilterOn = false;
+        dataViewer.isFilterOn = false;
       }
     });
   }
@@ -56,9 +72,9 @@ export class FacultyViewPetitionComponent {
     }
   }
 
-  updateStudentPetition(classId: string, petitionId: string, status: string, message: string, reasons: string, studentId: string) {
-    const tokenId = this.cookieService.get('facultyTokenId') ?? '';
-    const notedBy = this.cookieService.get('facultyTokenId') ?? '';
+  updateStudentPetition(petitionId: string, status: string, message: string, reasons: string, studentId: string) {
+    const tokenId = this.data.tokenId ?? '';
+    const notedBy = Extras.toTitleCaseSafe(this.data.facultyType + ' ' + this.data.program);
     Extras.load = true;
     if (status == 'denied' && (!message || !reasons)) {
       Extras.load = false;
@@ -66,7 +82,7 @@ export class FacultyViewPetitionComponent {
       return;
     }
 
-    this.facultyService.updateStudentService(tokenId, classId, petitionId, status, message, reasons, studentId, notedBy).subscribe((response: any) => {
+    this.facultyService.updateStudentPetition(tokenId, this.classId, petitionId, status, message, reasons, studentId, notedBy).subscribe((response: any) => {
       Extras.load = false;
       if (response.success) {
         this.reasons = '';
@@ -74,27 +90,24 @@ export class FacultyViewPetitionComponent {
         this.studentId = '';
         this.petitionId = '';
         Extras.isError('Notification was sent to student.');
-        this.fetchPetition(classId);
+        this.fetchPetition(this.classId);
+        this.fetchDeniedPetition();
         this.fetchClass();
       }
     });
   }
 
-  saveUnits(units: string) {
-    this.cookieService.set('units', units)
-  }
-
 
   fetchClass() {
     Extras.load = true;
-    const tokenId = this.cookieService.get('facultyTokenId') ?? '';
+    const tokenId = this.data.tokenId ?? '';
     this.facultyService.getClass(tokenId).subscribe((response: any) => {
       Extras.load = false;
-      if (response.success && this.cookieService.get('facultyType') == 'Registrar') {
-        Extras.classList = response.data
+      if (response.success && this.restrictService.isAdminViewable()) {
+        dataViewer.classList = response.data
       }
-      if (response.success && this.cookieService.get('facultyType') != 'Registrar') {
-        Extras.classList = response.data.filter((listOfClass: any) => listOfClass.program === this.program && listOfClass.status == 'pending' || listOfClass.status == 'approved');
+      if (response.success && !this.restrictService.isAdminViewable()) {
+        dataViewer.classList = response.data.filter((listOfClass: any) => listOfClass.program === this.facultyProgram && listOfClass.status == 'pending' || listOfClass.status == 'approved');
       }
     });
   }
@@ -102,39 +115,86 @@ export class FacultyViewPetitionComponent {
 
   fetchPetition(classId: string) {
     Extras.load = true;
-    const tokenId = this.cookieService.get('facultyTokenId') ?? '';
+    this.classId = classId;
+    const tokenId = this.data.tokenId ?? '';
     this.facultyService.getPetitionPending(tokenId, classId).subscribe((response: any) => {
       Extras.load = false;
       if (response.success) {
-        Extras.facultyClassList = response.data;
+        dataViewer.facultyClassList = response.data;
       }
       else {
-        Extras.facultyClassList = []
+        dataViewer.facultyClassList = []
       }
     });
   }
 
+  fetchDeniedPetition() {
+    Extras.load = true;
+    const tokenId = this.data.tokenId ?? '';
+
+    this.facultyService.getPetitionDenied(tokenId, this.classId).subscribe((response: any) => {
+      Extras.load = false;
+      if (response.success) {
+        this.petitionListDenied = response.data;
+        this.petitionListDenied = response.data.filter((petition: any) =>
+          petition.status.toString() === "denied" &&
+          petition.class_data?.subject_name.toString() === this.modalsubjectName.toString() &&
+          petition.class_data?.subject_code.toString() === this.modalsubjectCode.toString() &&
+          petition.class_data?.units.toString() === this.modalsubjectUnits.toString() &&
+          petition.class_data?.program.toString() === this.modalfacultyProgram.toString()
+        );
+      } else {
+        this.petitionListDenied = []; // Clear list if the response is not successful
+      }
+    });
+  }
+
+
+
+
   deniedStudent(status: string) {
-    return Extras.facultyClassList.filter(petition => petition.status === status)
+    return this.petitionListDenied.filter(petition => petition.status === status
+      && petition.class_data.subject_name == this.modalsubjectName &&
+      petition.class_data.subject_code === this.modalsubjectCode &&
+      petition.class_data.units === this.modalsubjectUnits &&
+      petition.class_data.program === this.modalfacultyProgram)
   }
 
   loadFacultyData() {
-    this.fullName = this.cookieService.get('firstName') + ' ' + this.cookieService.get('lastName');
-    this.program = this.cookieService.get('facultyProgram');
-    this.program = this.cookieService.get('facultyProgram');
+    this.fullName = this.data.firstName + ' ' + this.data.lastName;
+    this.facultyProgram = this.data.program;
+    this.facultyType = this.data.facultyType;
   }
 
+  saveTotalHours() {
+    if (Number(this.totalHours) == 0) {
+      this.data.totalHours = '0';
+      this.encryptData.encryptAndStoreData('faculty', this.data)
+      return;
+    }
+    if (!Number(this.totalHours)) {
+      Extras.isError('Total Hours is invalid.')
+      return;
+    }
+    this.data.totalHours = this.totalHours;
+    this.encryptData.encryptAndStoreData('faculty', this.data)
+  }
 
+  checkNumberOfHours() {
+    return Number(this.data.totalHours ?? '0')
+  }
 
   ngOnInit(): void {
-
-    if (this.cookieService.get('isSuccesful') == 'true') {
+    this.data = this.encryptData.decryptData('faculty');
+    this.data.totalHours = '';
+    if (this.data.isSuccesful == 'true') {
       this.isSuccesful = true;
     }
-    this.successText = this.cookieService.get('successText') ?? '';
+    this.successText = this.data.successText ?? '';
     this.loadFacultyData();
     this.fetchClass();
-    Extras.searchText = '';
-    Extras.isFilterOn = false;
+    dataViewer.pageIndex = 0;
+    dataViewer.searchText = '';
+    dataViewer.isFilterOn = false;
   }
 }

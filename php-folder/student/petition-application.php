@@ -16,8 +16,8 @@ include '../connection.php';
 
 // Get POST data
 $data = json_decode(file_get_contents("php://input"), true);
-$studentId = $data['studentId'] ?? '';
-$classId = $data['classId'] ?? '';
+$studentId = $data['studentId'] ?? Null;
+$classId = $data['classId'] ?? Null;
 $date = date('Y-m-d');
 $time = date('h:i A');
 $status = 'pending';

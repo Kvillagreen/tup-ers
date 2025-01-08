@@ -1,18 +1,19 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { CookieService } from 'ngx-cookie-service';
+import { EncryptData } from '../common/libraries/encrypt-data';
 @Injectable({
     providedIn: 'root',
 })
 export class PreventAdminLogin implements CanActivate {
     constructor(
-        private cookieService: CookieService,
-        private router: Router
+        private router: Router,
+        private encryptData: EncryptData
     ) { }
 
     canActivate(): boolean {
-        const isLoggedIn = this.cookieService.get('facultyIsLoggedIn') === 'true';
-        const userType = this.cookieService.get('userType');
+        const data = this.encryptData.decryptData('faculty') ?? '';
+        const isLoggedIn = data.facultyIsLoggedIn;
+        const userType = data.userType;
         if (isLoggedIn && userType == 'faculty') {
             this.router.navigate(['/faculty/dashboard']);
             return false;

@@ -1,5 +1,5 @@
 .navButton{
-    @apply flex items-center h-7 px-2 py-2 md:text-xs lg:text-sm text-gray-100 text-center hover:text-white font-semibold leading-none
+    @apply flex items-center h-7 px-2  py-2 md:text-xs lg:text-sm text-gray-100 text-center hover:text-white font-semibold leading-none
 }
 .active{
     @apply flex items-center h-7 px-2 py-2 md:text-xs lg:text-sm text-white font-bold  leading-none

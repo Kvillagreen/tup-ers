@@ -10,10 +10,10 @@ require 'PHPMailer-master/src/SMTP.php';
 
 // Get POST data (you would typically pass the email and OTP in the POST request)
 $data = json_decode(file_get_contents("php://input"), true);
-$hostEmail = $data['hostEmail'] ?? '';
-$hostPassword = $data['hostPassword'] ?? '';
-$tupvId = $data['tupvId'] ?? '';
-$password = $data['password'] ?? '';
+$hostEmail = $data['hostEmail'] ?? Null;
+$hostPassword = $data['hostPassword'] ?? Null;
+$tupvId = $data['tupvId'] ?? Null;
+$password = $data['password'] ?? Null;
 $passwordHashed = password_hash($password, PASSWORD_DEFAULT);
 $recepientEmail = '';
 $recepientName = '';
@@ -90,7 +90,7 @@ try {
     <p style="font-size:1.1em">Hi ' . htmlspecialchars(
     ucwords(strtolower($recepientName))
   ) . ',</p>
-    <p>Thank you for using TUPV-petition. Use this temporary password to login into your account. Dont forget to change the password after the login</p>
+    <p>Thank you for using TUPV-petition. Use this temporary password to login into your account. Dont forget to change the password after you login</p>
     <h2 style="background: #bc4749;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">' . htmlspecialchars($password) . '</h2>
     <p style="font-size:0.9em;">Regards,<br />TUPV Admin</p>
     <hr style="border:none;border-top:1px solid #eee" />

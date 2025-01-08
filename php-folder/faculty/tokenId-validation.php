@@ -15,19 +15,19 @@ include '../connection.php'; // Include your database connection
 
 // Get POST data
 $data = json_decode(file_get_contents("php://input"), true);
-$email = $data['email'] ?? ''; // Input can be email or username
-$tokenId = $data['tokenId'] ?? '';
-$facultyId = $data['facultyId'] ?? '';
+$email = $data['email'] ?? Null; // Input can be email or username
+$tokenId = $data['tokenId'] ?? Null;
+$facultyId = $data['facultyId'] ?? Null;
 
 // Validate input
 if (!$email || !$tokenId || !$facultyId) {
     echo json_encode(['success' => false, 'message' => 'All fields are required']);
-    http_response_code(400); // Bad Request
+    header('Location: ../error/fields-required.php');
     exit;
 }
 
 // Determine if input is email or username
-$sql = "SELECT * FROM tbl_admin WHERE faculty_id = ? AND email = ? AND  token_id = ?";
+$sql = "SELECT * FROM tbl_admin WHERE faculty_id = ? AND email = ? AND  token_id = ? AND status = 'approved'";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("sss", $facultyId, $email, $tokenId);
 $stmt->execute();

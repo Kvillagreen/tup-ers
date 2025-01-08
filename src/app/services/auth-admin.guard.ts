@@ -4,6 +4,8 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { CookieService } from 'ngx-cookie-service';
 import { FacultyService } from './faculty.service';
+import { EncryptData } from '../common/libraries/encrypt-data';
+import { Extras } from '../common/libraries/environment';
 @Injectable({
   providedIn: 'root',
 })
@@ -11,14 +13,17 @@ export class AuthAdminGuard implements CanActivate {
   constructor(
     private cookieService: CookieService,
     private facultyService: FacultyService,
-    private router: Router
+    private router: Router,
+    private encryptData: EncryptData
   ) { }
 
   canActivate(): Observable<boolean> | boolean {
-    const email = this.cookieService.get('facultyEmail');
-    const tokenId = this.cookieService.get('facultyTokenId');
-    const facultyId = this.cookieService.get('facultyId');
-    const userType = this.cookieService.get('userType');
+    const data = this.encryptData.decryptData('faculty') ?? '';
+
+    const email = data.email;
+    const tokenId = data.tokenId;
+    const facultyId = data.facultyId;
+    const userType = data.userType;
     if (email && tokenId && facultyId && userType == 'faculty') {
       return this.facultyService.tokenIdValidator(facultyId, email, tokenId).pipe(
         map((response: any) => {
@@ -41,7 +46,9 @@ export class AuthAdminGuard implements CanActivate {
   }
 
   private handleInvalidSession(): void {
-    this.cookieService.set('facultyIsLoggedIn', 'false', 1 / 24);
+    Extras.load = false;
+    Extras.isError("Changes detected.")
+    this.encryptData.logoutDelete('faculty')
     this.router.navigate(['/faculty/login']);
   }
 }
