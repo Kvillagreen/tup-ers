@@ -202,7 +202,7 @@
                 <p class="text-left text-xl font-bold">Create Petition Form</p>
                 <!-- Close Button -->
                 <button
-                    (click)="isAddPetition=!isAddPetition; subjectCode=''; subjectName=''; subjectUnits=0; isFail=''; isFourthYear=''"
+                    (click)="isAddPetition=!isAddPetition; subjectCode=''; subjectName=''; subjectUnits=''; isFail=''; isFourthYear=''"
                     class="absolute top-2 right-2 w-8 h-8 py-1 bg-red-500 rounded-full text-white flex items-center justify-center text-[16px]">
                     ×
                 </button>
@@ -261,7 +261,7 @@
                         </div>
                         <div class="flex w-full h-full justify-center items-center">
                             <button
-                                [disabled]="isFail != 'yes' || isFourthYear != 'yes'"
+                                [disabled]="isFail != 'yes' && isFourthYear != 'yes'"
                                 (click)="submitCreatePetition()"
                                 class="w-1/2 h-8 rounded-md text-gray-50 bg-gray-600 hover:bg-gray-700 hover:text-gray-300 cursor-pointer" [ngClass]="{
                                     'bg-red-500 hover:bg-red-800': ( isFail=='yes' || isFourthYear=='yes'),

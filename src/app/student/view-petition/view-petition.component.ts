@@ -20,7 +20,7 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
   program: string = '';
   subjectCode: string = '';
   subjectName: string = '';
-  subjectUnits: number | undefined;
+  subjectUnits: string = '';
   tupvId: string = '';
   fullName: string = '';
   isFail: string = '';
@@ -55,7 +55,7 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
   subjectUnitshange(event: Event): void {
     const input = (event.target as HTMLInputElement).value;
 
-    this.subjectUnits = Number(input)
+    this.subjectUnits = input
 
   }
 
@@ -150,33 +150,35 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
     this.studentService.classChecker(data.studentId, data.tokenId, this.classId).subscribe({
       next: (response: any) => {
         Extras.load = false;
-        console.log(response)
         if (response.duplicate) {
           this.isSuccesful = true;
           this.successText = 'You have transferred into other program, go to track petition for details. petition was not created.';
           this.isAddPetition = false;
         }
         else {
-          if (this.subjectUnits) {
-
-            this.studentService.petitionCreation(data.studentId, this.subjectCode, this.subjectName, this.subjectUnits.toString(), data.program).subscribe({
-              next: (response: any) => {
-                Extras.load = false;
-                if (response.success) {
-                  this.isSuccesful = true;
-                  this.successText = 'You have successfully submitted your petition';
-                  this.isAddPetition = false;
-                  this.fetchClass();
-                } else {
-                  Extras.isError(response.message.toString());
-                }
-              },
-              error: (error: any) => {
-                Extras.load = false;
-                Extras.errorMessage = "Error in parsing";
-              },
-            });
+          if (!Number(this.subjectUnits)) {
+            Extras.load = false
+            Extras.isError('Units must be a valid units');
+            return; 
           }
+          this.studentService.petitionCreation(data.studentId, this.subjectCode, this.subjectName, this.subjectUnits.toString(), data.program).subscribe({
+            next: (response: any) => {
+              Extras.load = false;
+              if (response.success) {
+                this.isSuccesful = true;
+                this.successText = 'You have successfully submitted your petition';
+                this.isAddPetition = false;
+                this.fetchClass();
+              } else {
+                Extras.isError(response.message.toString());
+              }
+            },
+            error: (error: any) => {
+              Extras.load = false;
+              Extras.errorMessage = "Error in parsing";
+            },
+          });
+
         }
       },
       error: (error: any) => {

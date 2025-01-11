@@ -87,10 +87,10 @@ export class DashboardComponent implements OnInit {
       (response: any) => {
         Extras.load = false;
         if (response.success && response.data) {
-          this.scheduleData = response.data;  
-          this.generateCalendar();            
+          this.scheduleData = response.data;
+          this.generateCalendar();
         } else {
-          console.error('Failed to fetch schedule');
+          this.scheduleData = []
         }
       },
       (error) => {
