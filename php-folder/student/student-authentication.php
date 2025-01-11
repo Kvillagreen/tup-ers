@@ -1,5 +1,4 @@
 <?php
-// login.php
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -74,7 +73,7 @@ if ($result->num_rows > 0) {
             echo json_encode(['success' => false, 'message' => 'Error found']);
         }
     } else {
-        echo json_encode(['success' => false, 'message' => 'Invalid password']);
+        echo json_encode(['success' => false, 'message' => 'Invalid Credentials']);
     }
 } else {
     echo json_encode(['success' => false, 'message' => 'Invalid Credentials']);

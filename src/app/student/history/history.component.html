@@ -1,4 +1,4 @@
-<div class="flex flex-col items-center justify-center w-full h-full py-2 md:px-0 px-2">
+<div class="animate-fadeInNew flex flex-col items-center justify-center w-full h-full py-2 md:px-0 px-2">
     <div class="w-full md:w-3/4 min-h-screen bg-[#f5f3f4] rounded-md  p-4 space-y-2">
         <div class="flex justify-start align-center">
             <p class="text-3xl font-bold text-gray-900">Past Petitions</p>
@@ -66,9 +66,8 @@
                     class="font-bold">{{class.petition_count}}</div>
                 <div class="">
                     <button [disabled]="class.petition_count >=50 || class.already_applied == 1 "
-                        [ngClass]="{'bg-gray-600 hover:bg-gray-700': class.petition_count >=50 || class.already_applied == 1, 'bg-red-500 hover:bg-red-800': (class.petition_count <50  && class.already_applied == 0)}"
-                        class="w-3/4 h-full py-2 rounded-md text-gray-50  hover:text-gray-300">
-                        <p *ngIf="class.already_applied == 1 && class.petition_count < 50">{{class.status}}</p>
+                        class="w-3/4 h-full py-2 bg-gray-600 hover:bg-gray-700 rounded-md text-gray-50  hover:text-gray-300">
+                        <p >{{extras.toTitleCaseSafe(class.status)}}</p>
                     </button>
                 </div>
             </div>

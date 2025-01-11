@@ -73,7 +73,7 @@ if ($result->num_rows > 0) {
             echo json_encode(['success' => false, 'message' => 'Status not yet approved, Kindly contact registrar for assistance.']);
         }
     } else {
-        echo json_encode(['success' => false, 'message' => 'Invalid password']);
+        echo json_encode(['success' => false, 'message' => 'Invalid Credentials']);
     }
 } else {
     echo json_encode(['success' => false, 'message' => 'Invalid Credentials']);

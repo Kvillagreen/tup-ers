@@ -12,34 +12,11 @@ interface Programs {
 
 export const Subjects = {
     programs: {
-        "BET-ELECTRONICS": {
-            "DT 1": { name: "DIGITAL TECHNIQUES 1", units: 3 },
-            "DT 2": { name: "DIGITAL TECHNIQUES 2", units: 1 },
-            "CAD": { name: "AUTO CAD", units: 5 },
-            "ELEX 1": { name: "ELECTRONICS TECHNIQUES 1", units: 2 },
-            "ETTP": { name: "ELECTRONICS PRINCIPLES", units: 4 },
-            "COMMS": { name: "COMMUNICATIONS", units: 2 },
-        },
-        "BS-ECE": {
-            "DT 1": { name: "DIGITAL TECHNIQUES 1", units: 3 },
-            "DT 2": { name: "DIGITAL TECHNIQUES 2", units: 1 },
-            "CAD": { name: "AUTO CAD", units: 5 },
-            "ELEX 1": { name: "ELECTRONICS TECHNIQUES 1", units: 2 },
-            "ETTP": { name: "ELECTRONICS PRINCIPLES", units: 4 },
-            "COMMS": { name: "COMMUNICATIONS", units: 2 },
-        }, 'BS-ME': {
-            "DT 1": { name: "DIGITAL TECHNIQUES 1", units: 3 },
-            "DT 2": { name: "DIGITAL TECHNIQUES 2", units: 1 },
-            "CAD": { name: "AUTO CAD", units: 5 },
-            "ELEX 1": { name: "ELECTRONICS TECHNIQUES 1", units: 2 },
-            "ETTP": { name: "ELECTRONICS PRINCIPLES", units: 4 },
-            "COMMS": { name: "COMMUNICATIONS", units: 2 },
-        },
-        'COAC': {},
-        'BET-CHEMTECH': {},
-        'BET-ELECTRICAL': {},
-        'BET-MECHATRONICS': {},
-        'BET-MANUFACTURING': {},
+        'BS-ECE': {},
+        'BS-ME': {},
+        'BS-CHEM': {},
+        'BS-ELECTRICAL': {},
+        'BS-COMP ENG': {},
     } as any,
 
     faculty: {
@@ -165,8 +142,6 @@ export class NotificationService {
 export class restrictService {
     constructor(private router: Router, private encrypData: EncryptData,
     ) { }
-
-
     public isAdmin() {
         const data = this.encrypData.decryptData('faculty');
         if (data.facultyType !== 'Registrar' && data.facultyType !== 'Admin') {
@@ -174,6 +149,7 @@ export class restrictService {
             this.router.navigate(['/faculty/dashboard']);
         }
     }
+
     public isAdminViewable() {
         const data = this.encrypData.decryptData('faculty');
         if (data.facultyType !== 'Registrar' && data.facultyType !== 'Admin') {
@@ -205,6 +181,10 @@ export const Extras = {
 
     toLowerCaseSafe(value: string | undefined | null): string {
         return value ? value.toLowerCase() : '';
+    },
+
+    toUpperCaseSafe(value: string | null | undefined): string {
+        return value ? value.toUpperCase() : '';
     },
 
     toTitleCaseSafe(value: string | undefined | null): string {

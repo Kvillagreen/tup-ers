@@ -19,7 +19,8 @@ export const dataViewer = {
     facultyTrackList: [] as any[],
     facultyReceiveList: [] as any[],
     facultyManagement: [] as any[],
-
+    studentManagement: [] as any[],
+    facultyClassHistoryList: [] as any[],
     getFacultyToDisplay(): any[] {
         this.searchText = typeof this.searchText === 'string' ? this.searchText : '';
         const facultyList = Array.isArray(this.facultyManagement) ? this.facultyManagement : [];
@@ -31,6 +32,26 @@ export const dataViewer = {
             Extras.toLowerCaseSafe(String(listOfClass.email)).includes(Extras.toLowerCaseSafe(this.searchText)) ||
             Extras.toLowerCaseSafe(String(listOfClass.program)).includes(Extras.toLowerCaseSafe(this.searchText)) ||
             Extras.toLowerCaseSafe(String(listOfClass.faculty_type)).includes(Extras.toLowerCaseSafe(this.searchText))
+        );
+
+        // Filter by program and status that is pending and approved
+        filteredEvents = this.sortPetition(filteredEvents);
+
+        const start = this.pageIndex * this.pageSize;
+        const end = start + this.pageSize;
+        return filteredEvents.slice(start, end);
+    }, 
+    getStudentToDisplay(): any[] {
+        this.searchText = typeof this.searchText === 'string' ? this.searchText : '';
+        const studentList = Array.isArray(this.studentManagement) ? this.studentManagement : [];
+
+        // Filter transactions based on search text
+        let filteredEvents = studentList.filter((listOfClass: any) =>
+            Extras.toLowerCaseSafe(Extras.formatDate(listOfClass.date_created)).includes(Extras.toLowerCaseSafe(this.searchText)) ||
+            Extras.toLowerCaseSafe(String(listOfClass.firstname)).includes(Extras.toLowerCaseSafe(this.searchText)) ||
+            Extras.toLowerCaseSafe(String(listOfClass.tupv_id)).includes(Extras.toLowerCaseSafe(this.searchText)) ||
+            Extras.toLowerCaseSafe(String(listOfClass.program)).includes(Extras.toLowerCaseSafe(this.searchText)) ||
+            Extras.toLowerCaseSafe(String(listOfClass.student_id)).includes(Extras.toLowerCaseSafe(this.searchText))
         );
 
         // Filter by program and status that is pending and approved
@@ -61,6 +82,29 @@ export const dataViewer = {
         const end = start + this.pageSize;
         return filteredEvents.slice(start, end);
     },
+
+
+    getHistoryPetitionToDisplay(): any[] {
+        this.searchText = typeof this.searchText === 'string' ? this.searchText : '';
+        const classList = Array.isArray(this.facultyClassHistoryList) ? this.facultyClassHistoryList : [];
+
+        // Filter transactions based on search text
+        let filteredEvents = classList.filter((listOfClass: any) =>
+            Extras.toLowerCaseSafe(Extras.formatDate(listOfClass.date_created)).includes(Extras.toLowerCaseSafe(this.searchText)) ||
+            Extras.toLowerCaseSafe(String(listOfClass.subject_code)).includes(Extras.toLowerCaseSafe(this.searchText)) ||
+            Extras.toLowerCaseSafe(String(listOfClass.subject_name)).includes(Extras.toLowerCaseSafe(this.searchText)) ||
+            Extras.toLowerCaseSafe(String(listOfClass.units)).includes(Extras.toLowerCaseSafe(this.searchText)) ||
+            Extras.toLowerCaseSafe(String(listOfClass.petition_count)).includes(Extras.toLowerCaseSafe(this.searchText))
+        );
+
+        // Filter by program and status that is pending and approved
+        filteredEvents = this.sortPetition(filteredEvents);
+
+        const start = this.pageIndex * this.pageSize;
+        const end = start + this.pageSize;
+        return filteredEvents.slice(start, end);
+    },
+
 
     //filter and display the data for notification
     getNotificationList(status: string): any[] {
@@ -95,9 +139,9 @@ export const dataViewer = {
     },
 
 
-    getFacultyViewStudent(status: string): any[] {
+    getFacultyViewStudent(): any[] {
         const facultyClassList = Array.isArray(this.facultyClassList) ? this.facultyClassList : [];
-        let filteredEvents = facultyClassList.filter(petition => petition.status === status)
+        let filteredEvents = facultyClassList.filter(petition => petition.status != 'denied')
         filteredEvents = this.sortPetition(filteredEvents);
         return filteredEvents;
     },

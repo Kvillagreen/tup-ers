@@ -1,4 +1,4 @@
-<div class="flex flex-col items-center justify-center w-full overflow-auto h-full py-2 md:px-0 px-2">
+<div class="animate-fadeInNew flex flex-col items-center justify-center w-full overflow-auto h-full py-2 md:px-0 px-2">
     <div class="w-full md:w-3/4 min-h-screen bg-[#f5f3f4] rounded-md  p-4 space-y-2">
         <div class="flex justify-start align-center">
             <p class="text-3xl font-bold text-gray-900">Student Petitions</p>
@@ -15,7 +15,7 @@
                         </svg>
                     </span>
                     <div *ngIf="dataViewer.isFilterOn"
-                        class="relative w-full h-[250px] top-1 z-[10] rounded-b-md bg-red-900">
+                        class="animate-swipeDown relative w-full h-[250px] top-1 z-[10] rounded-b-md bg-red-900">
                         <div class=" grid grid-cols-1 gap-y-1 p-2 justify-start items-center">
                             <button (click)="dataViewer.onSortChange('date_created')"
                                 class=" h-8  text-gray-50   hover:text-gray-400">Date</button>
@@ -47,7 +47,7 @@
             </div>
         </div>
         <div
-            class="grid grid-cols-7 w-full h-12 bg-red-800 text-center  text-xs md:text-[16px] text-white rounded-t-md font-semibold justify-center items-center">
+            class="px-[5px] grid grid-cols-7 w-full h-12 bg-red-800 text-center  text-xs md:text-[16px] text-white rounded-t-md font-semibold justify-center items-center">
             <div class="leading-none">Date</div>
             <div class="leading-none">Subject Code</div>
             <div class="leading-none col-span-2">Subject Name</div>
@@ -56,27 +56,73 @@
             <div class="leading-none">View</div>
         </div>
         <div *ngIf="dataViewer.getViewPetitionToDisplay().length!=0">
-            <div *ngFor="let class of dataViewer.getViewPetitionToDisplay()" class="mt-2 grid grid-cols-7 w-full h-12 bg-red-300 text-center text-[12px] md:text-[14px] text-gray-900
+            <div *ngFor="let class of dataViewer.getViewPetitionToDisplay()">
+                <div class="px-[5px] mt-2 grid grid-cols-7 w-full h-12 bg-red-300 text-center text-[12px] md:text-[14px] text-gray-900
                 justify-center items-center">
-                <div class=" leading-none">{{extras.formatDate(class.date_created)}}</div>
-                <div class="leading-none">{{class.subject_code}}</div>
-                <div class="col-span-2 leading-none">{{extras.toTitleCaseSafe(class.subject_name)}}</div>
-                <div class="leading-none">{{class.units}}</div>
-                <div [ngClass]="{'text-red-600': class.petition_count >=50,'text-green-600': class.petition_count <50 }"
-                    class="font-bold leading-none">{{class.petition_count}}</div>
-                <div class="">
-                    <button (click)="isView=true;
+                    <div class=" leading-none">
+                        <span class="text-center">{{extras.formatDate(class.date_created)}}</span>
+
+                    </div>
+                    <div class="leading-none">{{class.subject_code}}</div>
+                    <div class="col-span-2 leading-none">{{extras.toTitleCaseSafe(class.subject_name)}}</div>
+                    <div class="leading-none">{{class.units}}</div>
+                    <div [ngClass]="{'text-red-600': class.petition_count >=50,'text-green-600': class.petition_count <50 }"
+                        class="font-bold leading-none">{{class.petition_count}}</div>
+                    <div class="flex justify-center items-center w-full ">
+                        <button
+                            (click)="isView=true;
                     subjectName=class.subject_name;dataViewer.pageIndex=0 ;modalfacultyProgram=class.program;
-                        modalsubjectCode=class.subject_code;
-                        modalsubjectName=class.subject_name; modalsubjectUnits=class.units;
-                        fetchPetition(class.class_id);fetchDeniedPetition();"
-                        class="w-3/4 h-full py-2 bg-red-500 hover:bg-red-800 rounded-md text-gray-50  hover:text-gray-300">
-                        <p>View</p>
-                    </button>
+                        modalsubjectCode=class.subject_code;modalStatus=class.status;
+                        modalsubjectName=class.subject_name; modalsubjectUnits=class.units;modalclassId=class.class_id;
+                        classSchedule=class.schedule;classLocation=class.location;fetchPetition(class.class_id);fetchDeniedPetition(); toApprove= class.class_id;fetchDepartment(class.class_id)"
+                            class="w-3/4 flex md:gap-x-2 justify-center items-center h-full py-2 bg-red-500 hover:bg-red-800 rounded-md text-gray-50  hover:text-gray-300">
+                            <p>View</p>
+                            <span
+                                *ngIf="this.facultyType=='Faculty Staff' && class.schedule!='[[]]' && class.location !='Faculty Staff'">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                    class="size-5">
+                                    <path fill-rule="evenodd"
+                                        d="M16.403 12.652a3 3 0 0 0 0-5.304 3 3 0 0 0-3.75-3.751 3 3 0 0 0-5.305 0 3 3 0 0 0-3.751 3.75 3 3 0 0 0 0 5.305 3 3 0 0 0 3.75 3.751 3 3 0 0 0 5.305 0 3 3 0 0 0 3.751-3.75Zm-2.546-4.46a.75.75 0 0 0-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
+                                        clip-rule="evenodd" />
+                                </svg></span>
+                            <span *ngIf="this.facultyType=='Program Head' && (class.location != 'Program Head' )">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                    class="size-5">
+                                    <path fill-rule="evenodd"
+                                        d="M16.403 12.652a3 3 0 0 0 0-5.304 3 3 0 0 0-3.75-3.751 3 3 0 0 0-5.305 0 3 3 0 0 0-3.751 3.75 3 3 0 0 0 0 5.305 3 3 0 0 0 3.75 3.751 3 3 0 0 0 5.305 0 3 3 0 0 0 3.751-3.75Zm-2.546-4.46a.75.75 0 0 0-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
+                                        clip-rule="evenodd" />
+                                </svg></span>
+                            <span
+                                *ngIf="this.facultyType=='College Dean' &&  (class.location != 'Faculty Staff' && class.location != 'Program Head'&& class.location !='College Dean')">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                    class="size-5">
+                                    <path fill-rule="evenodd"
+                                        d="M16.403 12.652a3 3 0 0 0 0-5.304 3 3 0 0 0-3.75-3.751 3 3 0 0 0-5.305 0 3 3 0 0 0-3.751 3.75 3 3 0 0 0 0 5.305 3 3 0 0 0 3.75 3.751 3 3 0 0 0 5.305 0 3 3 0 0 0 3.751-3.75Zm-2.546-4.46a.75.75 0 0 0-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
+                                        clip-rule="evenodd" />
+                                </svg></span>
+                            <span
+                                *ngIf="this.facultyType=='Registrar' && (class.location != 'Faculty Staff' && class.location != 'Program Head' && class.location !='College Dean' && class.location !='Registrar')">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                    class="size-5">
+                                    <path fill-rule="evenodd"
+                                        d="M16.403 12.652a3 3 0 0 0 0-5.304 3 3 0 0 0-3.75-3.751 3 3 0 0 0-5.305 0 3 3 0 0 0-3.751 3.75 3 3 0 0 0 0 5.305 3 3 0 0 0 3.75 3.751 3 3 0 0 0 5.305 0 3 3 0 0 0 3.751-3.75Zm-2.546-4.46a.75.75 0 0 0-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
+                                        clip-rule="evenodd" />
+                                </svg></span>
+                            <span
+                                *ngIf="this.facultyType=='ADAA' && (class.location != 'Faculty Staff' && class.location != 'Program Head' && class.location !='College Dean' && class.location !='Registrar'&& class.location !='ADAA')">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                    class="size-5">
+                                    <path fill-rule="evenodd"
+                                        d="M16.403 12.652a3 3 0 0 0 0-5.304 3 3 0 0 0-3.75-3.751 3 3 0 0 0-5.305 0 3 3 0 0 0-3.751 3.75 3 3 0 0 0 0 5.305 3 3 0 0 0 3.75 3.751 3 3 0 0 0 5.305 0 3 3 0 0 0 3.751-3.75Zm-2.546-4.46a.75.75 0 0 0-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
+                                        clip-rule="evenodd" />
+                                </svg></span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-        <div *ngFor="let class of dataViewer.multiplierCounter(dataViewer.getViewPetitionToDisplay().length) let i=index" class=" grid grid-cols-7 w-full h-12 mt-2 bg-red-300 text-center text-[12px] md:text-[14px] 
+        <div *ngFor="let class of dataViewer.multiplierCounter(dataViewer.getViewPetitionToDisplay().length) let i=index"
+            class=" grid grid-cols-7 w-full h-12 mt-2 bg-red-300 text-center text-[12px] md:text-[14px] 
         justify-center items-center">
             <div class="col-span-7 text-center text-sm md:text-lg font-semibold"
                 *ngIf="class==0 && dataViewer.getViewPetitionToDisplay().length==0">No data found
@@ -97,15 +143,17 @@
 
 
 <div *ngIf="isView">
-    <div class="animate-fadeIn fixed inset-0 flex items-center  justify-center bg-gray-900 bg-opacity-50 z-[100] ">
+    <div class="animate-fadeInNew fixed inset-0 flex items-center  justify-center bg-gray-900 bg-opacity-50 z-[100] ">
         <div
             class="w-full md:w-3/4 h-5/6 flex flex-col  bg-red-300  px-2 border-2 shadow-md shadow-red-900 border-red-400 rounded-md overflow-y-auto text-red-800 ">
             <!-- Header Section -->
             <div class="mt-auto sticky top-0 flex justify-between w-full bg-red-300 h-20 py-4 items-center">
-                <p class="text-center text-xl md:text-3xl font-bold w-full leading-none ">{{extras.toTitleCaseSafe(subjectName)}}
+
+                <p class="text-center text-xl md:text-3xl font-bold w-full leading-none ">
+                    {{extras.toTitleCaseSafe(subjectName)}}
                 </p>
                 <!-- Close Button -->
-                <button (click)="isView=false"
+                <button (click)="isView=false;departmentList=[]"
                     class="flex w-8 h-8 py-1 bg-red-500  text-gray-50  hover:bg-red-800 hover:text-gray-300 rounded-full items-center justify-center text-[16px]">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                         stroke="currentColor" class="size-4 stroke-red-50 hover:stroke-gray-300">
@@ -113,20 +161,37 @@
                     </svg>
                 </button>
             </div>
-            <div class="mt-auto sticky top-0 flex px-2 justify-between w-full bg-red-300  h-20 md:h-16 py-2 items-center ">
+            <div
+                class="mt-auto sticky top-0 flex px-2 justify-between w-full bg-red-300  h-20 md:h-16 py-2 items-center ">
                 <p class="text-lg leading-none md:text-xl text-left font-semibold w-full">List of Students:</p>
-                <button *ngIf="facultyProgram!='STAFF'" (click)="isCalendarOpen=!isCalendarOpen"
-                    class="flex justify-between items-center w-full sm:w-72 md:w-72 h-full px-8 bg-red-500    hover:bg-red-800 text-gray-50  hover:text-gray-300 rounded-md font-semibold leading-none text-sm md:text-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
-                        class="size-6 justify-center fill-gray-50  hover:fill-gray-300">
-                        <path
-                            d="M5.75 7.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM5 10.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0ZM10.25 7.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM7.25 8.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0ZM8 9.5A.75.75 0 1 0 8 11a.75.75 0 0 0 0-1.5Z" />
-                        <path fill-rule="evenodd"
-                            d="M4.75 1a.75.75 0 0 0-.75.75V3a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2V1.75a.75.75 0 0 0-1.5 0V3h-5V1.75A.75.75 0 0 0 4.75 1ZM3.5 7a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v4.5a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1V7Z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    <span>Add Schedule</span>
-                </button>
+
+                <div class=" h-full flex justify-between gap-x-2">
+                    <button *ngIf="classLocation==facultyType && facultyType!='Faculty Staff'"
+                        (click)="generalApproval()"
+                        class="flex justify-between items-center w-52  h-full px-8 bg-red-500    hover:bg-red-800 text-gray-50  hover:text-gray-300 rounded-md font-semibold leading-none text-sm md:text-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                            class="size-6 justify-center">
+                            <path fill-rule="evenodd"
+                                d="M8.603 3.799A4.49 4.49 0 0 1 12 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 0 1 3.498 1.307 4.491 4.491 0 0 1 1.307 3.497A4.49 4.49 0 0 1 21.75 12a4.49 4.49 0 0 1-1.549 3.397 4.491 4.491 0 0 1-1.307 3.497 4.491 4.491 0 0 1-3.497 1.307A4.49 4.49 0 0 1 12 21.75a4.49 4.49 0 0 1-3.397-1.549 4.49 4.49 0 0 1-3.498-1.306 4.491 4.491 0 0 1-1.307-3.498A4.49 4.49 0 0 1 2.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 0 1 1.307-3.497 4.49 4.49 0 0 1 3.497-1.307Zm7.007 6.387a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span>Approve</span>
+                    </button>
+                    <!-- faculty staff will add schedule-->
+                    <button *ngIf="facultyType=='Faculty Staff' && classSchedule=='[[]]'"
+                        (click)="isCalendarOpen=!isCalendarOpen"
+                        class="flex justify-between items-center w-52  h-full px-8 bg-red-500    hover:bg-red-800 text-gray-50  hover:text-gray-300 rounded-md font-semibold leading-none text-sm md:text-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
+                            class="size-6 justify-center fill-gray-50  hover:fill-gray-300">
+                            <path
+                                d="M5.75 7.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM5 10.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0ZM10.25 7.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM7.25 8.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0ZM8 9.5A.75.75 0 1 0 8 11a.75.75 0 0 0 0-1.5Z" />
+                            <path fill-rule="evenodd"
+                                d="M4.75 1a.75.75 0 0 0-.75.75V3a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2V1.75a.75.75 0 0 0-1.5 0V3h-5V1.75A.75.75 0 0 0 4.75 1ZM3.5 7a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v4.5a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1V7Z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span>Add Schedule</span>
+                    </button>
+                </div>
             </div>
             <div class="flex flex-col w-full text-sm h-full overflow-hidden ">
                 <div class="w-full h-full  overflow-y-auto scrollbar-container ">
@@ -136,11 +201,13 @@
                             class="col-span-3 p-2 h-full w-full bg-red-400 border-l-2 border-y-2 rounded-xl rounded-b-none rounded-r-none">
                             Tupv ID</p>
                         <p class="col-span-6 h-full w-full bg-red-400 border-y-2 p-2">Full Name</p>
-                        <p
-                            class="col-span-3 h-full w-full bg-red-400 border-y-2  p-2 border-r-2 rounded-xl rounded-l-none rounded-b-none">
+                        <p class="col-span-2 h-full w-full bg-red-400 border-y-2 p-2">
                             Action</p>
+                        <p
+                            class="col-span-1 h-full w-full flex justify-end bg-red-400 border-y-2  p-2 border-r-2 rounded-xl rounded-l-none rounded-b-none">
+                        </p>
                     </div>
-                    <div *ngFor="let list of dataViewer.getFacultyViewStudent('pending') let i=index">
+                    <div *ngFor="let list of dataViewer.getFacultyViewStudent() let i=index">
                         <div
                             class="grid grid-cols-12 bg-red-400 h-12 mt-2 text-center text-xs md:text-xl font-semibold">
                             <div class="col-span-3 flex justify-center items-center">
@@ -149,7 +216,7 @@
                             <div class="col-span-6 flex justify-center items-center">
                                 <p class="">{{extras.toTitleCaseSafe(list.first_name+' '+list.last_name)}}</p>
                             </div>
-                            <div class="col-span-3 h-full w-full text-lg flex justify-center items-center">
+                            <div class="col-span-2 h-full w-full text-lg flex justify-center items-center">
                                 <button
                                     (click)="openModal=true; classId=list.class_id;petitionId=list.petition_id;studentId= list.student_id"
                                     class="flex justify-center items-center size-8">
@@ -160,14 +227,25 @@
                                     </svg>
                                 </button>
                             </div>
+                            <div class="flex h-full w-full text-[12px] justify-center items-center">
+                                <select *ngIf="facultyType=='Program Head'"
+                                    (change)="statusChange($event,list.petition_id)"
+                                    class="outline-none border-red-700 border-2">
+                                    <option disabled selected>Transfer</option>
+                                    <option *ngFor="let department of departmentList" [value]="department.class_id">
+                                        {{department.program}}
+                                    </option>
+                                </select>
+                            </div>
+
                         </div>
                     </div>
-                    <div *ngIf="dataViewer.getFacultyViewStudent('pending').length<10">
-                        <div *ngFor="let class of dataViewer.multiplierCounter(dataViewer.getFacultyViewStudent('pending').length) let i=index"
+                    <div *ngIf="dataViewer.getFacultyViewStudent().length<10">
+                        <div *ngFor="let class of dataViewer.multiplierCounter(dataViewer.getFacultyViewStudent().length) let i=index"
                             class=" grid grid-cols-7 w-full h-12 mt-2 bg-red-400 text-center text-[12px] md:text-[14px] 
                     justify-center items-center">
                             <div class="col-span-7 text-center text-sm md:text-lg font-semibold"
-                                *ngIf="class==0 && dataViewer.getFacultyViewStudent('pending').length==0">No
+                                *ngIf="class==0 && dataViewer.getFacultyViewStudent().length==0">No
                                 data found
                             </div>
                         </div>
@@ -176,8 +254,18 @@
                 <div class="pt-2">
                 </div>
                 <div class="mt-auto sticky bottom-0 bg-red-300 overflow-auto scrollbar-container z-[10] y-2 h-80">
-                    <div class="grid grid-cols-12 text-center  md:text-xl font-semibold ">
-                        <p class="col-span-12 text-lg text-left font-semibold">Denied Students:</p>
+                    <div class="grid grid-cols-12 text-center pr-2 md:text-xl font-semibold ">
+                        <p class="col-span-6 text-lg text-left font-semibold">Denied Students:</p>
+                        <div class="col-span-6 w-full gap-x-2 flex justify-end items-center">
+                            <span class="text-lg font-semibold ">Change Class Status:</span>
+                            <select (change)="classStatusChange($event)"
+                                class="w-1/4 outline-none text-xs h-8 border-2 border-red-800">
+                                <option selected disabled>{{extras.toTitleCaseSafe(modalStatus)}}</option>
+                                <option value="denied">Disable</option>
+                                <option value="finished">Finish</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                        </div>
                         <p class="col-span-3">Tupv ID</p>
                         <p class="col-span-6">Full Name</p>
                         <p class="col-span-3">Action</p>
@@ -220,7 +308,7 @@
 </div>
 
 <div *ngIf="openModal"
-    class="animate-fadeIn fixed inset-0 flex items-center  justify-center bg-gray-900 bg-opacity-50 z-[100] ">
+    class="animate-fadeInNew fixed inset-0 flex items-center  justify-center bg-gray-900 bg-opacity-50 z-[100] ">
     <div
         class=" w-full md:w-[480px] h-[480px] flex flex-col overflow-auto scrollbar-container gap-y-2 p-8 items-start justify-center  bg-red-300  border-2 shadow-md shadow-red-900 border-red-400 rounded-md overflow-y-auto text-red-800 ">
         <div class="text-2xl text-center font-bold w-full">
@@ -229,8 +317,7 @@
         <div class="flex flex-col justify-center text-left gap-y-2 items-center h-full w-full">
             <div class="flex flex-col  h-full w-full">
                 <label>Reason</label>
-                <textarea class="textArea" name="reasons" maxlength="100"
-                [(ngModel)]="reasons" required
+                <textarea class="textArea" name="reasons" maxlength="100" [(ngModel)]="reasons" required
                     placeholder="State your reason here"></textarea>
             </div>
             <div class="flex flex-col  h-full w-full">
@@ -257,7 +344,7 @@
 
 
 <div *ngIf="isCalendarOpen"
-    class="animate-fadeIn fixed inset-0 flex items-center  justify-center bg-gray-900 bg-opacity-50 z-[100] ">
+    class="animate-fadeInNew fixed inset-0 flex items-center  justify-center bg-gray-900 bg-opacity-50 z-[100] ">
     <div
         class=" w-full md:w-[480px] h-[480px] flex flex-col overflow-auto px-4 scrollbar-container gap-y-2  items-center justify-start  bg-red-300  border-2 shadow-md shadow-red-900 border-red-400 rounded-md overflow-y-auto text-red-800 ">
         <div class="flex mt-auto sticky top-0 justify-between pt-4 w-full h-12 bg-red-300 items-center">
@@ -281,6 +368,14 @@
                     [(ngModel)]="totalHours" placeholder="Total number of Hours">
                 <button (click)="saveTotalHours()" class="w-full rounded-md p-2 text-red-200 font-semibold bg-red-500">
                     save
+                </button>
+            </div>
+        </div>
+        <div class="flex flex-col  w-full h-full gap-x-2 gap-y-2 px-4 justify-center items-center">
+            <div *ngIf="calendar.getTotalTimeInHours(calendar.calendarList) == data.totalHours && data.totalHours > 0 && calendar.getTotalTimeInHours(calendar.calendarList) > 0"
+                class="flex w-full gap-x-2 ">
+                <button (click)="generalApproval()" class="w-full rounded-md p-2 text-red-200 font-semibold bg-red-500">
+                    Approve
                 </button>
             </div>
         </div>

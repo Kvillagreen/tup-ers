@@ -34,7 +34,7 @@ export class SignupComponent implements OnInit {
 
   onSubmit() {
     Extras.load = true;
-
+    this.tupvId=this.tupvId.toLocaleUpperCase()
     const emailPattern: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     if (!this.firstName || !this.lastName || !this.password || !this.passwordConfirm || !this.tupvId || !this.email || !this.program) {
       Extras.isError("All fields are required");

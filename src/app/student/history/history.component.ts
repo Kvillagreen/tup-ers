@@ -52,7 +52,9 @@ export class HistoryComponent implements OnInit, AfterViewInit {
     const data = this.encryptData.decryptData('student') ?? ''
     const tokenId = data.tokenId;
     this.studentService.getClass(tokenId).subscribe((response: any) => {
-      dataViewer.classListHistory = response.data.filter((listOfClass: any) => listOfClass.program === this.program && listOfClass.status == 'approved' || listOfClass.status == 'denied');
+      if (response.data && response.success) {
+        dataViewer.classListHistory = response.data.filter((listOfClass: any) => listOfClass.program === this.program && listOfClass.status == 'finished' || listOfClass.status == 'denied');
+      }
     });
   }
 

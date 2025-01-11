@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NotificationService } from '../../common/libraries/environment';
 import { Injectable } from '@angular/core';
+import { EncryptData } from '../../common/libraries/encrypt-data';
 @Injectable({
   providedIn: 'root',
 })
@@ -21,12 +22,14 @@ import { Injectable } from '@angular/core';
 })
 export class NotificationComponent {
 
-  constructor(private studentService: StudentService, 
-    private notificationService: NotificationService, private cookieService: CookieService, private renderer: Renderer2) { }
+  constructor(private studentService: StudentService,
+    private notificationService: NotificationService, private encryptData: EncryptData,
+    private cookieService: CookieService, private renderer: Renderer2) { }
   isLocate: boolean = false;
   dataViewer = dataViewer;
   isFilterOn: boolean = false;
   status: string = 'unread';
+  extras = Extras
   @ViewChild('filterDownView') filterDownView!: ElementRef;
 
   private clickListener: (() => void) | undefined = undefined;
@@ -48,6 +51,18 @@ export class NotificationComponent {
     if (this.clickListener) {
       this.clickListener();
     }
+  }
+
+  updateMessage(notificationId: string, status: string) {
+    const data = this.encryptData.decryptData('student') ?? '';
+    this.studentService.updateStudentMessage(data.tokenId.toString(), data.studentId.toString(), notificationId, status).subscribe({
+      next: (response: any) => {
+        Extras.load = false;
+        if (response.success) {
+          this.notificationService.fetchNotification();
+        }
+      },
+    });
   }
 
 

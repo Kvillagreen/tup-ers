@@ -16,6 +16,9 @@ export class privateData {
         return this.url + 'faculty';
     }
 
+    get printableUrl(): string {
+        return this.url + 'printable';
+    }
     get emailServiceUrl(): string {
         return this.url + 'email-service';
     }

@@ -50,6 +50,8 @@ try {
             c.program,
             c.date_created,
             c.capacity,
+            c.location,
+            c.schedule,
             (SELECT COUNT(*) FROM tbl_petition p WHERE p.class_id = c.class_id AND p.status !='denied') AS petition_count
         FROM tbl_class c
         ";

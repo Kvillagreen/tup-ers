@@ -32,8 +32,8 @@ export class LoginComponent implements OnInit {
       this.rememberMe = localStorage.getItem('isFacultyRemember') == 'true';
       this.tupvId = localStorage.getItem('tupvId') ?? ''
     }
-    
-    Extras.errorMessage='';
+
+    Extras.errorMessage = '';
   }
   rememberMeFunction(event: boolean) {
     this.rememberMe = event
@@ -47,6 +47,7 @@ export class LoginComponent implements OnInit {
   }
   onSubmit() {
     Extras.load = true;
+    this.tupvId = this.tupvId.toLocaleUpperCase()
     if (!this.tupvId || !this.password) {
       Extras.isError('All fields are required.')
       Extras.load = false;  // Stop loading
@@ -58,6 +59,7 @@ export class LoginComponent implements OnInit {
       Extras.load = false;  // Stop loading
       return;
     }
+
     this.studentService.login(this.tupvId, this.password).subscribe({
       next: (response: any) => {
         Extras.load = false;
@@ -69,7 +71,9 @@ export class LoginComponent implements OnInit {
           this.notificationService.fetchNotification();
           this.encryptData.encryptAndStoreData('student', response.student);
           this.router.navigate(['/dashboard']);
+          this.extras.load = false
           window.location.reload()
+          this.extras.load = false
         } else {
           Extras.isError(response.message)
         }

@@ -52,7 +52,6 @@ export class CalendarComponent implements OnInit {
 
   dayIsClicked(day: string, click: boolean): void {
     const realDate = this.convertToRealDate(day.toString());
-    console.log(this.totalHours())
 
     if (click === false) {
       const calendarEntry = {
@@ -80,8 +79,6 @@ export class CalendarComponent implements OnInit {
       // Add the clicked entry
       Calendar.addCalendarList(calendarEntry);
       this.numberOfHours = Number(Calendar.getTotalTimeInHours(Calendar.calendarList));
-      console.log(this.numberOfHours)
-      console.log(this.totalHours())
       if (this.numberOfHours > this.totalHours()) {
         Calendar.addCalendarList(calendarEntry);
         this.numberOfHours = Number(Calendar.getTotalTimeInHours(Calendar.calendarList));
@@ -116,10 +113,7 @@ export class CalendarComponent implements OnInit {
     }
 
     const monthKey = `${this.currentYear}-${this.currentMonth}`;
-    console.log(Calendar.calendarList)
     this.calendarData[monthKey] = this.calendarDays
-    console.log(this.calendarData[monthKey])
-    console.log(this.calendar.calendarList)
     Calendar.isTime = false;
     this.numberOfHours = Number(Calendar.getTotalTimeInHours(Calendar.calendarList));
   }

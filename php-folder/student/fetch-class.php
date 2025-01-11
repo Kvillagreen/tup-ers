@@ -1,5 +1,4 @@
 <?php
-// registration.php
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -42,7 +41,7 @@ $student = $result->fetch_assoc();
 $studentId = $student['student_id'];
 
 try {
-    // Fetch class details and petition information
+
     $sql = "SELECT 
             c.class_id,
             c.subject_code,

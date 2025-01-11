@@ -1,0 +1,72 @@
+<div class="grid grid-cols-1 md:grid-cols-12 p-2">
+    <div class="w-full h-full col-span-8 p-4 bg-red-200 flex flex-col justify-start items-center">
+        <div class="p-4 bg-white shadow rounded-md mx-auto w-full h-full">
+            <div class="w-full h-12 text-xl md:text-3xl text-red-950 font-extrabold flex items-center justify-center">
+                <p class="">CLASS SCHEDULE</p>
+            </div>
+            <div class="flex justify-between items-center mb-4">
+                <button (click)="prevMonth()"
+                    class="px-2 py-1 bg-red-500 w-12 justify-center flex items-center text-white rounded"><svg
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                        <path fill-rule="evenodd"
+                            d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <span class="font-bold text-xl">{{ extras.toUpperCaseSafe(formatMonthAndYear(currentDate)) }}</span>
+                <button (click)="nextMonth()"
+                    class="px-2 py-1 bg-red-500 w-12 justify-center flex items-center text-white rounded"><svg
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                        <path fill-rule="evenodd"
+                            d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Days of the Week -->
+            <div class="grid grid-cols-7 gap-1 text-center font-semibold border-y-2 py-1 border-red-800">
+                <div *ngFor="let day of daysOfWeek">{{ day }}</div>
+            </div>
+
+            <!-- Calendar Dates -->
+            <div class="grid grid-cols-7 gap-1 text-center mt-2">
+                <ng-container *ngFor="let day of calendarDays">
+                    <div *ngIf="day.day; else emptyDay">
+                        <button (click)="selectDay(day)" [ngClass]="{
+                          'bg-red-700 text-white': day.isScheduled,
+                          'bg-gray-100': !day.isScheduled
+                        }" class="w-8 h-8 rounded-md     hover:bg-red-800 hover:text-white">
+                            {{ day.day }}
+                        </button>
+                    </div>
+                    <ng-template #emptyDay>
+                        <div class="w-8 h-8"></div>
+                    </ng-template>
+                </ng-container>
+            </div>
+
+        </div>
+    </div>
+    <div class="flex w-full h-screen col-span-4 p-4 bg-red-300">
+        <div class="w-full h-full bg-white p-4 rounded-md">
+            <div class="bg-white h-full w-full">
+                <h3 class=" mt-4 text-xl text-left font-extrabold text-gray-900">SCHEDULE FOR SELECTED DATE</h3>
+                <div *ngIf="selectedDateSchedule.length > 0" class="mt-4">
+                    <div *ngFor="let item of selectedDateSchedule" class="mt-2 p-2 border rounded-md bg-gray-50">
+                        <p><strong>{{ item.subject_name }}</strong> ({{ item.subject_code }})</p>
+                        <div *ngFor="let sched of item.schedule">
+                            <p *ngIf="sched.date==clickDate"><b>Time: </b>{{ convertTimeTo12Hour(sched.fromTime) }} - {{
+                                convertTimeTo12Hour(sched.toTime) }}
+                            </p>
+                        </div>
+                        <div *ngIf="selectedDateSchedule.length === 0" class=" mt-4">
+                            <div class="mt-2 p-2 border rounded-md font-semibold bg-gray-50">
+                                <p>No schedule for the selected date.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

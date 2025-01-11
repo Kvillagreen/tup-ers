@@ -1,4 +1,4 @@
-<div class="flex flex-col items-center justify-center w-full h-full py-2 md:px-0 px-2">
+<div class="animate-fadeInNew flex flex-col items-center justify-center w-full h-full py-2 md:px-0 px-2">
     <div class="w-full md:w-3/4 min-h-screen bg-[#f5f3f4] rounded-md  p-4 space-y-2">
         <div class="flex justify-start align-center">
             <p class="text-3xl font-bold text-gray-900">Messages</p>
@@ -42,33 +42,44 @@
             </div>
         </div>
         <div
-            class="grid grid-cols-12 px-4 w-full h-20 bg-red-800 text-center  text-xs md:text-[16px] text-white rounded-t-md font-semibold justify-center items-center">
-            <div class="col-span-1"></div>
-            <div class="col-span-3  ">Faculty</div>
+            class="grid grid-cols-12 px-4 w-full h-12 bg-red-800 text-center  text-xs md:text-[16px] text-white rounded-t-md font-semibold justify-center items-center">
+            <div class=" "></div>
+            <div class="col-span-3 ">Faculty</div>
             <div class="col-span-4 ">Messages</div>
             <div class="col-span-3 ">Subject</div>
-            <div class="col-span-1 ">Action</div>
+            <div class=" ">Action</div>
         </div>
         <div *ngIf="dataViewer.getNotificationList(status).length!=0">
             <div *ngFor="let class of dataViewer.getNotificationList(status)let i=index">
-                <div class="w-full grid grid-cols-12 min-h-12 h-full gap-x-2 overflow-hidden p-4 items-center bg-red-300 mt-2">
-                    <div class="size-7 sm:size-8 md:size-12 rounded-full text-white text-xs sm:text-lg md:text-xl bg-red-600 flex justify-center items-center">
-                        <div class="col-span-1  overflow-hidden   flex justify-center items-center">
-                            {{class.noted_by[0]}}</div>
+                <div
+                    class="w-full grid grid-cols-12 min-h-12 h-full gap-x-2 overflow-hidden p-4 items-center bg-red-300 mt-2">
+                    <div class="h-full flex flex-col text-red-800 font-semibold justify-center items-center">
+                        <p class="w-full flex leading-none text-[12px] sm:text-xs md:text-[16px] text-center">
+                            {{i+1}}.</p>
                     </div>
-                    <div class="col-span-3 h-full flex overflow-hidden flex-col text-red-800 gap-y-[2px] font-semibold justify-center items-center">
-                        <p class="w-full flex  text-[10px] sm:text-xs md:text-[18px] leading-none text-center">{{class.noted_by}}</p>
+                    <div
+                        class="col-span-3 h-full flex overflow-hidden flex-col text-red-800 gap-y-[2px] font-semibold justify-center items-center">
+                        <p class="w-full flex  text-[10px] sm:text-xs md:text-[18px] leading-none text-center">
+                            {{class.noted_by}}</p>
                         <p class="w-full flex text-[8px] md:text-[10px] leading-none ">{{class.date_created}}</p>
                     </div>
-                    <div class="col-span-4 flex-col text-red-800 font-semibold  md:gap-y-2 gap-y-[2px]">
-                        <p class="w-full flex text-[10px] sm:text-xs md:text-[18px] leading-none">Reasons: {{class.reasons}}</p>
-                        <p class="w-full flex text-[10px] sm:text-xs md:text-[18px] leading-none">Message: {{class.message}}</p>
+                    <div class="col-span-4 flex-col text-red-800   md:gap-y-2 gap-y-[2px]">
+                        <p class="w-full flex text-[10px] sm:text-xs md:text-[14px] leading-none gap-x-2"><span
+                                class="font-semibold">Reasons:</span>{{ extras.toTitleCaseSafe(class.reasons)}}</p>
+                        <p class="w-full flex text-[10px] sm:text-xs md:text-[14px] leading-none gap-x-2"><span
+                                class="font-semibold">Message:</span>{{class.message}}</p>
                     </div>
                     <div class="col-span-3 h-full flex flex-col text-red-800 font-semibold justify-center items-center">
-                        <p class="w-full flex leading-none text-[10px] sm:text-xs md:text-[18px] text-center">{{class.title}}</p>
+                        <p class="w-full flex leading-none text-[10px] sm:text-xs md:text-[14px] text-center">
+                            {{class.title}}</p>
                     </div>
-                    <button *ngIf="class.status=='unread'" class="flex justify-center items-center text-red-800 font-semibold  w-full  text-[10px] sm:text-xs md:text-[18px]  ">
-                        read
+                    <button *ngIf="class.status=='unread'" (click)="updateMessage(class.notification_id,'read')"
+                        class="hover:underline flex justify-center items-center text-red-800 font-semibold  w-full  text-[10px] sm:text-xs md:text-[14px]  ">
+                        Read
+                    </button>
+                    <button *ngIf="class.status=='read'" (click)="updateMessage(class.notification_id,'unread')"
+                        class="hover:underline flex justify-center items-center text-red-800 font-semibold  w-full  text-[10px] sm:text-xs md:text-[14px]  ">
+                        Unread
                     </button>
                 </div>
             </div>
@@ -77,7 +88,8 @@
             <div *ngFor="let class of dataViewer.multiplierCounter(dataViewer.getNotificationList(status).length) let i=index"
                 class="mt-2 grid grid-cols-7 w-full h-12 bg-red-300 text-center text-[12px] md:text-[14px] text-gray-900
                 justify-center items-center">
-                <div class="col-span-7 font-semibold" *ngIf="class==0 && dataViewer.getNotificationList(status).length==0">
+                <div class="col-span-7 font-semibold"
+                    *ngIf="class==0 && dataViewer.getNotificationList(status).length==0">
                     No Messages
                     found</div>
             </div>

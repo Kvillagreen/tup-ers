@@ -20,7 +20,7 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
   program: string = '';
   subjectCode: string = '';
   subjectName: string = '';
-  subjectUnits: string = '';
+  subjectUnits: number | undefined;
   tupvId: string = '';
   fullName: string = '';
   isFail: string = '';
@@ -31,13 +31,33 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
   isNotTyped: boolean = false;
   successText: string = '';
   constructor(private studentService: StudentService, private encryptData: EncryptData,
-    private renderer: Renderer2, private cdr: ChangeDetectorRef) { }
+    private renderer: Renderer2, private cdr: ChangeDetectorRef) {
+    this.extras = Extras
+  }
   extras = Extras;
   subject = Subjects;
 
   @ViewChild('filterDownView') filterDownView!: ElementRef;
 
   private clickListener: (() => void) | undefined = undefined;
+
+  userType: string = '';  // Store the current user type
+
+  subjectCodeChange(event: Event): void {
+    const input = (event.target as HTMLInputElement).value;
+    this.subjectCode = input
+  }
+  subjectNameChange(event: Event): void {
+    const input = (event.target as HTMLInputElement).value;
+    this.subjectName = input
+  }
+
+  subjectUnitshange(event: Event): void {
+    const input = (event.target as HTMLInputElement).value;
+
+    this.subjectUnits = Number(input)
+
+  }
 
 
   ngAfterViewInit() {
@@ -62,7 +82,9 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
   fetchClass() {
     const data = this.encryptData.decryptData('student') ?? ''
     this.studentService.getClass(data.tokenId).subscribe((response: any) => {
-      dataViewer.classList = response.data.filter((listOfClass: any) => listOfClass.program === this.program && listOfClass.status == 'pending' || listOfClass.status == 'approved');
+      if (response.data && response.success) {
+        dataViewer.classList = response.data.filter((listOfClass: any) => listOfClass.program === this.program && listOfClass.status == 'pending' || listOfClass.status == 'approved');
+      }
     });
   }
 
@@ -85,18 +107,32 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
   submitPetitionApplication() {
     let data = this.encryptData.decryptData('student') ?? ''
     Extras.load = true;
-    this.studentService.petitionApplicatipon(data.studentId, this.classId).subscribe({
+    this.studentService.classChecker(data.studentId, data.tokenId, this.classId).subscribe({
       next: (response: any) => {
         Extras.load = false;
-        if (response.success) {
+        console.log(response)
+        if (response.duplicate) {
           this.isSuccesful = true;
-          this.successText = 'You have successfully applied your petition';
-          data.isSuccesful = this.isSuccesful
-          data.successText = this.successText
-          this.encryptData.encryptAndStoreData('student', data)
-          window.location.reload();
+          this.successText = 'You have transferred into other program, go to track petition for details. petition was not created.';
+          this.isApply = false;
         } else {
-          Extras.isError(response.message.toString());
+          this.studentService.petitionApplicatipon(data.studentId, this.classId).subscribe({
+            next: (response: any) => {
+              Extras.load = false;
+              if (response.success) {
+                this.isSuccesful = true;
+                this.successText = 'You have successfully applied your petition';
+                this.isApply = false;
+                this.fetchClass();
+              } else {
+                Extras.isError(response.message.toString());
+              }
+            },
+            error: (error: any) => {
+              Extras.load = false;
+              Extras.errorMessage = "Error in parsing";
+            },
+          });
         }
       },
       error: (error: any) => {
@@ -109,26 +145,48 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
   submitCreatePetition() {
     let data = this.encryptData.decryptData('student') ?? ''
     Extras.load = true;
-    this.studentService.petitionCreation(data.studentId, this.subjectCode, this.subjectName, this.subjectUnits, data.program).subscribe({
+    this.subjectCode = this.subjectCode.toLocaleUpperCase();
+    this.subjectName = this.subjectName.toLocaleUpperCase();
+    this.studentService.classChecker(data.studentId, data.tokenId, this.classId).subscribe({
       next: (response: any) => {
         Extras.load = false;
-        if (response.success) {
+        console.log(response)
+        if (response.duplicate) {
           this.isSuccesful = true;
-          this.successText = 'You have successfully submitted your petition';
-          data.isSuccesful = this.isSuccesful
-          data.successText = this.successText
-          this.encryptData.encryptAndStoreData('student', data)
-          window.location.reload();
-        } else {
-          Extras.isError(response.message.toString());
+          this.successText = 'You have transferred into other program, go to track petition for details. petition was not created.';
+          this.isAddPetition = false;
+        }
+        else {
+          if (this.subjectUnits) {
+
+            this.studentService.petitionCreation(data.studentId, this.subjectCode, this.subjectName, this.subjectUnits.toString(), data.program).subscribe({
+              next: (response: any) => {
+                Extras.load = false;
+                if (response.success) {
+                  this.isSuccesful = true;
+                  this.successText = 'You have successfully submitted your petition';
+                  this.isAddPetition = false;
+                  this.fetchClass();
+                } else {
+                  Extras.isError(response.message.toString());
+                }
+              },
+              error: (error: any) => {
+                Extras.load = false;
+                Extras.errorMessage = "Error in parsing";
+              },
+            });
+          }
         }
       },
       error: (error: any) => {
         Extras.load = false;
         Extras.errorMessage = "Error in parsing";
       },
+
     });
   }
+
 
   saveData() {
     this.subjectName = Subjects.getSubjectsName(this.program, this.subjectCode);

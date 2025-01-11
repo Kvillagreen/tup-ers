@@ -56,8 +56,8 @@ export class FacultyReportPetitionComponent implements OnInit {
     Extras.load = true;
     const tokenId = this.data.tokenId;
     this.facultyService.getClass(tokenId).subscribe((response: any) => {
-      if (response.success) {
-        Extras.load = false;
+      Extras.load = false;
+      if (response.success && response.data) {
         this.programList = response.data;
         this.programReportList = response.data;
         this.classList = response.data.filter((listOfClass: any) => listOfClass.program === program && listOfClass.status == 'pending' || listOfClass.status == 'approved');

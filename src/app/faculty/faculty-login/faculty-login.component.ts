@@ -66,7 +66,6 @@ export class FacultyLoginComponent implements OnInit {
         if (response.success && response.tokenId) {
           this.encrypData.encryptAndStoreData('faculty', response.faculty);
           this.router.navigate(['/faculty/dashboard']);
-          window.location.reload()
         } else {
           Extras.isError(response.message)
         }

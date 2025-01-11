@@ -1,0 +1,243 @@
+<div class="animate-fadeInNew flex flex-col items-center justify-center w-full overflow-auto h-full py-2 md:px-0 px-2">
+    <div class="w-full md:w-3/4 min-h-screen bg-[#f5f3f4] rounded-md  p-4 space-y-2">
+        <div class="flex justify-start align-center">
+            <p class="text-3xl font-bold text-gray-900">Petitions History</p>
+        </div>
+        <div class="grid grid-cols-2 justify-between align-center w-full h-full gap-2">
+            <div class="grid grid-cols-2 col-span-2 md:col-span-1 justify-between align-center w-full gap-2">
+                <button #filterDownView (click)="dataViewer.isFilterOn=!dataViewer.isFilterOn"
+                    class="w-full col-span-1 h-12 py-2 rounded-md  bg-red-500  text-gray-50  hover:bg-red-800 hover:text-gray-300">
+                    <span class="flex justify-center items-center h-8">Filter
+                        <svg width="20px" height="20px" class="ml-2 fill-white hover:fill-gray-300" viewBox="0 0 24 24"
+                            fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M15 10.5A3.502 3.502 0 0 0 18.355 8H21a1 1 0 1 0 0-2h-2.645a3.502 3.502 0 0 0-6.71 0H3a1 1 0 0 0 0 2h8.645A3.502 3.502 0 0 0 15 10.5zM3 16a1 1 0 1 0 0 2h2.145a3.502 3.502 0 0 0 6.71 0H21a1 1 0 1 0 0-2h-9.145a3.502 3.502 0 0 0-6.71 0H3z" />
+                        </svg>
+                    </span>
+                    <div *ngIf="dataViewer.isFilterOn"
+                        class="animate-swipeDown relative w-full h-[250px] top-1 z-[10] rounded-b-md bg-red-900">
+                        <div class=" grid grid-cols-1 gap-y-1 p-2 justify-start items-center">
+                            <button (click)="dataViewer.onSortChange('date_created')"
+                                class=" h-8  text-gray-50   hover:text-gray-400">Date</button>
+                            <button (click)="dataViewer.onSortChange('units')"
+                                class=" h-8 text-gray-50   hover:text-gray-400">Units</button>
+                            <button (click)="dataViewer.onSortChange('subject_code')"
+                                class=" h-8 text-gray-50  hover:text-gray-400">Subject Code</button>
+                            <button (click)="dataViewer.onSortChange('subject_name')"
+                                class=" h-8 text-gray-50   hover:text-gray-400">Subject Name</button>
+
+                            <button (click)="dataViewer.onSortChange('petition_count')"
+                                class=" h-8 text-gray-50   hover:text-gray-400">No.of students</button>
+                        </div>
+                    </div>
+                </button>
+            </div>
+            <div class="flex justify-between items-center w-full col-span-2 md:col-span-1 h-full">
+                <div class="relative w-full h-full">
+                    <input type="text" placeholder="Search Petition" [(ngModel)]="dataViewer.searchText"
+                        (ngModelChange)="dataViewer.onSearchChange($event)"
+                        class="w-full h-full outline-2 outline-red-950 border-red-950 border-2 rounded-md px-10 py-2">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="absolute top-1/2 left-3 transform -translate-y-1/2 w-5 h-5 text-red-950" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M11 4a7 7 0 100 14 7 7 0 000-14zM21 21l-4.35-4.35" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div
+            class="grid grid-cols-7 w-full h-12 bg-red-800 text-center  text-xs md:text-[16px] text-white rounded-t-md font-semibold justify-center items-center">
+            <div class="leading-none">Date</div>
+            <div class="leading-none">Subject Code</div>
+            <div class="leading-none col-span-2">Subject Name</div>
+            <div class="leading-none">Units</div>
+            <div class="leading-none">No. of Students</div>
+            <div class="leading-none">View</div>
+        </div>
+        <div *ngIf="dataViewer.getHistoryPetitionToDisplay().length!=0">
+            <div *ngFor="let class of dataViewer.getHistoryPetitionToDisplay()">
+                <div class="mt-2 grid grid-cols-7 w-full h-12 bg-red-300 text-center text-[12px] md:text-[14px] text-gray-900
+                justify-center items-center">
+                    <div class=" leading-none">
+                        <span class="text-center">{{extras.formatDate(class.date_created)}}</span>
+
+                    </div>
+                    <div class="leading-none">{{class.subject_code}}</div>
+                    <div class="col-span-2 leading-none">{{extras.toTitleCaseSafe(class.subject_name)}}</div>
+                    <div class="leading-none">{{class.units}}</div>
+                    <div [ngClass]="{'text-red-600': class.petition_count >=50,'text-green-600': class.petition_count <50 }"
+                        class="font-bold leading-none">{{class.petition_count}}</div>
+                    <div class="flex justify-center items-center w-full ">
+                        <button
+                            (click)="isView=true;
+                    subjectName=class.subject_name;dataViewer.pageIndex=0 ;modalfacultyProgram=class.program;
+                        modalsubjectCode=class.subject_code;modalStatus=class.status;
+                        modalsubjectName=class.subject_name; modalsubjectUnits=class.units;modalclassId=class.class_id;
+                        fetchPetition(class.class_id);fetchDeniedPetition()"
+                            class="w-3/4 flex gap-x-3 justify-center items-center h-full py-2 bg-red-500 hover:bg-red-800 rounded-md text-gray-50  hover:text-gray-300">
+                            <p>View</p>
+                            <span
+                                *ngIf="this.facultyType=='Faculty Staff' && class.schedule!='[[]]' && class.location !='Faculty Staff'">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                    class="size-5">
+                                    <path fill-rule="evenodd"
+                                        d="M16.403 12.652a3 3 0 0 0 0-5.304 3 3 0 0 0-3.75-3.751 3 3 0 0 0-5.305 0 3 3 0 0 0-3.751 3.75 3 3 0 0 0 0 5.305 3 3 0 0 0 3.75 3.751 3 3 0 0 0 5.305 0 3 3 0 0 0 3.751-3.75Zm-2.546-4.46a.75.75 0 0 0-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
+                                        clip-rule="evenodd" />
+                                </svg></span>
+                            <span *ngIf="this.facultyType=='Program Head' && (class.location != 'Program Head' )">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                    class="size-5">
+                                    <path fill-rule="evenodd"
+                                        d="M16.403 12.652a3 3 0 0 0 0-5.304 3 3 0 0 0-3.75-3.751 3 3 0 0 0-5.305 0 3 3 0 0 0-3.751 3.75 3 3 0 0 0 0 5.305 3 3 0 0 0 3.75 3.751 3 3 0 0 0 5.305 0 3 3 0 0 0 3.751-3.75Zm-2.546-4.46a.75.75 0 0 0-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
+                                        clip-rule="evenodd" />
+                                </svg></span>
+                            <span
+                                *ngIf="this.facultyType=='College Dean' &&  (class.location != 'Faculty Staff' && class.location != 'Program Head'&& class.location !='College Dean')">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                    class="size-5">
+                                    <path fill-rule="evenodd"
+                                        d="M16.403 12.652a3 3 0 0 0 0-5.304 3 3 0 0 0-3.75-3.751 3 3 0 0 0-5.305 0 3 3 0 0 0-3.751 3.75 3 3 0 0 0 0 5.305 3 3 0 0 0 3.75 3.751 3 3 0 0 0 5.305 0 3 3 0 0 0 3.751-3.75Zm-2.546-4.46a.75.75 0 0 0-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
+                                        clip-rule="evenodd" />
+                                </svg></span>
+                            <span
+                                *ngIf="this.facultyType=='Registrar' && (class.location != 'Faculty Staff' && class.location != 'Program Head' && class.location !='College Dean' && class.location !='Registrar')">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                    class="size-5">
+                                    <path fill-rule="evenodd"
+                                        d="M16.403 12.652a3 3 0 0 0 0-5.304 3 3 0 0 0-3.75-3.751 3 3 0 0 0-5.305 0 3 3 0 0 0-3.751 3.75 3 3 0 0 0 0 5.305 3 3 0 0 0 3.75 3.751 3 3 0 0 0 5.305 0 3 3 0 0 0 3.751-3.75Zm-2.546-4.46a.75.75 0 0 0-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
+                                        clip-rule="evenodd" />
+                                </svg></span>
+                            <span
+                                *ngIf="this.facultyType=='ADAA' && (class.location != 'Faculty Staff' && class.location != 'Program Head' && class.location !='College Dean' && class.location !='Registrar'&& class.location !='ADAA')">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                    class="size-5">
+                                    <path fill-rule="evenodd"
+                                        d="M16.403 12.652a3 3 0 0 0 0-5.304 3 3 0 0 0-3.75-3.751 3 3 0 0 0-5.305 0 3 3 0 0 0-3.751 3.75 3 3 0 0 0 0 5.305 3 3 0 0 0 3.75 3.751 3 3 0 0 0 5.305 0 3 3 0 0 0 3.751-3.75Zm-2.546-4.46a.75.75 0 0 0-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
+                                        clip-rule="evenodd" />
+                                </svg></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngFor="let class of dataViewer.multiplierCounter(dataViewer.getHistoryPetitionToDisplay().length) let i=index"
+            class=" grid grid-cols-7 w-full h-12 mt-2 bg-red-300 text-center text-[12px] md:text-[14px] 
+        justify-center items-center">
+            <div class="col-span-7 text-center text-sm md:text-lg font-semibold"
+                *ngIf="class==0 && dataViewer.getHistoryPetitionToDisplay().length==0">No data found
+            </div>
+        </div>
+        <div class="w-full flex justify-between items-center text-black">
+            <button (click)="dataViewer.prevList()"
+                class="bg-red-500 hover:bg-red-800 w-20 h-full py-2 rounded-md text-gray-50  hover:text-gray-300">
+                Prev
+            </button>
+            <button (click)="dataViewer.nextList(dataViewer.classList.length)"
+                class="bg-red-500 hover:bg-red-800 w-20 h-full py-2 rounded-md text-gray-50  hover:text-gray-300">
+                Next
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<div *ngIf="isView">
+    <div class="animate-fadeInNew fixed inset-0 flex items-center  justify-center bg-gray-900 bg-opacity-50 z-[100] ">
+        <div
+            class="w-full md:w-3/4 h-5/6 flex flex-col  bg-red-300  px-2 border-2 shadow-md shadow-red-900 border-red-400 rounded-md overflow-y-auto text-red-800 ">
+            <!-- Header Section -->
+            <div class="mt-auto sticky top-0 flex justify-between w-full bg-red-300 h-20 py-4 items-center">
+
+                <p class="text-center text-xl md:text-3xl font-bold w-full leading-none ">
+                    {{extras.toTitleCaseSafe(subjectName)}}
+                </p>
+                <!-- Close Button -->
+                <button (click)="isView=false"
+                    class="flex w-8 h-8 py-1 bg-red-500  text-gray-50  hover:bg-red-800 hover:text-gray-300 rounded-full items-center justify-center text-[16px]">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="size-4 stroke-red-50 hover:stroke-gray-300">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div
+                class="mt-auto sticky top-0 flex px-2 justify-between w-full bg-red-300  h-20 md:h-16 py-2 items-center ">
+                <p class="text-lg leading-none md:text-xl text-left font-semibold w-full">List of Students:</p>
+            </div>
+            <div class="flex flex-col w-full text-sm h-full overflow-hidden ">
+                <div class="w-full h-full  overflow-y-auto scrollbar-container ">
+                    <div
+                        class="grid grid-cols-12 h-12 overflow-hidden justify-center items-center text-center md:text-xl font-semibold ">
+                        <p
+                            class="col-span-3 p-2 h-full w-full bg-red-400 border-l-2 border-y-2 rounded-xl rounded-b-none rounded-r-none">
+                            Tupv ID</p>
+                        <p class="col-span-6 h-full w-full bg-red-400 border-y-2 p-2">Full Name</p>
+                        <p class="col-span-2 h-full w-full bg-red-400 border-y-2 p-2">
+                            Action</p>
+                        <p
+                            class="col-span-1 h-full w-full flex justify-end bg-red-400 border-y-2  p-2 border-r-2 rounded-xl rounded-l-none rounded-b-none">
+                        </p>
+                    </div>
+                    <div *ngFor="let list of dataViewer.getFacultyViewStudent() let i=index">
+                        <div
+                            class="grid grid-cols-12 bg-red-400 h-12 mt-2 text-center text-xs md:text-xl font-semibold">
+                            <div class="col-span-3 flex justify-center items-center">
+                                <p class="">{{list.tupv_id}}</p>
+                            </div>
+                            <div class="col-span-6 flex justify-center items-center">
+                                <p class="">{{extras.toTitleCaseSafe(list.first_name+' '+list.last_name)}}</p>
+                            </div>
+                            <div class="col-span-2 h-full w-full text-lg flex justify-center items-center">
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="dataViewer.getFacultyViewStudent().length<10">
+                        <div *ngFor="let class of dataViewer.multiplierCounter(dataViewer.getFacultyViewStudent().length) let i=index"
+                            class=" grid grid-cols-7 w-full h-12 mt-2 bg-red-400 text-center text-[12px] md:text-[14px] 
+                    justify-center items-center">
+                            <div class="col-span-7 text-center text-sm md:text-lg font-semibold"
+                                *ngIf="class==0 && dataViewer.getFacultyViewStudent().length==0">No
+                                data found
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pt-2">
+                </div>
+                <div class="mt-auto sticky bottom-0 bg-red-300 overflow-auto scrollbar-container z-[10] y-2 h-80">
+                    <div class="grid grid-cols-12 text-center  md:text-xl font-semibold ">
+                        <p class="col-span-12 text-lg text-left font-semibold">Denied Students:</p>
+                        <p class="col-span-3">Tupv ID</p>
+                        <p class="col-span-6">Full Name</p>
+                        <p class="col-span-3">Action</p>
+                    </div>
+                    <div *ngIf="petitionListDenied.length!=0">
+                        <div *ngFor="let list of petitionListDenied let i=index">
+                            <div class="grid grid-cols-12 text-center  font-semibold text-xs md:text-lg">
+                                <div class="col-span-3 flex justify-center items-center">
+                                    <p class="">{{list.tupv_id}}</p>
+                                </div>
+                                <div class="col-span-6 flex justify-center items-center">
+                                    <p class="">{{extras.toTitleCaseSafe(list.first_name+'
+                                        '+list.last_name)}}</p>
+                                </div>
+                                <div class="col-span-3 h-full w-full flex justify-center items-center">
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="petitionListDenied.length==0">
+                        <div class="grid grid-cols-12 text-center text-sm md:text-lg">
+                            <div class="col-span-12 flex justify-center items-center">
+                                <p class="text-sm md:text-lg font-semibold mt-2">No Data Found</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

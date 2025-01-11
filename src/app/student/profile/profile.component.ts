@@ -170,7 +170,7 @@ export class ProfileComponent implements OnInit {
     });
   }
   logout() {
-    this.cookieService.delete('student')
+    this.encryptData.logoutDelete('student');
     this.router.navigate(['/login']);
   }
 }

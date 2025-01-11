@@ -1,5 +1,4 @@
 <?php
-// registration.php
 
 date_default_timezone_set('Asia/Manila');
 header('Content-Type: application/json');
@@ -95,7 +94,7 @@ try {
             exit();
         }
     }
-    $insertClass = $conn->prepare("INSERT INTO `tbl_class` ( `subject_code`, `subject_name`, `units`, `schedule`,`status`,`program`, `date_created` ) VALUES ( ?,?, ?, ?, ?,?,?)");
+    $insertClass = $conn->prepare("INSERT INTO `tbl_class` ( `subject_code`, `subject_name`, `units`, `schedule`,`status`,`program`, `date_created`, `location` ) VALUES ( ?,?, ?, ?, ?,?,?,'Program Head')");
     $insertClass->bind_param("sssssss", $subjectCode, $subjectName, $subjectUnits, $schedule, $status, $program, $date);
 
     if ($insertClass->execute()) {

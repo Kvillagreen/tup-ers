@@ -1,1 +1,175 @@
-<p>faculty-profile works!</p>
+<div class="animate-fadeInNew flex flex-col items-center justify-center w-full h-full py-2 md:px-0 px-2 ">
+    <div class="w-full md:w-3/4 min-h-screen bg-[#f5f3f4] rounded-md  p-4 space-y-4">
+        <div class="flex justify-start align-center">
+            <p class="text-3xl font-bold text-gray-900">Faculty Profile</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-12 h-full w-full gap-x-2 gap-y-2">
+            <div
+                class="col-span-1 md:col-span-4 py-8 bg-red-900 flex flex-col justify-center items-center h-full w-full space-y-4">
+                <div class="size-40 rounded-sm  flex justify-center items-center">
+                    <img src="../../../assets/images/studentsImage.png"
+                        class=" bg-white object-contain w-40 h-full overflow-hidden rounded-sm border-2 border-red-50">
+                </div>
+                <div class="flex justify-center items-center text-center w-full text-gray-50">
+                    <p>
+                        <span class="font-semibold">{{facultyType}}</span>
+                    </p>
+                </div>
+            </div>
+            <div
+                class="col-span-1 md:col-span-8 grid grid-cols-1 bg-transparent gap-y-2 gap-x-2 justify-start leading-none items-start h-full w-full">
+                <div class=" bg-red-900 flex flex-col justify-start items-start h-full w-full p-4 space-y-4">
+                    <div class="grid grid-cols-12 w-full text-gray-50">
+                        <label class="w-full col-span-4 md:col-span-3">Faculty Name:</label>
+                        <p
+                            class="col-span-8 md:col-span-9 bg-transparent outine-none w-full border-none focus:outline-none">
+                            {{extras.toTitleCaseSafe(fullName)}}
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-12 w-full text-gray-50">
+                        <label class="w-full col-span-4 md:col-span-3">Faculty Program:</label>
+                        <p
+                            class="col-span-8 md:col-span-9 bg-transparent outine-none w-full border-none focus:outline-none">
+                            {{extras.toTitleCaseSafe(program)}}
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-12 w-full text-gray-50">
+                        <label class="w-full col-span-4 md:col-span-3">Creation Date:</label>
+                        <p
+                            class="col-span-8 md:col-span-9 bg-transparent outine-none w-full border-none focus:outline-none">
+                            {{extras.formatDate(dateCreated)}}
+                        </p>
+                    </div>
+                </div>
+                <div class=" bg-red-900 flex flex-col justify-start items-start h-full w-full p-4 space-y-2">
+                    <div class="grid grid-cols-12 w-full text-gray-50 gap-y-0">
+                        <label class="w-full col-span-4 md:col-span-3 py-4">Email:</label>
+                        <div class="flex col-span-8 md:col-span-9 items-center w-full">
+                            <input class=" bg-transparent outline-none w-full border-none focus:outline-none"
+                                [readonly]="!isEditableEmail" [(ngModel)]="email">
+                            <button class="ml-2 bg-red-500 text-white rounded-md p-2 hover:bg-red-700"
+                                (click)="isEditableEmail=!isEditableEmail">
+                                <img *ngIf="!isEditableEmail" src="../../../assets/svg/edit.svg">
+                                <img *ngIf="isEditableEmail" (click)="saveEmail()" src="../../../assets/svg/save.svg">
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-12 w-full text-gray-50 gap-y-0">
+                        <label class="w-full col-span-4 md:col-span-3 py-4">Edit Password:</label>
+                        <div class="flex col-span-8 md:col-span-9 items-center w-full">
+                            <div class="w-full"></div>
+                            <button class="ml-2 bg-red-500 text-white rounded-md p-2 hover:bg-red-700"
+                                (click)="isEditablePassword=!isEditablePassword">
+                                <img *ngIf="!isEditablePassword" src="../../../assets/svg/edit.svg">
+                                <img *ngIf="isEditablePassword" (click)="saveEmail()"
+                                    src="../../../assets/svg/save.svg">
+                            </button>
+                        </div>
+                    </div>
+                    <div *ngIf="!isEditablePassword" class="w-full h-32">
+                    </div>
+                    <div *ngIf="isEditablePassword" class="w-full h-32">
+                        <div class="grid grid-cols-12 w-full text-gray-50 pb-2">
+                            <label class="w-full col-span-4 md:col-span-3 py-2">Current Password:</label>
+                            <div class="flex col-span-8 md:col-span-9 items-center">
+                                <input type="password"
+                                    class=" bg-transparent outline-none w-full border-none focus:outline-none"
+                                    [type]="showCurrentPassword ? 'text' : 'password'" placeholder="Current Password"
+                                    [(ngModel)]="currentPassword">
+                                <button class="ml-2 bg-red-500 text-white rounded-md p-2 hover:bg-red-700"
+                                    (click)="showCurrentPassword=!showCurrentPassword">
+                                    <i class="text-white"
+                                        [class]="showCurrentPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-12 w-full text-gray-50">
+                            <label class="w-full col-span-4 md:col-span-3 py-2">New Password:</label>
+                            <div class="flex col-span-8 md:col-span-9 items-center">
+                                <input type="password"
+                                    class=" bg-transparent outline-none w-full border-none focus:outline-none"
+                                    [type]="showNewPassword ? 'text' : 'password'" placeholder="New Password"
+                                    [(ngModel)]="newPassword">
+                                <button class="ml-2 bg-red-500 text-white rounded-md p-2 hover:bg-red-700"
+                                    (click)="showNewPassword=!showNewPassword">
+                                    <i class="text-white"
+                                        [class]="showNewPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                                </button>
+                            </div>
+                            <div class="flex col-span-12 h-2 text-[12px] w-full text-left items-center">
+                                <div *ngIf="strengthChecker(newPassword)" class="border-b-4 h-2 w-8" [ngClass]="{
+                                   'border-red-600 w-8': strengthChecker(newPassword) <= 2,
+                                   'border-orange-600 w-16': strengthChecker(newPassword) === 3,
+                                   'border-yellow-600 w-24': strengthChecker(newPassword) > 3
+                                 }"></div>
+                                <span *ngIf=" strengthChecker(newPassword)<=2 && strengthChecker(newPassword)!=0"
+                                    class="pl-2">Weak</span>
+                                <span *ngIf=" strengthChecker(newPassword)==4 || strengthChecker(newPassword)==3 "
+                                    class="pl-2">Moderate</span><span *ngIf=" strengthChecker(newPassword)>4"
+                                    class="pl-2">Moderate</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-12 w-full text-gray-50">
+                            <label class="w-full col-span-4 md:col-span-3 py-2">Confirm Password:</label>
+                            <div class="flex col-span-8 md:col-span-9 items-center">
+                                <input type="password"
+                                    class=" bg-transparent outline-none w-full border-none focus:outline-none"
+                                    [type]="showConfirmPassword ? 'text' : 'password'" placeholder="Current Password"
+                                    [(ngModel)]="confirmPassword">
+                                <button class="ml-2 bg-red-500 text-white rounded-md p-2 hover:bg-red-700"
+                                    (click)="showConfirmPassword=!showConfirmPassword">
+                                    <i class="text-white"
+                                        [class]="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                                </button>
+                            </div>
+                            <div class="flex col-span-12 h-2 text-[12px] w-full text-left items-center">
+                                <div *ngIf="strengthChecker(confirmPassword)" class="border-b-4 h-2 w-8" [ngClass]="{
+                                   'border-red-600 w-8': strengthChecker(confirmPassword) <= 2,
+                                   'border-orange-600 w-16': strengthChecker(confirmPassword) === 3,
+                                   'border-yellow-600 w-24': strengthChecker(confirmPassword) > 3
+                                 }"></div>
+                                <span
+                                    *ngIf=" strengthChecker(confirmPassword)<=2 && strengthChecker(confirmPassword)!=0"
+                                    class="pl-2">Weak</span>
+                                <span
+                                    *ngIf=" strengthChecker(confirmPassword)==4 || strengthChecker(confirmPassword)==3 "
+                                    class="pl-2">Moderate</span><span *ngIf=" strengthChecker(confirmPassword)>4"
+                                    class="pl-2">Moderate</span>
+                                <span class="ml-2 font-semibold"><input hidden
+                                        *ngIf="passworChecker()">{{passwordError}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center w-full pt-6">
+                        <button (click)="updateAccountDetails()"
+                            class="w-40 h-8 rounded-md text-gray-50 hover:text-gray-300 hover:bg-red-700 bg-red-500 ">Save
+                            Changes</button>
+                        <div
+                            class=" h-2 w-full text-[12px] text-right justify-center items-center text-gray-50 font-semibold ">
+                            <p>{{extras.errorMessage}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="isLoggedIn">
+    <div class="animate-fadeInNew fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-[100]">
+        <div
+            class="w-[350px] h-[350px] bg-red-300 border-2 border-red-400 rounded-md text-red-900 p-8 flex flex-col align-center relative">
+            <!-- Header Section -->
+            <div class="flex w-full justify-center items-center text-lg font-semibold h-[200px]">
+                <p>Please relogin your account to verify your identity.</p>
+            </div>
+            <div class="flex justify-end items-center w-full  font-semibold">
+                <button (click)="logout()"
+                    class="w-32 px-2 py-3 h-full bg-red-600 text-gray-50 hover:text-gray-300  hover:bg-red-900 rounded-md">
+                    Okay
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

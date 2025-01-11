@@ -1,4 +1,4 @@
-<div class="flex flex-col items-center justify-center w-full h-full py-2 md:px-0 px-2">
+<div class="animate-fadeInNew flex flex-col items-center justify-center w-full h-full py-2 md:px-0 px-2">
   <div class="w-full md:w-3/4 min-h-screen bg-[#f5f3f4] rounded-md  p-4 space-y-2">
     <div class="flex justify-start align-center">
       <p class="text-3xl font-bold text-gray-900">Applied Petitions</p>
@@ -23,7 +23,8 @@
               <path fill-rule="evenodd" clip-rule="evenodd"
                 d="M15 10.5A3.502 3.502 0 0 0 18.355 8H21a1 1 0 1 0 0-2h-2.645a3.502 3.502 0 0 0-6.71 0H3a1 1 0 0 0 0 2h8.645A3.502 3.502 0 0 0 15 10.5zM3 16a1 1 0 1 0 0 2h2.145a3.502 3.502 0 0 0 6.71 0H21a1 1 0 1 0 0-2h-9.145a3.502 3.502 0 0 0-6.71 0H3z" />
             </svg></span>
-          <div *ngIf="dataViewer.isFilterOn" class="relative w-full h-[250px] top-1 z-[10] rounded-b-md bg-red-900">
+          <div *ngIf="dataViewer.isFilterOn"
+            class="animate-swipeDown relative w-full h-[250px] top-1 z-[10] rounded-b-md bg-red-900">
             <div class=" grid grid-cols-1 gap-y-1 p-2 justify-start items-center">
               <button (click)="dataViewer.onSortChange('date_created')"
                 class=" h-8  text-gray-50   hover:text-gray-400">Date
@@ -57,7 +58,7 @@
     </div>
     <div
       class="grid grid-cols-6 w-full h-12 bg-red-800 text-center  text-xs md:text-[16px] text-white rounded-t-md font-semibold justify-center items-center">
-      <div class="">Date Created</div>
+      <div class="">Date</div>
       <div class="">Subject Code</div>
       <div class="col-span-2">Subject Name</div>
       <div class="">Status</div>
@@ -71,7 +72,7 @@
         <div class="">{{class.subject_code}}</div>
         <div class="col-span-2">{{extras.toTitleCaseSafe(class.subject_name)}}</div>
         <div class="font-bold"
-          [ngClass]="{'text-orange-700 ':class.status=='pending' ,'text-red-700 ':class.status=='denied','text-green-700 ':class.status=='approved'}">
+          [ngClass]="{'text-orange-700 ':class.status=='pending' ,'text-red-700 ':class.status=='denied','text-green-700 ':class.status=='approved'||class.status=='finished'}">
           {{extras.toTitleCaseSafe(class.status)}}</div>
         <div class="flex justify-center items-center">
           <button (click)="isLocate=!isLocate; this.petitionTracker=extras.convertJson(class.petition_tracker)"
@@ -89,7 +90,8 @@
     </div>
 
     <div *ngIf="dataViewer.multiplierCounter(dataViewer.getTrackPetitionToDisplay().length).length !=0">
-      <div *ngFor="let class of dataViewer.multiplierCounter(dataViewer.getTrackPetitionToDisplay().length) let i=index" class="mt-2 grid grid-cols-7 w-full h-12 bg-red-300 text-center text-[12px] md:text-[14px] text-gray-900
+      <div *ngFor="let class of dataViewer.multiplierCounter(dataViewer.getTrackPetitionToDisplay().length) let i=index"
+        class="mt-2 grid grid-cols-7 w-full h-12 bg-red-300 text-center text-[12px] md:text-[14px] text-gray-900
           justify-center items-center">
         <div class="col-span-7 font-semibold" *ngIf="class==0 && dataViewer.getTrackPetitionToDisplay().length==0">No
           data found</div>
@@ -109,20 +111,24 @@
 </div>
 
 <div *ngIf="isLocate">
-  <div class="animate-fadeIn fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-[100]">
-    <div class="w-[350px] h-5/6 bg-red-300 rounded-md text-red-800 p-4 flex flex-col align-center relative">
+  <div class="animate-fadeInNew fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-[100]">
+    <div
+      class="w-[350px] h-5/6 bg-red-300 rounded-md overflow-y-auto scrollbar-container text-red-800 flex flex-col align-center relative">
       <!-- Header Section -->
-      <div class="flex w-full justify-center items-center">
-        <p class="text-left text-xl font-bold">Petition Tracker</p>
+      <div
+        class="fixed mr-2 rounded-t-md mt-auto h-12 z-[120] bg-red-300 flex  border-b-2 border-red-600 w-[350px] justify-center items-center">
+        <div class="w-full h-12 flex justify-center items-center py-3">
+          <p class=" text-xl flex font-bold mt-auto ">Petition Tracker</p>
+        </div>
         <!-- Close Button -->
         <button (click)="isLocate=!isLocate"
-          class="absolute top-2 right-2 w-8 h-8 bg-red-500 rounded-full text-white flex items-center justify-center text-[16px]">
+          class="absolute top-2 right-2 w-8 h-8 hover:bg-red-600 bg-red-500 rounded-full text-white flex items-center justify-center text-[16px]">
           ×
         </button>
       </div>
       <!-- Timeline Section -->
       <div *ngIf="petitionTracker && petitionTracker.length > 0">
-        <div class="flex flex-col w-full h-full mt-4">
+        <div class="flex flex-col w-full h-full mt-12 px-4">
           <!-- Step 1 -->
           <div *ngFor="let items of petitionTracker">
             <div class="relative top-16 -left-[7px] size-4 rounded-full bg-white z-[110]"></div>
@@ -143,13 +149,6 @@
       <ng-template #noData>
         <p>No petition tracker data available.</p>
       </ng-template>
-    </div>
-
-    <div class="hidden absolute inset-0 flex-col items-center justify-center  h-full w-full z-[100]">
-      <!-- Spinning Loader -->
-      <img src="/assets/images/tupSeal.png" class="animate-spin-5s rounded-full h-20 w-20 " />
-      <!-- Loading Text -->
-      <p class="mt-4 font-bold text-xs text-gray-50 animate-pulse">loading...</p>
     </div>
   </div>
 </div>

@@ -21,6 +21,7 @@ import { EncryptData } from '../../common/libraries/encrypt-data';
 export class ReceivePetitionComponent implements OnInit, AfterViewInit {
   constructor(private studentService: StudentService, private encryptData: EncryptData,
     private cookieService: CookieService, private renderer: Renderer2) { }
+  private clickListener: (() => void) | undefined = undefined;
   isLocate: boolean = false;
   petitionTracker: any[] = [];
   extras = Extras;
@@ -29,16 +30,16 @@ export class ReceivePetitionComponent implements OnInit, AfterViewInit {
   @ViewChild('filterDownView') filterDownView!: ElementRef;
 
   fetchTrackPetition() {
-
     const data = this.encryptData.decryptData('student') ?? ''
     const tokenId = data.tokenId;
     const studentId = data.studentId;
     this.studentService.trackPetition(tokenId, studentId).subscribe((response: any) => {
-      dataViewer.receiveList = response.data.filter((listOfTrack: any) => listOfTrack.status === 'approved');
+      if (response.data && response.success) {
+        dataViewer.receiveList = response.data.filter((listOfTrack: any) => listOfTrack.status === 'approved');
+      }
     });
   }
 
-  private clickListener: (() => void) | undefined = undefined;
 
 
   ngAfterViewInit() {
@@ -59,6 +60,13 @@ export class ReceivePetitionComponent implements OnInit, AfterViewInit {
     }
   }
 
+  downloadForm(petitionId: string) {
+    const data = this.encryptData.decryptData('student') ?? ''
+    const tokenId = data.tokenId;
+    const firstName = data.firstName;
+    const lastName = data.lastName;
+    this.studentService.downloadForm(petitionId, tokenId, firstName, lastName)
+  }
 
   ngOnInit() {
     this.fetchTrackPetition();

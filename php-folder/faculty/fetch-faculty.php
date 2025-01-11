@@ -14,7 +14,7 @@ include '../connection.php';
 
 // Get POST data
 $data = json_decode(file_get_contents("php://input"), true);
-$tokenId = $data['tokenId'] ?? 'caa1040f510863b6dec5faf0c4eff13b477e75185eb42';
+$tokenId = $data['tokenId'] ?? null;
 if (!$tokenId) {
     include '../fields-required.html';
     echo json_encode([

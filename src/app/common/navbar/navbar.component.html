@@ -38,7 +38,7 @@
                 </svg></span></div>
     </div>
     <div *ngIf="settingsDropdown"
-        class=" absolute hidden md:flex flex-col text-center px-2 text-white py-5 top-16 right-4 rounded-md h-[350px] md:h-[285px] w-[200px] bg-[#c1121f] z-10 shadow-md shadow-gray-800">
+        class=" animate-swipeDown absolute hidden md:flex flex-col text-center px-2 text-white py-5 top-16 right-4 rounded-md h-[350px] md:h-[285px] w-[200px] bg-[#c1121f] z-10 shadow-md shadow-gray-800">
         <div
             class="absolute -top-3 right-2 w-0 h-0 border-l-[20px] border-r-[20px] border-b-[20px] border-l-transparent border-r-transparent border-[#c1121f]">
         </div>
@@ -73,7 +73,7 @@
         </div>
     </div>
     <div #sideBar *ngIf="isSideBarHidden"
-        class="md:hidden fixed flex flex-col text-center px-2 text-white py-5 top-0 left-0 rounded-md min-h-screen w-[250px] bg-red-800 z-10 shadow-md shadow-gray-800">
+        class="animate-slide-in-right md:hidden fixed flex flex-col text-center px-2 text-white py-5 top-0 left-0 rounded-md min-h-screen w-[250px] bg-red-800 z-10 shadow-md shadow-gray-800">
         <p class="text-white text-lg font-semibold">{{extras.toTitleCaseSafe(fullName)}}</p>
         <p class="text-sm">{{program}}</p>
         <hr class="mt-[12px]">
@@ -136,7 +136,7 @@
             PHILIPPINES</p>
     </div>
     <div class="hidden md:flex w-[200px] md:w-full justify-end space-x-2">
-        <a [routerLink]="['/faculty/dashboard']" routerLinkActive="active" class="navButton">
+        <a *ngIf="facultyType=='Faculty Staff'" [routerLink]="['/faculty/dashboard']" routerLinkActive="active" class="navButton">
             <p class="leading-none">Home</p>
         </a>
         <a [routerLink]="['/faculty/receive-petition']" routerLinkActive="active" class="hidden">
@@ -165,7 +165,7 @@
                 </svg></span></div>
     </div>
     <div *ngIf="settingsDropdown"
-        class="absolute hidden md:flex flex-col text-center px-2 text-white py-5 top-16 right-4 rounded-md h-[350px] md:h-[280px] w-[200px] bg-[#c1121f] z-10 shadow-md shadow-gray-800">
+        class="animate-swipeDown absolute hidden md:flex flex-col text-center px-2 text-white py-5 top-16 right-4 rounded-md h-[350px] md:h-[280px] w-[200px] bg-[#c1121f] z-10 shadow-md shadow-gray-800">
         <div
             class="absolute -top-3 right-2 w-0 h-0 border-l-[20px] border-r-[20px] border-b-[20px] border-l-transparent border-r-transparent border-[#c1121f]">
         </div>
@@ -183,17 +183,24 @@
                     <img src="/assets/svg/report.svg"><span>Report</span>
                 </a>
             </div>
+            <div>
+                <a [routerLink]="['/faculty/faculty-history']" routerLinkActive=""
+                    class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-center space-x-2 items-center">
+                    <img src="/assets/svg/history.svg"><span>History</span>
+                </a>
+            </div>
             <a (click)="isLoggedIn=!isLoggedIn"
                 class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-center space-x-2 items-center"><img
                     src="/assets/svg/logout.svg"><span>Logout</span></a>
         </div>
     </div>
     <div #sideBar *ngIf="isSideBarHidden"
-        class="md:hidden fixed flex flex-col text-center px-2 text-white py-5 top-0 left-0 rounded-md min-h-screen w-[250px] bg-red-800 z-10 shadow-md shadow-gray-800">
+        class="md:hidden animate-slide-in-right fixed flex flex-col text-center px-2 text-white py-5 top-0 left-0 rounded-md min-h-screen w-[250px] bg-red-800 z-10 shadow-md shadow-gray-800">
         <p class="text-white text-lg font-semibold">{{facultyFullName}}</p>
         <p class="text-sm">{{facultyProgram}}</p>
         <hr class="mt-[12px]">
-        <div class="flex flex-col justify-between items-center w-full space-y-2 pt-2"><a
+        <div class="flex flex-col justify-between items-center w-full space-y-2 pt-2">
+            <a *ngIf="facultyType=='Faculty Staff'"
                 [routerLink]="['/faculty/dashboard']" routerLinkActive=""
                 class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
                 <img src="/assets/svg/home.svg"><span>Home</span>
@@ -221,6 +228,10 @@
                 class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
                 <img src="/assets/svg/report.svg"><span>Student Management</span>
             </a>
+            <a [routerLink]="['/faculty/faculty-history']" routerLinkActive=""
+                class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
+                <img src="/assets/svg/history.svg"><span>History</span>
+            </a>
             <a *ngIf="restrictService.isAdminViewable()" [routerLink]="['/faculty/report']" routerLinkActive=""
                 class="w-full hover:bg-red-300 hover:rounded-sm py-2 flex justify-start space-x-2 px-4 items-center">
                 <img src="/assets/svg/report.svg"><span>Report</span>
@@ -244,7 +255,7 @@
 
 <!--Modal everytime user select logout this is the one who prompt, for verification purpose -->
 <div *ngIf="isLoggedIn">
-    <div class="animate-fadeIn fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-[100]">
+    <div class="animate-fadeInNew fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-[100]">
         <div
             class="w-[350px] h-[350px] bg-red-300 border-2 shadow-md shadow-red-900 border-red-400 rounded-md text-red-900 p-8 flex flex-col align-center relative">
             <div class="flex w-full justify-center items-center text-center text-lg font-semibold h-[200px]">
@@ -265,7 +276,7 @@
 </div>
 
 <div *ngIf="autoLogout">
-    <div class="animate-fadeIn fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-[100]">
+    <div class="animate-fadeInNew fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-[100]">
         <div
             class="w-[350px] h-[350px] bg-red-300 border-2 shadow-md shadow-red-900 border-red-400 rounded-md text-red-900 p-8 flex flex-col align-center relative">
             <div class="flex w-full justify-center items-center text-center text-lg font-semibold h-[200px]">
@@ -284,6 +295,6 @@
 
 <div *ngIf="isSideBarHidden">
     <div
-        class="md:hidden animate-fadeIn fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-[1]">
+        class="md:hidden animate-fadeInNew fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-[1]">
     </div>
 </div>

@@ -22,6 +22,7 @@ import { HistoryComponent } from './student/history/history.component';
 import { NotificationComponent } from './student/notification/notification.component';
 import { StudentManagementComponent } from './faculty/student-management/student-management.component';
 import { FacultyManagementComponent } from './faculty/faculty-management/faculty-management.component';
+import { FacultyHistoryComponent } from './faculty/faculty-history/faculty-history.component';
 export const routes: Routes = [
   // Student routes
   {
@@ -53,6 +54,7 @@ export const routes: Routes = [
       { path: 'dashboard', component: FacultyDashboardComponent, canActivate: [AuthAdminGuard] },
       { path: 'student-management', component: StudentManagementComponent, canActivate: [AuthAdminGuard] },
       { path: 'faculty-management', component: FacultyManagementComponent, canActivate: [AuthAdminGuard] },
+      { path: 'faculty-history', component: FacultyHistoryComponent, canActivate: [AuthAdminGuard] },
       { path: 'report', component: FacultyReportPetitionComponent, canActivate: [AuthAdminGuard] },
       { path: '**', redirectTo: '/faculty/login', pathMatch: 'full' },
     ]

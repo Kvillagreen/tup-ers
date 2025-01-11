@@ -45,6 +45,7 @@ export class ForgetPasswordComponent implements OnInit {
   }
 
   onSubmit() {
+    this.tupvId=this.tupvId.toLocaleUpperCase()
     Extras.load = true;
     if (!this.otp || !this.tupvId) {
       Extras.isError("All fields are required");
