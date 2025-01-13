@@ -11,8 +11,8 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. Only suit
 
 ## Owners and Conditions
 
-This is owned solely by the ECE students of TUP-Visayas campus. The entire codes, studies used in the developement is programmed carefully and with cosideration. Any asssets used as well as the images, and icons are belongs to rightful owner.
+This project is the exclusive property of the Electronics and Communications Engineering (ECE) students of the Technological University of the Philippines - Visayas Campus. All code and research utilized in its development were meticulously crafted with diligence and precision. Additionally, all assets, including images and icons, are credited to and remain the property of their rightful owners.
 
-# Angular Version
+## Angular Version
 
 version 17.3.11.
