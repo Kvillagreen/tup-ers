@@ -105,8 +105,6 @@ export class StudentService {
         window.URL.revokeObjectURL(downloadUrl); // Clean up URL reference
       },
       (error) => {
-        console.error('Error downloading the form:', error);
-        alert('Failed to download the form. Please try again later.');
       }
     );
   }

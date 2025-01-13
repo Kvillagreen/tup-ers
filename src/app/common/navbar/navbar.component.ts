@@ -101,7 +101,7 @@ export class NavbarComponent implements AfterViewInit, OnInit, OnDestroy, DoChec
     if (!data) {
       this.encryptData.encryptAndStoreData('web', this.dataNotLoad);
     }
-    
+
     this.notificationService.fetchNotification();
     const dataStudent = this.encryptData.decryptData('faculty') ?? '';
     this.router.events.subscribe((event) => {
@@ -124,8 +124,7 @@ export class NavbarComponent implements AfterViewInit, OnInit, OnDestroy, DoChec
   }
 
   toggleDropdown(state: boolean): void {
-    this.isSideBarHidden = state;
-    console.log(this.isSideBarHidden) // Open or close dropdown based on hover state
+    this.isSideBarHidden = state;// Open or close dropdown based on hover state
   }
 
 
@@ -168,22 +167,26 @@ export class NavbarComponent implements AfterViewInit, OnInit, OnDestroy, DoChec
     const dataStudent = this.encryptData.decryptData('student') ?? '';
 
 
-    if (dataStudent.userType == 'student' && dataStudent.isLoggedIn == true) {
-      this.userType = dataStudent.userType;
-      this.tupvId = dataStudent.tupvId;
-      this.fullName = `${dataStudent.firstName}` + ' ' + `${dataStudent.lastName}`;
-      this.email = dataStudent.email;
-      this.program = dataStudent.program;
+    if (this.router.url.includes('/faculty')) {
+      if (dataFaculty.userType == 'faculty' && dataFaculty.facultyIsLoggedIn == true) {
+        this.userType = dataFaculty.userType;
+        this.facultyFullName = `${dataFaculty.firstName}` + ' ' + `${dataFaculty.lastName}`;
+        this.facultyEmail = dataFaculty.email;
+        this.facultyType = dataFaculty.facultyType;
+        this.facultyStatus = dataFaculty.status;
+        this.facultyProgram = dataFaculty.program;
+      }
+    } else {
+      if (dataStudent.userType == 'student' && dataStudent.isLoggedIn == true) {
+        this.userType = dataStudent.userType;
+        this.tupvId = dataStudent.tupvId;
+        this.fullName = `${dataStudent.firstName}` + ' ' + `${dataStudent.lastName}`;
+        this.email = dataStudent.email;
+        this.program = dataStudent.program;
+        return;
+      }
     }
 
-    if (dataFaculty.userType == 'faculty' && dataFaculty.facultyIsLoggedIn == true) {
-      this.userType = dataFaculty.userType;
-      this.facultyFullName = `${dataFaculty.firstName}` + ' ' + `${dataFaculty.lastName}`;
-      this.facultyEmail = dataFaculty.email;
-      this.facultyType = dataFaculty.facultyType;
-      this.facultyStatus = dataFaculty.status;
-      this.facultyProgram = dataFaculty.program;
-    }
   }
 
   checkLength() {
@@ -197,12 +200,12 @@ export class NavbarComponent implements AfterViewInit, OnInit, OnDestroy, DoChec
   logout() {
     this.isSideBarHidden = false;
     this.settingsDropdown = false;
-    if (this.userType == 'student') {
-      this.encryptData.logoutDelete('student')
-      this.router.navigate(['/login']);
-    } else {
+    if (this.router.url.includes('/faculty')) {
       this.encryptData.logoutDelete('faculty')
       this.router.navigate(['/faculty/login']);
+    } else {
+      this.encryptData.logoutDelete('student')
+      this.router.navigate(['/login']);
     }
   }
 }

@@ -60,11 +60,12 @@
                                 convertTimeTo12Hour(sched.toTime) }}
                             </p>
                         </div>
-                        <div *ngIf="selectedDateSchedule.length === 0" class=" mt-4">
-                            <div class="mt-2 p-2 border rounded-md font-semibold bg-gray-50">
-                                <p>No schedule for the selected date.</p>
-                            </div>
-                        </div>
+
+                    </div>
+                </div>
+                <div *ngIf="selectedDateSchedule.length === 0" class=" mt-4">
+                    <div class="mt-2 p-2 border rounded-md font-semibold bg-gray-50">
+                        <p>No schedule for the selected date.</p>
                     </div>
                 </div>
             </div>

@@ -33,7 +33,7 @@
                         </svg>
                     </div>
                     <div class="w-full flex justify-between gap-x-2">
-                        <input [type]="showPassword ? 'text' : 'password'" id="password" name="password"
+                        <input autocomplete="password" [type]="showPassword ? 'text' : 'password'" id="password" name="password"
                             [(ngModel)]="password"
                             class="w-full outline-none border-none h-full text-red-50 placeholder:text-red-50 font-semibold bg-transparent"
                             required placeholder="Password" />

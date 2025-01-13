@@ -92,7 +92,7 @@
                         </svg>
                     </div>
                     <div class="w-full flex justify-between gap-x-2">
-                        <input required [type]="showPassword ? 'text' : 'password'" id="password" name="password"
+                        <input autocomplete="Password" required [type]="showPassword ? 'text' : 'password'" id="password" name="password"
                             [(ngModel)]="password"
                             class="w-full outline-none border-none h-full text-red-50 placeholder:text-red-50 font-semibold bg-transparent"
                             required placeholder="Password" />
@@ -114,7 +114,7 @@
                                     clip-rule="evenodd" />
                             </svg>
                         </div>
-                        <input required [type]="showConfirmPassword ? 'text' : 'password'" id="passwordConfirm"
+                        <input autocomplete="Confirm password" required [type]="showConfirmPassword ? 'text' : 'password'" id="passwordConfirm"
                             name="passwordConfirm" [(ngModel)]="passwordConfirm"
                             class="w-full outline-none border-none h-full text-red-50 placeholder:text-red-50 font-semibold bg-transparent"
                             required placeholder="Confirm Password" />
