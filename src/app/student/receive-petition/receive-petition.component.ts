@@ -60,12 +60,13 @@ export class ReceivePetitionComponent implements OnInit, AfterViewInit {
     }
   }
 
-  downloadForm(petitionId: string) {
+  downloadForm(petitionId: string, capacity: number) {
     const data = this.encryptData.decryptData('student') ?? ''
     const tokenId = data.tokenId;
     const firstName = data.firstName;
+    const studentId = data.studentId;
     const lastName = data.lastName;
-    this.studentService.downloadForm(petitionId, tokenId, firstName, lastName)
+    this.studentService.downloadForm(petitionId, tokenId, firstName, lastName, capacity, studentId)
   }
 
   ngOnInit() {

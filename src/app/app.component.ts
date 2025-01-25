@@ -30,7 +30,7 @@ export class AppComponent implements OnInit {
     });
   }
 
-  /*
+  
   @HostListener('document:contextmenu', ['$event'])
   disableRightClick(event: MouseEvent): void {
     event.preventDefault();
@@ -45,7 +45,7 @@ export class AppComponent implements OnInit {
       event.preventDefault();
     }
   }
-  */
+  
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
     if (event.key === 'Tab') {
@@ -58,13 +58,13 @@ export class AppComponent implements OnInit {
     }
   }
   ngOnInit(): void {
-    /*setInterval(() => {
+    setInterval(() => {
       const before = new Date();
       debugger;
       const after = new Date();
       if (after.getTime() - before.getTime() > 100) {
       }
     }, 1000);
-    */
+    
   }
 }

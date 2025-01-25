@@ -48,6 +48,7 @@ try {
             p.date_created,
             c.subject_name,
             c.subject_code,
+            c.capacity,
             c.program,
             c.units
         FROM tbl_petition p
@@ -72,6 +73,7 @@ try {
                 'subject_code' => $row['subject_code'],
                 'program' => $row['program'],
                 'units' => $row['units'],
+                'capacity' => $row['capacity'],
                 'status' => $row['status'],
                 'date_created' => $row['date_created'],
                 'petition_tracker' => $row['petition_tracker']
