@@ -28,14 +28,15 @@ export class CalendarComponent implements OnInit {
   numberOfHoursUnits: number = 0;
   numberOfHours: number = 0;
   clickDate: boolean = false;
+  categoryText: string = "";
   daysOfWeek: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   months: string[] = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
   data: any = this.encryptData.decryptData('faculty');
-  calendarDays: { realDate: Date; date: number | null; clicked: boolean | false }[] = [];
-  calendarData: { [key: string]: { realDate: Date; date: number | null; clicked: boolean }[] } = {};
+  calendarDays: { realDate: Date; date: number | null; clicked: boolean | false; category: string | null }[] = [];
+  calendarData: { [key: string]: { realDate: Date; date: number | null; clicked: boolean; category: string | null }[] } = {};
   tempData: any[] = [];
   constructor(private facultyService: FacultyService, private encryptData: EncryptData,
     private cookieService: CookieService, private facultyView: FacultyViewPetitionComponent) {
@@ -50,14 +51,15 @@ export class CalendarComponent implements OnInit {
     Calendar.isTime = !Calendar.isTime;
   }
 
-  dayIsClicked(day: string, click: boolean): void {
-    const realDate = this.convertToRealDate(day.toString());
+  dayIsClicked(day: number, click: boolean, category: string): void {
+    const realDate = this.convertToRealDate((day+1).toString());
 
     if (click === false) {
       const calendarEntry = {
         date: realDate.toString(),
         fromTime: this.fromTime as string, // Ensure it's treated as a string
-        toTime: this.toTime as string, // Ensure it's treated as a string
+        toTime: this.toTime as string,
+        category: category as string // Ensure it's treated as a string
       };
 
 
@@ -75,7 +77,10 @@ export class CalendarComponent implements OnInit {
         Extras.isError('Please input valid time.');
         return;
       }
-
+      if (!category) {
+        Extras.isError('Category is required.');
+        return;
+      }
       // Add the clicked entry
       Calendar.addCalendarList(calendarEntry);
       this.numberOfHours = Number(Calendar.getTotalTimeInHours(Calendar.calendarList));
@@ -94,21 +99,23 @@ export class CalendarComponent implements OnInit {
       // Mark the day as clicked
       const dayNumber = parseInt(day, 10);
       this.calendarDays = this.calendarDays.map((d) =>
-        d.date === dayNumber ? { ...d, clicked: true } : d
+        d.date === dayNumber ? { ...d, clicked: true, category: category } : d
       );
 
+      console.log(Calendar.calendarList);
     } else {
       // Mark the day as not clicked
       const calendarEntry = {
         date: realDate.toString(),
         fromTime: this.tempfromTime as string, // Ensure it's treated as a string
-        toTime: this.temptoTime as string, // Ensure it's treated as a string
+        toTime: this.temptoTime as string,
+        category: this.categoryText, // Ensure it's treated as a string
       };
 
       Calendar.addCalendarList(calendarEntry);
       const dayNumber = parseInt(day, 10);
       this.calendarDays = this.calendarDays.map((d) =>
-        d.date === dayNumber ? { ...d, clicked: false } : d
+        d.date === dayNumber ? { ...d, clicked: false, category: '' } : d
       );
     }
 
@@ -130,7 +137,6 @@ export class CalendarComponent implements OnInit {
   }
 
 
-
   generateCalendarDays(): void {
     const monthKey = `${this.currentYear}-${this.currentMonth}`; // Unique key for year and month
     if (this.calendarData[monthKey]) {
@@ -142,8 +148,9 @@ export class CalendarComponent implements OnInit {
     const daysInMonth = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
     const newCalendarDays = [];
 
+    // Fill empty slots before the 1st day of the month
     for (let i = 0; i < firstDay; i++) {
-      newCalendarDays.push({ realDate: new Date(), date: null, clicked: false });
+      newCalendarDays.push({ realDate: new Date(), date: null, clicked: false, category: null });
     }
 
     for (let i = 1; i <= daysInMonth; i++) {
@@ -152,17 +159,18 @@ export class CalendarComponent implements OnInit {
       this.tempData = Calendar.calendarList;
       const match = this.tempData.find(item => item.date === formattedDate);
 
-      // Check if the date is already clicked, then set the clicked state
       newCalendarDays.push({
         realDate: date,
         date: i,
-        clicked: !!match,  // Set clicked state based on whether there's a matching entry
+        clicked: !!match,
+        category: match ? match.category ?? null : null, // Ensure category is always present
       });
     }
 
     this.calendarData[monthKey] = newCalendarDays;
     this.calendarDays = newCalendarDays;
   }
+
 
 
 

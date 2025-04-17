@@ -68,6 +68,7 @@ export class DashboardComponent implements OnInit {
     this.generateCalendar();
     this.selectedDateSchedule = [];
   }
+  
   selectDay(dayObj: any): void {
     this.clickDate = dayObj.dateStr;
     if (dayObj && dayObj.isScheduled) {
@@ -86,8 +87,9 @@ export class DashboardComponent implements OnInit {
     this.studentService.fetchCalendar(data.tokenId, data.studentId).subscribe(
       (response: any) => {
         Extras.load = false;
-        if (response.success && response.data) {
+        if (response.success && response.data ) {
           this.scheduleData = response.data;
+          console.log(response.data)
           this.generateCalendar();
         } else {
           this.scheduleData = []

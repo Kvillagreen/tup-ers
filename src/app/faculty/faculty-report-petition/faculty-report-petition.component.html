@@ -1,8 +1,17 @@
 <div class="animate-fadeInNew w-full min-h-screen flex flex-col p-4">
-    <div
+    <div *ngIf=" data.facultyType== 'Program Head'"
         class="text-left md:text-center leading-none shadow-gray-800 shadow-md overflow-auto bg-red-500 border-4 border-red-600 rounded-xl p-4 w-full h-full text-[30px] md:text-4xl font-extrabold text-gray-50">
-        <p class="md:w-full w-1/2 h-full py-0"><span *ngIf="program" class="h-full w-full">{{program}}</span> Report Page</p>
+        <p class="md:w-full w-full h-full py-0"><span *ngIf="program" class="h-full w-full">{{program}}</span> Report
+            Page</p>
     </div>
+
+    <div *ngIf=" data.facultyType!= 'Program Head'"
+        class="text-left md:text-center leading-none shadow-gray-800 shadow-md overflow-auto bg-red-500 border-4 border-red-600 rounded-xl p-4 w-full h-full text-[30px] md:text-4xl font-extrabold text-gray-50">
+        <p class="md:w-full w-1/2 h-full py-0"><span *ngIf="program" class="h-full w-full">{{program}}</span> Report
+            Page</p>
+    </div>
+
+
     <div *ngIf="!program" class="flex justify-center items-center w-full h-full gap-x-4 gap-y-2 pt-2">
         <div
             class="w-full md:w-96 h-96  flex flex-col justify-center shadow-md shadow-gray-800 items-center text-center text-white text-xl font-extrabold bg-red-500 border-4 border-red-600 rounded-xl p-4">
@@ -16,7 +25,12 @@
         </div>
         <div
             class="w-full h-96 flex flex-col text-white md:text-xs lg:text-sm overflow-auto scrollbar-container shadow-md shadow-gray-800  bg-red-500 border-4 border-red-600 rounded-xl justify-start px-4">
-            <p class="sticky top-0 text-2xl bg-red-500  font-extrabold text-center py-2">{{program}}</p>
+            <div class="sticky top-0 w-full text-2xl bg-red-500 font-extrabold text-center py-2">
+                <p>{{program}} </p>
+                <button (click)="facultyReport(program)" class="absolute right-0 top-2 size-8 bg-red-500 border-2 border-white rounded-md flex justify-center align-center">
+                     <img src="../../../assets/svg/download.svg" alt="">
+                </button>
+            </div>
             <p class=" font-semibold text-lg text-left mt-2">List of Subject:</p>
             <div class="grid grid-cols-12">
                 <p class="ml-4 font-semibold col-span-6">Subject</p>
@@ -48,7 +62,11 @@
             <div *ngFor="let class of classList"
                 class="w-full h-96 flex flex-col text-white shadow-md shadow-gray-800  bg-red-500 border-4 border-red-600 rounded-xl overflow-auto scrollbar-container">
                 <!-- Sticky Header -->
-                <div class="sticky top-0 bg-red-500 z-10">
+                <div class="sticky flex flex-col top-0 bg-red-500 z-10">
+                    <div class="absolute top-0 right-2 flex p-3 w-full justify-end align-center">
+                        <button (click)="downloadReport(class.class_id, class.subject_name)" class="size-8 bg-red-500 rounded-md border-2 border-white flex justify-center align-center">
+                            <img src="../../../assets/svg/download.svg"></button>
+                    </div>
                     <p class="text-2xl font-extrabold text-center leading-none pt-4">{{ class.subject_name }}</p>
                     <p class="text-lg font-semibold text-center leading-none mt-2">
                         ({{ extras.toTitleCaseSafe(class.status) }})
@@ -83,9 +101,8 @@
 
     </div>
 
-
 </div>
-<div
+<div *ngIf="data.facultyType != 'Program Head'"
     class="animate-fadeInNew absolute right-8 top-[110px] md:top-[115px] flex text-red-50 shadow-md shadow-gray-800 justify-end items-start z-[5] ">
     <select class="w-20 md:w-48 h-full bg-red-500  outline-none border-2 border-red-400 p-[8px]" [(ngModel)]="program"
         (change)="fetchClass(program)">

@@ -29,6 +29,7 @@ export class AppComponent implements OnInit {
       }
     });
   }
+/*
 
   
   @HostListener('document:contextmenu', ['$event'])
@@ -57,7 +58,10 @@ export class AppComponent implements OnInit {
       }
     }
   }
+  
+*/
   ngOnInit(): void {
+    /*
     setInterval(() => {
       const before = new Date();
       debugger;
@@ -65,6 +69,7 @@ export class AppComponent implements OnInit {
       if (after.getTime() - before.getTime() > 100) {
       }
     }, 1000);
+    */
     
   }
 }

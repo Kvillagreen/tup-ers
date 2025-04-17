@@ -75,7 +75,8 @@
           [ngClass]="{'text-orange-700 ':class.status=='pending' ,'text-red-700 ':class.status=='denied','text-green-700 ':class.status=='approved'||class.status=='finished'}">
           {{extras.toTitleCaseSafe(class.status)}}</div>
         <div class="flex justify-center items-center">
-          <button (click)="isLocate=!isLocate; this.petitionTracker=extras.convertJson(class.petition_tracker)"
+          <button
+            (click)="isLocate=!isLocate; this.petitionTracker=extras.convertJson(class.petition_tracker); petitionId=class.petition_id"
             class="w-3/4 h-full flex justify-center items-center bg-red-500 py-2 rounded-md text-gray-50  hover:bg-red-800 hover:text-gray-300">
             <span class="mr-2">
               <svg width="20px" height="20px" viewBox="0 0 24 24"
@@ -117,11 +118,16 @@
       <!-- Header Section -->
       <div
         class="fixed mr-2 rounded-t-md mt-auto h-12 z-[120] bg-red-300 flex  border-b-2 border-red-600 w-[350px] justify-center items-center">
+        <button (click)="removePetition(petitionId)"
+          class="absolute top-2 left-2 w-8 h-8 hover:bg-red-600 bg-red-500 rounded-full text-white flex items-center justify-center text-[16px]">
+          <img src="../../../assets/svg/disable.svg" class="size-6">
+        </button>
+
         <div class="w-full h-12 flex justify-center items-center py-3">
           <p class=" text-xl flex font-bold mt-auto ">Petition Tracker</p>
         </div>
         <!-- Close Button -->
-        <button (click)="isLocate=!isLocate"
+        <button (click)="isLocate=!isLocate; petitionId=''"
           class="absolute top-2 right-2 w-8 h-8 hover:bg-red-600 bg-red-500 rounded-full text-white flex items-center justify-center text-[16px]">
           ×
         </button>

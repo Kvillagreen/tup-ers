@@ -9,6 +9,7 @@ import { CalendarComponent } from '../../common/calendar/calendar.component';
 import { Calendar } from '../../common/libraries/environment';
 import { dataViewer } from '../../common/libraries/data-viewer';
 import { EncryptData } from '../../common/libraries/encrypt-data';
+import { EmailService } from '../../services/email.service';
 @Component({
   selector: 'app-faculty-view-petition',
   imports: [CommonModule, FormsModule, HttpClientTestingModule, CalendarComponent],
@@ -34,20 +35,28 @@ export class FacultyViewPetitionComponent {
   reasons: string = '';
   classId: string = '';
   petitionId: string = '';
+  facultyName: string = "";
   studentId: string = '';
   isSuccesful: boolean = false;
   isNotTyped: boolean = false;
+  classSession: string = '';
   successText: string = '';
+  selectedFaculty: string = '';
+  selectionList: any[] = [];
   petitionListDenied: any[] = [];
   departmentList: any[] = [];
   totalHours: string = '';
   openModal: boolean = false;
+  modalType: string = "";
   data: any;
   classLocation: string = '';
   classSchedule: any;
   dataViewer = dataViewer;
+  approvalWarn: boolean = false;
   toApprove: string = '';
-  constructor(private facultyService: FacultyService,
+  classStatus: string = '';
+  warning: boolean = false;
+  constructor(private facultyService: FacultyService, private emailService: EmailService,
     private renderer: Renderer2, private cookieService: CookieService, private restrictService: restrictService,
     private encryptData: EncryptData
   ) { }
@@ -76,18 +85,9 @@ export class FacultyViewPetitionComponent {
     });
   }
 
-  ngOnDestroy() {
-    if (this.clickListener) {
-      this.clickListener();
-    }
-  }
-
-  classStatusChange(event: any) {
-    Extras.load = true;
+  duplicatePetition(classId: string) {
     const data = this.encryptData.decryptData('faculty') ?? ''
-    const status = event.target.value;
-    console.log(this.modalclassId)
-    this.facultyService.updateClassStatus(data.tokenId, this.modalclassId, status).subscribe((response: any) => {
+    this.facultyService.duplicatePetition(data.tokenId, classId).subscribe((response: any) => {
       Extras.load = false;
       console.log(response)
       if (response.success) {
@@ -97,13 +97,81 @@ export class FacultyViewPetitionComponent {
     });
   }
 
-  fetchDepartment(classId: string) {
-    const tokenId = this.data.tokenId ?? '';
-    console.log(classId)
-    this.facultyService.fetchDepartment(classId, tokenId).subscribe((response: any) => {
+
+  deleteClass(classId: string) {
+    const data = this.encryptData.decryptData('faculty') ?? ''
+    this.facultyService.deleteClass(data.tokenId, classId).subscribe((response: any) => {
       Extras.load = false;
       console.log(response)
       if (response.success) {
+        this.isView = false;
+        this.fetchClass()
+        this.warning = false;
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.clickListener) {
+      this.clickListener();
+    }
+  }
+  selectedFacultyId(event: any) {
+    this.selectedFaculty = event.target.value
+  }
+
+  classStatusChange(event: any) {
+    const status = event.target.value;
+    if (status == 'denied') {
+      this.classStatus = 'denied';
+      console.log('clicked')
+      this.openModal = true;
+      return;
+    }
+    else {
+      Extras.load = true;
+      const data = this.encryptData.decryptData('faculty') ?? ''
+      this.facultyService.updateClassStatus(data.tokenId, this.modalclassId, status).subscribe((response: any) => {
+        Extras.load = false;
+        if (response.success) {
+          this.isView = false;
+          this.fetchClass()
+        }
+      });
+    }
+  }
+
+  classTypeChange(event: any) {
+    const type = event.target.value;
+    Extras.load = true;
+    const data = this.encryptData.decryptData('faculty') ?? ''
+    this.facultyService.updateClassType(data.tokenId, this.modalclassId, type).subscribe((response: any) => {
+      Extras.load = false;
+      if (response.success) {
+        console.log(response)
+        this.isView = false;
+        this.fetchClass()
+      }
+    });
+  }
+
+  fetchSelection() {
+    const tokenId = this.data.tokenId ?? '';
+    const program = this.data.program ?? '';
+    this.facultyService.fetchFacultySelection(tokenId, program).subscribe((response: any) => {
+      Extras.load = false;
+      console.log(response)
+      if (response.success) {
+        this.selectionList = response.data;
+      }
+    })
+  }
+
+  fetchDepartment(classId: string) {
+    const tokenId = this.data.tokenId ?? '';
+    this.facultyService.fetchDepartment(classId, tokenId).subscribe((response: any) => {
+      Extras.load = false;
+      if (response) {
         this.departmentList = response.data
       }
     });
@@ -134,6 +202,35 @@ export class FacultyViewPetitionComponent {
     });
   }
 
+  updateClassPetition(status: string, message: string, reasons: string) {
+    const tokenId = this.data.tokenId ?? '';
+    const notedBy = Extras.toTitleCaseSafe(this.data.facultyType + ' ' + this.data.program);
+    Extras.load = true;
+    if (status == 'denied' && (!message || !reasons)) {
+      Extras.load = false;
+      Extras.isError('All fields are required');
+      return;
+    }
+
+    this.facultyService.updateClassPetition(tokenId, this.classId, status, message, reasons, notedBy).subscribe((response: any) => {
+      Extras.load = false;
+      console.log(response)
+      if (response.success) {
+        this.reasons = '';
+        this.message = '';
+        this.studentId = '';
+        this.petitionId = '';
+        this.openModal = false;
+        this.isView = false;
+        this.classStatus = '';
+        Extras.isError('Notification was sent to student.');
+        this.fetchPetition(this.classId);
+        this.fetchDeniedPetition();
+        this.fetchClass();
+      }
+    });
+  }
+
 
   //transfer to other program if faculty head wants to 
 
@@ -155,6 +252,7 @@ export class FacultyViewPetitionComponent {
   fetchClass() {
     Extras.load = true;
     const tokenId = this.data.tokenId ?? '';
+    const id = this.data.facultyId ?? '';
     this.facultyService.getClass(tokenId).subscribe((response: any) => {
       Extras.load = false;
       if (response.success) {
@@ -166,7 +264,7 @@ export class FacultyViewPetitionComponent {
         }
         // making petition still available if Program Head approved  after approval
         if (this.facultyType == 'Faculty Staff') {
-          dataViewer.classList = response.data.filter((listOfClass: any) => ((listOfClass.location != 'Program Head' && listOfClass.schedule == '[[]]') || (listOfClass.location == 'Program Head' && listOfClass.schedule != '[[]]')) && listOfClass.status == 'pending' || listOfClass.status == 'approved');
+          dataViewer.classList = response.data.filter((listOfClass: any) => (listOfClass.faculty_id == id) && (listOfClass.status == 'pending') || (listOfClass.faculty_id ==id) && (listOfClass.status == 'approved'));
         }
         // making petition still available College Dean after approval
         if (this.facultyType == 'College Dean') {
@@ -181,6 +279,7 @@ export class FacultyViewPetitionComponent {
             (listOfClass.location != 'Faculty Staff' && listOfClass.location != 'Program Head' && listOfClass.location != 'College Dean')
             && listOfClass.status == 'pending' ||
             listOfClass.status == 'approved');
+
         }
         // making petition still available ADAA after approval
         if (this.facultyType == 'ADAA') {
@@ -193,22 +292,74 @@ export class FacultyViewPetitionComponent {
     });
   }
 
+  approvalHead(details: string) {
+    Extras.load = true;
+    const email = this.data.email ?? '';
+    const tokenId = this.data.tokenId ?? '';
+
+    this.emailService.petitionApprovalHead(email, details, this.toApprove, tokenId, this.classSession, this.selectedFaculty).subscribe((response: any) => {
+      Extras.load = false;
+      console.log(response)
+      if (response.success) {
+        this.selectedFaculty = '';
+        this.approvalWarn= true;
+      }
+    })
+  }
+
+  approvalRegistar(details: string) {
+    Extras.load = true;
+    const email = this.data.email ?? '';
+    const tokenId = this.data.tokenId ?? '';
+
+    this.emailService.petitionApprovalRegistrar(email, details, this.toApprove, tokenId, this.classSession).subscribe((response: any) => {
+      Extras.load = false
+      console.log(response);
+      if (response.success) {
+        this.selectedFaculty = '';
+        this.approvalWarn = true;
+      }
+    });
+  }
+
+  approvalGeneral(details: string) {
+    Extras.load = true;
+    const email = this.data.email ?? '';
+    const tokenId = this.data.tokenId ?? '';
+
+    this.emailService.petitionApprovalGeneral(email, details, this.toApprove, tokenId, this.classSession).subscribe((response: any) => {
+      Extras.load = false;
+      console.log(this.toApprove)
+      console.log(details)
+      if (response.success) {
+        this.approvalWarn= true;
+      }
+      else {
+        return;
+      }
+    });
+  }
+
   generalApproval() {
+    console.log('clicjed')
     // from faculty head going faculty staff
     if (this.classSchedule == '[[]]') {
       if (this.facultyType == 'Program Head') {
-        this.approval('Faculty Staff');
+        //this.approval('Faculty Staff');
+        this.approvalHead('Faculty Staff');
       }
       // from Faculty Staff going Faculty Head
       // Include the faculty_id to class 
       if (this.facultyType == 'Faculty Staff') {
+        Extras.load = true;
         const tokenId = this.data.tokenId ?? '';
+        const email = this.data.email ?? '';
         const facultyId = this.data.facultyId ?? '';
-        this.facultyService.addSchedule(tokenId, this.toApprove, this.calendar.calendarList, facultyId).subscribe((response: any) => {
+        console.log(this.classSession)
+        this.emailService.petitionApprovalStaff(email, 'Program Head', this.toApprove, tokenId, this.classSession, this.calendar.calendarList, facultyId).subscribe((response: any) => {
           Extras.load = false;
+          console.log(response)
           if (response.success) {
-            this.approval('Program Head')
-            this.fetchClass();
             this.isCalendarOpen = false;
             this.openModal = false;
             this.isView = false;
@@ -222,30 +373,38 @@ export class FacultyViewPetitionComponent {
     else {
       // from faculty head going faculty staff
       if (this.facultyType == 'Program Head') {
-        this.approval('College Dean');
+        this.approvalGeneral('College Dean');
       }
-      // from College Dean going Registrar
-      if (this.facultyType == 'College Dean') {
-        this.approval('Registrar');
-      }
-      // from Registrar going ADAA
-      if (this.facultyType == 'Registrar') {
-        this.approval('ADAA');
-      }
-      // from ADAA going back to student
-      if (this.facultyType == 'ADAA') {
+      if (this.facultyType == 'Faculty Staff') {
+        Extras.load = true;
         const tokenId = this.data.tokenId ?? '';
-        this.facultyService.finalApprovalPetition(tokenId, this.toApprove).subscribe((response: any) => {
+        const email = this.data.email ?? '';
+        const facultyId = this.data.facultyId ?? '';
+        console.log(this.classSession)
+        this.facultyService.updateClassSchedule( tokenId, this.toApprove, this.calendar.calendarList, facultyId).subscribe((response: any) => {
           Extras.load = false;
+          console.log(response)
           if (response.success) {
-            this.approval('Students: Approved');
-            this.fetchClass();
+            this.isCalendarOpen = false;
+            this.openModal = false;
             this.isView = false;
           }
           else {
             return;
           }
         });
+      }
+      // from College Dean going Registrar
+      if (this.facultyType == 'College Dean') {
+        this.approvalGeneral('Registrar');
+      }
+      // from Registrar going ADAA
+      if (this.facultyType == 'Registrar') {
+        this.approvalGeneral('ADAA');
+      }
+      // from ADAA going back to student
+      if (this.facultyType == 'ADAA') {
+        this.approvalRegistar('Students: Approved');
       }
     }
   }
@@ -351,6 +510,7 @@ export class FacultyViewPetitionComponent {
     if (this.data.isSuccesful == 'true') {
       this.isSuccesful = true;
     }
+    this.fetchSelection();
     this.successText = this.data.successText ?? '';
     this.loadFacultyData();
     this.fetchClass();

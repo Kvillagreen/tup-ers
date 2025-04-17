@@ -145,10 +145,8 @@ export class NavbarComponent implements AfterViewInit, OnInit, OnDestroy, DoChec
   }
 
   private userInactive(): void {
-
-
     const dataFaculty = this.encryptData.decryptData('faculty') ?? '';
-    const dataStudent = this.encryptData.decryptData('faculty') ?? '';
+    const dataStudent = this.encryptData.decryptData('student') ?? '';
     if (dataStudent.tokenId || dataFaculty.tokenId) {
       this.extras.isError('Logout automatically due to inactivity within 5 minutes.')
       this.logout();

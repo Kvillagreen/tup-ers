@@ -41,18 +41,25 @@ export class StudentService {
     return this.http.post<any[]>(`${this.apiUrl}/fetch-students-report.php`, credentials);
   }
 
+  removePetition(petitionId: string) {
+    const credentials = { petitionId }
+    return this.http.post<any[]>(`${this.apiUrl}/petition-deletion.php`, credentials);
+  }
+
+
   receivePetition(tokenId: string, studentId: string) {
     const credentials = { tokenId, studentId }
     return this.http.post<any[]>(`${this.apiUrl}/fetch-receive-petition.php`, credentials);
   }
 
-  petitionCreation(studentId: string, subjectCode: string, subjectName: string, subjectUnits: string, program: string) {
-    const credentials = { studentId, subjectCode, subjectName, subjectUnits, program }
+
+  petitionCreation(studentId: string, subjectCode: string, subjectName: string, subjectUnits: string, program: string, overLoad: string, yearSection: string, faculty: string, reasons:string, schoolYear:string, term:string) {
+    const credentials = { studentId, subjectCode, subjectName, subjectUnits, program, overLoad, yearSection, faculty, reasons, schoolYear, term}
     return this.http.post<any[]>(`${this.apiUrl}/petition-creation.php`, credentials);
   }
 
-  petitionApplicatipon(studentId: string, classId: string) {
-    const credentials = { studentId, classId }
+  petitionApplicatipon(studentId: string, classId: string, overLoad: string, faculty: string, yearSection: string) {
+    const credentials = { studentId, classId, overLoad, faculty, yearSection}
     return this.http.post<any[]>(`${this.apiUrl}/petition-application.php`, credentials);
   }
 
@@ -86,30 +93,16 @@ export class StudentService {
     const credentials = { firstName, lastName, tupvId, email, password, program }
     return this.http.post<any[]>(`${this.apiUrl}/student-registration.php`, credentials);
   }
-  fetchCalendar(tokenId: string, classId: string) {
-    const credentials = { tokenId, classId }
+
+  fetchCalendar(tokenId: string, studentId: string) {
+    const credentials = { tokenId, studentId }
     return this.http.post<any[]>(`${this.apiUrl}/fetch-schedule.php`, credentials);
   }
 
-  downloadForm(petitionId: string, tokenId: string, firstName: string, lastName: string, capacity: number, studentId: string): void {
+  downloadForm(petitionId: string, tokenId: string, firstName: string, lastName: string, capacity: number, studentId: string, type: string): void {
     const requestData = { petitionId, tokenId, capacity, studentId };
-    if (capacity <= 9) {
-      this.http.post(this.apiPrintableUrl + '/petition-tutorial.php', requestData, { responseType: 'blob' }).subscribe(
-        (response: Blob) => {
-          // Create a Blob and trigger download
-          const blob = new Blob([response], { type: 'application/pdf' });
-          const downloadUrl = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = downloadUrl;
-          a.download = `${firstName}_${lastName}_petition_tutorial_class.pdf`; // Adjust the file extension as needed
-          a.click();
-          window.URL.revokeObjectURL(downloadUrl); // Clean up URL reference
-        },
-        (error) => {
-        }
-      );
-    }
-    else {
+
+    if (capacity > 9 || type == "special class") {
       this.http.post(this.apiPrintableUrl + '/petition-specialclass.php', requestData, { responseType: 'blob' }).subscribe(
         (response: Blob) => {
           // Create a Blob and trigger download
@@ -118,6 +111,23 @@ export class StudentService {
           const a = document.createElement('a');
           a.href = downloadUrl;
           a.download = `${firstName}_${lastName}_petition_special_class.pdf`; // Adjust the file extension as needed
+          a.click();
+          window.URL.revokeObjectURL(downloadUrl); // Clean up URL reference
+        },
+        (error) => {
+        }
+      );
+    }
+
+    else {
+      this.http.post(this.apiPrintableUrl + '/petition-tutorial.php', requestData, { responseType: 'blob' }).subscribe(
+        (response: Blob) => {
+          // Create a Blob and trigger download
+          const blob = new Blob([response], { type: 'application/pdf' });
+          const downloadUrl = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = downloadUrl;
+          a.download = `${firstName}_${lastName}_petition_tutorial_class.pdf`; // Adjust the file extension as needed
           a.click();
           window.URL.revokeObjectURL(downloadUrl); // Clean up URL reference
         },

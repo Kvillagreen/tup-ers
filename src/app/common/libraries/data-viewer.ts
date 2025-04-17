@@ -87,7 +87,6 @@ export const dataViewer = {
     getHistoryPetitionToDisplay(): any[] {
         this.searchText = typeof this.searchText === 'string' ? this.searchText : '';
         const classList = Array.isArray(this.facultyClassHistoryList) ? this.facultyClassHistoryList : [];
-
         // Filter transactions based on search text
         let filteredEvents = classList.filter((listOfClass: any) =>
             Extras.toLowerCaseSafe(Extras.formatDate(listOfClass.date_created)).includes(Extras.toLowerCaseSafe(this.searchText)) ||

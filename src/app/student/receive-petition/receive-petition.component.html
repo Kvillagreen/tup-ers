@@ -58,7 +58,7 @@
                     <div class="">{{class.subject_code}}</div>
                     <div class="col-span-2">{{extras.toTitleCaseSafe(class.subject_name)}}</div>
                     <div class="flex justify-center items-centers overflow-hidden px-1">
-                        <button (click)="downloadForm(class.petition_id, class.capacity)"
+                        <button (click)="downloadForm(class.petition_id, class.capacity, class.class_type)"
                             class="w-full h-full flex justify-center items-center font-bold bg-red-500 py-2 px-4 rounded-md text-gray-50  hover:bg-red-800 hover:text-gray-300">
                             Download    <div class="ml-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"

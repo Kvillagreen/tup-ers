@@ -65,11 +65,15 @@
             <div class="">Join</div>
         </div>
         <div *ngIf="dataViewer.getViewPetitionToDisplay().length!=0">
-            <div *ngFor="let class of dataViewer.getViewPetitionToDisplay() let i=index" class="mt-2 grid grid-cols-7 w-full h-12 bg-red-300 text-center text-[12px] md:text-[14px] text-gray-900
-                justify-center items-center">
+            <div *ngFor="let class of dataViewer.getViewPetitionToDisplay() let i=index"
+                class="mt-2 grid grid-cols-7 w-full h-12 bg-red-300 text-center text-[12px] md:text-[14px] text-gray-900
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        justify-center items-center">
                 <div class="md:text-[14px] text-[10px]">{{extras.formatDate(class.date_created)}}</div>
                 <div class="">{{class.subject_code}}</div>
-                <div class="col-span-2">{{extras.toTitleCaseSafe(class.subject_name)}}</div>
+                <div class="col-span-2 leading-none flex flex-col">
+                    <p> {{extras.toTitleCaseSafe(class.subject_name)}}</p>
+                    <p class="font-extrabold text-[8px] md:text-xs ">({{extras.toUpperCaseSafe(class.class_type)}})</p>
+                </div>
                 <div class="">{{class.units}}</div>
                 <div [ngClass]="{'text-red-600': class.petition_count >=50,'text-green-600': class.petition_count <50 }"
                     class="font-bold">{{class.petition_count}}</div>
@@ -101,7 +105,7 @@
         <div *ngIf="dataViewer.multiplierCounter(dataViewer.getViewPetitionToDisplay().length).length !=0">
             <div *ngFor="let class of dataViewer.multiplierCounter(dataViewer.getViewPetitionToDisplay().length) let i=index"
                 class="mt-2 grid grid-cols-7 w-full h-12 bg-red-300 text-center text-[12px] md:text-[14px] text-gray-900
-                justify-center items-center">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            justify-center items-center">
                 <div class="col-span-7 font-semibold"
                     *ngIf="class==0 && dataViewer.getViewPetitionToDisplay().length==0">No data found</div>
             </div>
@@ -128,7 +132,8 @@
             <div class="flex w-[345px] h-12 justify-center rounded-md p-4 items-center bg-red-300 fixed ">
                 <p class="text-left text-xl font-bold">Application Petition Form</p>
                 <!-- Close Button -->
-                <button (click)="isApply=!isApply;  isFail=''; isFourthYear=''"
+                <button
+                    (click)="isApply=!isApply;  isFail=''; isFourthYear=''; faculty ='' ;overLoad ='' ; yearSection ='' "
                     class="absolute top-2 right-2 w-8 h-8 py-1 bg-red-500 rounded-full text-white flex items-center justify-center text-[16px]">
                     ×
                 </button>
@@ -146,37 +151,48 @@
                             <label class="w-full">Program:</label>
                             <input readonly value="{{program}}" class="outline-none px-2 bg-transparent">
                         </div>
+                        <div class="grid grid-cols-2 w-full  gap-y-[5px] justify-center items-center">
+
+                            <label class="w-full">Year and Section</label>
+                            <input id="yearSection" name="yearSection" [(ngModel)]="yearSection"
+                                placeholder="YEAR AND SECTION"
+                                class="outline-none uppercase placeholder:text-red-700 font-semibold text-[14px] rounded-md border-2 p-1 border-red-800 bg-transparent">
+
+
+                            <label class="w-full">Faculty before ?</label>
+                            <input id="faculty" name="faculty" [(ngModel)]="faculty" placeholder="FACULTY"
+                                class="outline-none uppercase placeholder:text-red-700 font-semibold text-[14px] rounded-md border-2 p-1 border-red-800 bg-transparent">
+
+                            <label *ngIf="isFourthYear =='yes'" class="w-full">Is Overload ?</label>
+                            <input *ngIf="isFourthYear =='yes'" id="overLoad" name="overLoad" [(ngModel)]="overLoad"
+                                placeholder="UNITS OVERLOAD, NO"
+                                class="outline-none uppercase placeholder:text-red-700 font-semibold text-[14px] rounded-md border-2 p-1 border-red-800 bg-transparent">
+
+
+                        </div>
+
 
                         <div class="grid grid-cols-[75%_25%] w-full gap-y-2">
-                            <label class="w-full">Did you fail this subject ?</label>
-                            <select class="bg-transparent outline-none" name="isFail" [(ngModel)]="isFail">
-                                <option *ngIf="!isFail" class="bg-gray-300" value="" disabled selected>No</option>
-                                <option class="bg-gray-300 outline-none" value="yes" selected>Yes</option>
-                                <option *ngIf="isFail" class="bg-gray-300 outline-none" value="no">No</option>
-                            </select>
-                            <label *ngIf="isFail==='no'" class="w-full">Are you a fourth year student ?</label>
-                            <select *ngIf="isFail==='no'" class="bg-transparent outline-none" name="isFourthYear"
-                                [(ngModel)]="isFourthYear">
+                            <label class="w-full">Are you a fourth year student ?</label>
+                            <select class="bg-transparent outline-none" name="isFourthYear" [(ngModel)]="isFourthYear">
                                 <option *ngIf="!isFourthYear" class="bg-gray-300" value="" disabled selected>No
                                 </option>
                                 <option class="bg-gray-300 outline-none" value="yes">Yes</option>
                                 <option *ngIf="isFourthYear" class="bg-gray-300 outline-none" value="no">No</option>
                             </select>
                         </div>
+
                     </div>
                     <div class="grid grid-cols-1 justify-center items-center">
                         <div class="h-12 w-full flex flex-col justify-center items-center">
-                            <p *ngIf="isFail != 'yes' && isFourthYear != 'yes' " class="text-sm text-red-700">Your
-                                are not
-                                eligible to take this subject</p>
+
                             <p *ngIf="extras.errorMessage" class="text-sm text-red-700">{{extras.errorMessage}}
                             </p>
                         </div>
                         <div class="flex justify-center items-center">
-                            <button [disabled]="isFail != 'yes' && isFourthYear != 'yes' "
-                                class="w-1/2 h-8  rounded-md text-gray-50  hover:text-gray-300 cursor-pointer"
-                                (click)="submitPetitionApplication()"
-                                [ngClass]="{'bg-gray-600 hover:bg-gray-700': isFail !== 'yes' && isFourthYear !== 'yes', 'bg-red-500 hover:bg-red-800': isFail === 'yes' || isFourthYear === 'yes' }">
+                            <button
+                                class="w-1/2 h-8  rounded-md text-gray-50  bg-red-500  hover:bg-red-800 hover:text-gray-300 cursor-pointer"
+                                (click)="submitPetitionApplication()">
                                 Submit
                             </button>
                         </div>
@@ -202,7 +218,7 @@
                 <p class="text-left text-xl font-bold">Create Petition Form</p>
                 <!-- Close Button -->
                 <button
-                    (click)="isAddPetition=!isAddPetition; subjectCode=''; subjectName=''; subjectUnits=''; isFail=''; isFourthYear=''"
+                    (click)="isAddPetition=!isAddPetition; subjectCode=''; subjectName=''; subjectUnits=''; isFail=''; isFourthYear=''; overLoad= '' ; faculty = '' ; yearSection = ''"
                     class="absolute top-2 right-2 w-8 h-8 py-1 bg-red-500 rounded-full text-white flex items-center justify-center text-[16px]">
                     ×
                 </button>
@@ -210,7 +226,7 @@
             <!-- Timeline Section -->
             <div class="flex flex-col w-full h-full mt-8 p-4">
                 <form>
-                    <div class="flex flex-col justify-start items-start space-y-4 h-full">
+                    <div class="flex flex-col justify-start items-start space-y-4 h-full ">
                         <div class="grid grid-cols-2 w-full">
                             <label class="w-full">TUPV ID: </label>
                             <input readonly value="{{tupvId}}" class="outline-none px-2 bg-transparent">
@@ -219,8 +235,9 @@
                                 class="outline-none px-2 bg-transparent">
                             <label class="w-full">Program:</label>
                             <input readonly value="{{program}}" class="outline-none px-2 bg-transparent">
+
                         </div>
-                        <div class="grid grid-cols-2 w-full  gap-y-[5px] justify-center items-center">
+                        <div class="grid grid-cols-2 w-full  gap-y-[5px] justify-center items-center  scrollbar-container">
                             <label class="w-full py-[1px]">Subject Code: </label>
                             <input id="subjectCode" name="subjectCode" [(ngModel)]="subjectCode" placeholder="CODE"
                                 class="outline-none placeholder:text-red-700 font-semibold uppercase text-[14px] rounded-md border-2 p-1 border-red-800 bg-transparent">
@@ -230,43 +247,79 @@
                                 class="outline-none placeholder:text-red-700 font-semibold uppercase text-[14px] rounded-md border-2 p-1 border-red-800 bg-transparent">
 
                             <label class="w-full">No. of Units:</label>
-                            <input id="subjectUnits" name="subjectUnits"  [(ngModel)]="subjectUnits" placeholder="UNITS"
+                            <input id="subjectUnits" name="subjectUnits" [(ngModel)]="subjectUnits" placeholder="UNITS"
                                 class="outline-none placeholder:text-red-700 font-semibold text-[14px] rounded-md border-2 p-1 border-red-800 bg-transparent">
+
+
+                            <label class="w-full">Term</label>
+                            <select id="term" name="term" [(ngModel)]="term"
+                                class="outline-none uppercase placeholder:text-red-700 font-semibold text-[14px] rounded-md border-2 p-1 border-red-800 bg-transparent">
+                                <option selected disabled>Term</option>
+                                <option value="First">First</option>
+                                <option value="Second">Second</option>
+                                <option value="Third">Third</option>
+                            </select>
+
+                            <label class="w-full">Schoolyear</label>
+                            <select id="term" name="schoolYear" [(ngModel)]="schoolYear"
+                                class="outline-none uppercase placeholder:text-red-700 font-semibold text-[14px] rounded-md border-2 p-1 border-red-800 bg-transparent">
+                                <option selected disabled>School Year</option>
+                                <option *ngFor="let year of years" [value]="year+ '-' + (year+1)">{{ year}}-{{year+1}}</option>
+                            </select>
+
+                            <label class="w-full">Year and Section</label>
+                            <input id="yearSection" name="yearSection" [(ngModel)]="yearSection"
+                                placeholder="YEAR AND SECTION"
+                                class="outline-none uppercase placeholder:text-red-700 font-semibold text-[14px] rounded-md border-2 p-1 border-red-800 bg-transparent">
+
+
+                            <label class="w-full">Faculty before ?</label>
+                            <input id="faculty" name="faculty" [(ngModel)]="faculty" placeholder="FACULTY"
+                                class="outline-none uppercase placeholder:text-red-700 font-semibold text-[14px] rounded-md border-2 p-1 border-red-800 bg-transparent">
+
+
+                            <label *ngIf="isFourthYear=='yes'" class="w-full">Is Overload ?</label>
+                            <input *ngIf="isFourthYear=='yes'" id="overLoad" name="overLoad" [(ngModel)]="overLoad"
+                                placeholder="UNITS OVERLOAD, NO"
+                                class="outline-none uppercase placeholder:text-red-700 font-semibold text-[14px] rounded-md border-2 p-1 border-red-800 bg-transparent">
+
+                            <div class="col-span-2 flex flex-col  h-full w-full">
+                                <label>Reason</label>
+                                <textarea class="textArea" name="reasons" maxlength="100" [(ngModel)]="reasons" required
+                                    placeholder="State your reasons for application"></textarea>
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-[75%_25%] w-full gap-y-2">
-                            <label class="w-full">Did you fail this subject ?</label>
-                            <select class="bg-transparent outline-none" name="isFail" [(ngModel)]="isFail">
-                                <option *ngIf="!isFail" class="bg-gray-300" value="" disabled selected>No</option>
-                                <option class="bg-gray-300 outline-none" value="yes" selected>Yes</option>
-                                <option *ngIf="isFail" class="bg-gray-300 outline-none" value="no">No</option>
-                            </select>
-                            <label *ngIf="isFail==='no'" class="w-full">Are you a fourth year student ?</label>
-                            <select *ngIf="isFail==='no'" class="bg-transparent outline-none" name="isFourthYear"
-                                [(ngModel)]="isFourthYear">
+                            <label class="w-full">Are you a fourth year student ?</label>
+                            <select class="bg-transparent outline-none" name="isFourthYear" [(ngModel)]="isFourthYear">
                                 <option *ngIf="!isFourthYear" class="bg-gray-300" value="" disabled selected>No
                                 </option>
                                 <option class="bg-gray-300 outline-none" value="yes">Yes</option>
                                 <option *ngIf="isFourthYear" class="bg-gray-300 outline-none" value="no">No</option>
                             </select>
+                            <label class="w-full">Send to program head of ?</label>
+                            <select required id="program" class="outline-none bg-transparent " name="program"
+                                [(ngModel)]="programName" required>
+                                <option class="w-full bg-gray-300" value="" disabled selected>Select Program Head
+                                </option>
+                                <option *ngFor="let list of programList" [value]="list"
+                                    class="w-full bg-gray-300 outline-none">
+                                    {{list}}
+                                </option>
+                            </select>
                         </div>
+
                     </div>
                     <div class="grid grid-cols-1 h-full justify-center items-center">
                         <div class="h-full w-full flex flex-col justify-center items-center">
-                            <p *ngIf="isFail != 'yes' && isFourthYear != 'yes' " class="text-sm text-red-700">
-                                Your are not eligible to take this subject</p>
                             <p *ngIf="extras.errorMessage" class="text-sm text-red-700 text-center">
                                 {{extras.errorMessage}}
                             </p>
                         </div>
                         <div class="flex w-full h-full justify-center items-center">
-                            <button
-                                [disabled]="isFail != 'yes' && isFourthYear != 'yes'"
-                                (click)="submitCreatePetition()"
-                                class="w-1/2 h-8 rounded-md text-gray-50 bg-gray-600 hover:bg-gray-700 hover:text-gray-300 cursor-pointer" [ngClass]="{
-                                    'bg-red-500 hover:bg-red-800': ( isFail=='yes' || isFourthYear=='yes'),
-                                    'bg-gray-600 hover:bg-gray-700':  isFail != 'yes' || isFourthYear != 'yes',
-                                }">
+                            <button (click)="submitCreatePetition()" class="w-1/2 h-8 rounded-md text-gray-50 bg-red-500 hover:bg-red-800
+                                hover:text-gray-300 cursor-pointer">
                                 Submit
                             </button>
                         </div>

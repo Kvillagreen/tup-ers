@@ -1,4 +1,4 @@
-<div *ngIf="this.facultyType=='Faculty Staff'" class="grid grid-cols-1 md:grid-cols-12 p-2">
+<div *ngIf="this.facultyType=='Faculty Staff'|| this.facultyType=='Registrar' || this.facultyType =='ADAA'" class="grid grid-cols-1 md:grid-cols-12 p-2">
     <div class="w-full h-full col-span-8 p-4 bg-red-200 flex flex-col justify-start items-center">
         <div class="p-4 bg-white shadow rounded-md mx-auto w-full h-full">
             <div class="w-full h-12 text-xl md:text-3xl text-red-950 font-extrabold flex items-center justify-center">
@@ -54,8 +54,9 @@
                 <h3 class=" mt-4 text-xl text-left font-extrabold text-gray-900">SCHEDULE FOR SELECTED DATE</h3>
                 <div *ngIf="selectedDateSchedule.length > 0" class="mt-4">
                     <div *ngFor="let item of selectedDateSchedule" class="mt-2 p-2 border rounded-md bg-gray-50">
-                        <p><strong>{{ item.subject_name }}</strong> ({{ item.subject_code }})</p>
-                        <p><strong>{{ item.program }}</strong></p>
+                        <p><strong>Faculty Name: {{ extras.toUpperCaseSafe(item.name) }}</strong></p>
+                        <p><strong>Subject: {{ item.subject_name }}</strong> ({{ item.subject_code }})</p>
+                        <p><strong>Program: {{ item.program }}</strong></p>
                         <div *ngFor="let sched of item.schedule">
                             <p *ngIf="sched.date==clickDate"><b>Time: </b>{{ convertTimeTo12Hour(sched.fromTime) }} - {{
                                 convertTimeTo12Hour(sched.toTime) }}

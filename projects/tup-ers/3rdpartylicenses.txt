@@ -32,8 +32,8 @@ THE SOFTWARE.
 Package: @canvasjs/charts
 License: "SEE LICENSE IN <LICENSE>"
 
-CanvasJS Chart - v3.10.21 GA - https://canvasjs.com/ 
-Copyright 2024 fenopix
+CanvasJS Chart - v3.12.3 GA - https://canvasjs.com/ 
+Copyright 2025 fenopix
 
 --------------------- License Information --------------------
 CanvasJS Chart is a commercial product which requires purchase of license. Without a commercial license you can use it for evaluation purposes for upto 30 days. Please refer to the following link for further details.
@@ -51,7 +51,7 @@ License: "MIT"
 
 The MIT License
 
-Copyright (c) 2010-2024 Google LLC. https://angular.dev/license
+Copyright (c) 2010-2025 Google LLC. https://angular.dev/license
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -300,7 +300,7 @@ License: "MIT"
 
 The MIT License
 
-Copyright (c) 2010-2024 Google LLC. https://angular.dev/license
+Copyright (c) 2010-2025 Google LLC. https://angular.dev/license
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -326,7 +326,7 @@ License: "MIT"
 
 The MIT License
 
-Copyright (c) 2010-2024 Google LLC. https://angular.dev/license
+Copyright (c) 2010-2025 Google LLC. https://angular.dev/license
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -352,7 +352,7 @@ License: "MIT"
 
 The MIT License
 
-Copyright (c) 2010-2024 Google LLC. https://angular.dev/license
+Copyright (c) 2010-2025 Google LLC. https://angular.dev/license
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -378,7 +378,7 @@ License: "MIT"
 
 The MIT License
 
-Copyright (c) 2010-2024 Google LLC. https://angular.dev/license
+Copyright (c) 2010-2025 Google LLC. https://angular.dev/license
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

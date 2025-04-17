@@ -174,9 +174,24 @@ export class FacultyReportPetitionComponent implements OnInit {
     e.chart.render();
   }
 
+facultyReport(program: string){
+  this.facultyService.downloadFacultyReport(program);
+}
+
+downloadReport(classId:string, subjectName:string){
+    this.facultyService.downloadReport(classId, subjectName);
+}
+
   ngOnInit(): void {
-    this.restrict.isAdmin();
-    this.fetchClass('');
+    this.restrict.isAdminReport();
+    if (this.data.facultyType == 'Program Head'){
+      this.fetchClass(this.data.program)
+      this.program= this.data.program 
+      this.getSingleProgram(this.data.program)
+    }
+    else {
+      this.fetchClass('')
+    }
     this.fetchStudent();
   }
 }

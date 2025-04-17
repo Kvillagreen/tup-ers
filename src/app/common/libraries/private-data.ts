@@ -25,7 +25,6 @@ export class privateData {
 
     studentSecretKey = ''
     facultySecretKey = ''
-    backgroundUrl = 'http://localhost/tup-ers/src/assets/background.jpg'
     hostEmail = 'admin@tup-ers.infotech3c.com'
     hostPassword = 'Villagreen23.'
 
@@ -68,10 +67,6 @@ export class privateData {
         // Combine everything into the desired format
         return `_${monthInitial}${variableKeyInitial}ERS-${uuidLikeHash}`;
     }
-
-
-
-
 
 };
 

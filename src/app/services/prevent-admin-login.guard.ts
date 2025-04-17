@@ -12,7 +12,7 @@ export class PreventAdminLogin implements CanActivate {
 
     canActivate(): boolean {
         const data = this.encryptData.decryptData('faculty') ?? '';
-        const isLoggedIn = data.facultyIsLoggedIn;
+        const isLoggedIn = data.facultyIsLoggedIn??'';
         const userType = data.userType;
         if (isLoggedIn && userType == 'faculty') {
             this.router.navigate(['/faculty/dashboard']);

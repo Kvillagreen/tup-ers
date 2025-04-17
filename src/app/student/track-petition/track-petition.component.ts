@@ -20,6 +20,7 @@ export class TrackPetitionComponent implements OnInit, AfterViewInit {
   isLocate: boolean = false;
   petitionTracker: any[] = [];
   extras = Extras;
+  petitionId: string = '';
   dataViewer = dataViewer;
   @ViewChild('filterDownView') filterDownView!: ElementRef;
 
@@ -44,6 +45,8 @@ export class TrackPetitionComponent implements OnInit, AfterViewInit {
     }
   }
 
+
+
   fetchTrackPetition() {
     const data = this.encryptData.decryptData('student') ?? ''
     const tokenId = data.tokenId;
@@ -52,6 +55,20 @@ export class TrackPetitionComponent implements OnInit, AfterViewInit {
       dataViewer.trackList = response.data;
     });
   }
+
+
+
+  removePetition(petitionId: string) {
+    Extras.load = true
+    this.studentService.removePetition(petitionId).subscribe((response: any) => {
+      Extras.load=false;
+      if (response.success){
+        this.isLocate= false;
+        this.fetchTrackPetition()
+      }
+    });
+  }
+
 
 
   ngOnInit() {

@@ -8,11 +8,23 @@ import { privateData } from '../common/libraries/private-data';
 export class FacultyService {
     constructor(private http: HttpClient, private privateData: privateData) { }
     apiUrl = this.privateData.facultyUrl;
+    apiPrintableUrl = this.privateData.printableUrl;
 
     getClass(tokenId: string) {
         const credentials = { tokenId }
         return this.http.post<any[]>(`${this.apiUrl}/fetch-class.php`, credentials);
     }
+
+    updateClassSchedule(tokenId: string, classId: string, calendarList: any, facultyId: string) {
+        const credentials = { tokenId, classId, calendarList, facultyId }
+        return this.http.post<any[]>(`${this.apiUrl}/update-class-schedule.php`, credentials);
+    }
+
+    getClassHistory(tokenId: string) {
+        const credentials = { tokenId }
+        return this.http.post<any[]>(`${this.apiUrl}/fetch-class-history.php`, credentials);
+    }
+
 
     getStudent(tokenId: string) {
         const credentials = { tokenId }
@@ -39,6 +51,22 @@ export class FacultyService {
         return this.http.post<any[]>(`${this.apiUrl}/fetch-petition-pending.php`, credentials);
     }
 
+
+    duplicatePetition(tokenId: string, classId: string) {
+        const credentials = { tokenId, classId }
+        return this.http.post<any[]>(`${this.apiUrl}/duplicate-petition.php`, credentials);
+    }
+
+    deleteClass(tokenId: string, classId: string) {
+        const credentials = { tokenId, classId }
+        return this.http.post<any[]>(`${this.apiUrl}/delete-class.php`, credentials);
+    }
+
+    updateClassType(tokenId: string, classId: string, type: string) {
+        const credentials = { tokenId, classId, type }
+        return this.http.post<any[]>(`${this.apiUrl}/update-class-type.php`, credentials);
+    }
+
     updateClassStatus(tokenId: string, classId: string, status: string) {
         const credentials = { tokenId, classId, status }
         return this.http.post<any[]>(`${this.apiUrl}/update-class-status.php`, credentials);
@@ -57,6 +85,11 @@ export class FacultyService {
     fetchSchedule(tokenId: string, facultyId: string) {
         const credentials = { tokenId, facultyId }
         return this.http.post<any[]>(`${this.apiUrl}/fetch-schedule.php`, credentials);
+    }
+
+    fetchScheduleRegistrar(tokenId: string) {
+        const credentials = { tokenId }
+        return this.http.post<any[]>(`${this.apiUrl}/fetch-schedule-registrar.php`, credentials);
     }
 
     updateTrackerPetitioon(tokenId: string, classId: string, facultyType: string) {
@@ -100,9 +133,20 @@ export class FacultyService {
         const credentials = { classId, tokenId }
         return this.http.post<any[]>(`${this.apiUrl}/fetch-department.php`, credentials);
     }
+
+    fetchFacultySelection(tokenId: string, program: string) {
+        const credentials = { tokenId, program }
+        return this.http.post<any[]>(`${this.apiUrl}/fetch-department-staff.php`, credentials);
+    }
+
     updateStudentPetition(tokenId: string, classId: string, petitionId: string, status: string, message: string, reasons: string, studentId: string, notedBy: string) {
         const credentials = { tokenId, classId, petitionId, status, message, reasons, studentId, notedBy }
         return this.http.post<any[]>(`${this.apiUrl}/update-petition-student.php`, credentials);
+    }
+
+    updateClassPetition(tokenId: string, classId: string, status: string, message: string, reasons: string, notedBy: string) {
+        const credentials = { tokenId, classId, status, message, reasons, notedBy }
+        return this.http.post<any[]>(`${this.apiUrl}/update-petition-class.php`, credentials);
     }
 
     tokenIdValidator(facultyId: string, email: string, tokenId: string) {
@@ -119,6 +163,42 @@ export class FacultyService {
         const credentials = { firstName, lastName, email, password, faculty, program }
         return this.http.post<any[]>(`${this.apiUrl}/faculty-registration.php`, credentials);
     }
+
+    downloadReport(classId: string, subjectName: string): void {
+        const requestData = { classId };
+        this.http.post(this.apiPrintableUrl + '/petition-faculty-report.php', requestData, { responseType: 'blob' }).subscribe(
+            (response: Blob) => {
+                const blob = new Blob([response], { type: 'application/pdf' });
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = `${subjectName}_petition_report.pdf`; // Adjust the file extension as needed
+                a.click();
+                window.URL.revokeObjectURL(downloadUrl); // Clean up URL reference
+            }, (error) => {
+                console.log(error)
+            }
+        );
+    }
+
+    downloadFacultyReport(program: string): void {
+        const requestData = { program };
+        this.http.post(this.apiPrintableUrl + '/petition-faculty-program-report.php', requestData, { responseType: 'blob' }).subscribe(
+            (response: Blob) => {
+                const blob = new Blob([response], { type: 'application/pdf' });
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = `${program}_report.pdf`; // Adjust the file extension as needed
+                a.click();
+                window.URL.revokeObjectURL(downloadUrl); // Clean up URL reference
+            }, (error) => {
+                console.log(error)
+            }
+        );
+    }
+
+
 }
 
 

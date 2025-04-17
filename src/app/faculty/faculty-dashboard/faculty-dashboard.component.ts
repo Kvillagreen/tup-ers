@@ -34,9 +34,9 @@ export class FacultyDashboardComponent implements OnInit {
   }
 
   loadFacultyData() {
-    this.fullName = this.data.firstName  + ' ' + this.data.lastName;
-    this.facultyProgram = this.data.program ;
-    this.facultyType = this.data.facultyType ;
+    this.fullName = this.data.firstName + ' ' + this.data.lastName;
+    this.facultyProgram = this.data.program;
+    this.facultyType = this.data.facultyType;
   }
   generateCalendar(): void {
     this.calendarDays = [];
@@ -88,7 +88,6 @@ export class FacultyDashboardComponent implements OnInit {
       this.selectedDateSchedule = this.scheduleData.filter(item =>
         item.schedule.some((s: any) => s.date === dayObj.dateStr)
       );
-      console.log(this.selectedDateSchedule)
     } else {
       this.selectedDateSchedule = [];
     }
@@ -98,29 +97,48 @@ export class FacultyDashboardComponent implements OnInit {
   fetchSchedule(): void {
     const data = this.encryptData.decryptData('faculty') ?? '';
     Extras.load = true;
-
-    this.facultyService.fetchSchedule(data.tokenId, data.facultyId).subscribe(
-      (response: any) => {
-        Extras.load = false;
-
-        if (response.success && response.data) {
-          this.scheduleData = response.data;  // ✅ Correctly store fetched data
-          this.generateCalendar();            // ✅ Refresh calendar with new data
-        } else {
-          console.error('Failed to fetch schedule');
+    if(data.facultyType == 'Registrar' || this.facultyType == 'ADAA'){
+      this.facultyService.fetchScheduleRegistrar(data.tokenId).subscribe(
+        (response: any) => {
+          Extras.load = false;
+          if (response.success && response.data) {
+            this.scheduleData = response.data;  // ✅ Correctly store fetched data
+            this.generateCalendar();            // ✅ Refresh calendar with new data
+          } else {
+            console.error('Failed to fetch schedule');
+          }
+        },
+        (error) => {
+          Extras.load = false;
+          console.error('Error fetching schedule:', error);
         }
-      },
-      (error) => {
-        Extras.load = false;
-        console.error('Error fetching schedule:', error);
-      }
-    );
+      );
+    }
+    else{
+      this.facultyService.fetchSchedule(data.tokenId, data.facultyId).subscribe(
+        (response: any) => {
+          Extras.load = false;
+  
+          if (response.success && response.data) {
+            this.scheduleData = response.data;  // ✅ Correctly store fetched data
+            this.generateCalendar();            // ✅ Refresh calendar with new data
+          } else {
+            console.error('Failed to fetch schedule');
+          }
+        },
+        (error) => {
+          Extras.load = false;
+          console.error('Error fetching schedule:', error);
+        }
+      );
+    }
+    
   }
 
   ngOnInit(): void {
     this.data = this.encryptData.decryptData('faculty');
     this.loadFacultyData();
-    if (this.facultyType == 'Faculty Staff') {
+    if (this.facultyType == 'Faculty Staff' || this.facultyType == 'Registrar' || this.facultyType == 'ADAA') {
       this.generateCalendar();
       this.fetchSchedule();
     }

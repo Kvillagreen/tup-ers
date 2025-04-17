@@ -12,7 +12,7 @@ import { EncryptData } from '../../common/libraries/encrypt-data';
   providedIn: 'root',
 })
 @Component({
-  selector: 'app-receive-petition',
+  selector: 'app-received-petition',
   standalone: true,
   imports: [CommonModule, FormsModule, HttpClientTestingModule],
   templateUrl: './receive-petition.component.html',
@@ -60,13 +60,13 @@ export class ReceivePetitionComponent implements OnInit, AfterViewInit {
     }
   }
 
-  downloadForm(petitionId: string, capacity: number) {
+  downloadForm(petitionId: string, capacity: number, classType:string) {
     const data = this.encryptData.decryptData('student') ?? ''
     const tokenId = data.tokenId;
     const firstName = data.firstName;
     const studentId = data.studentId;
     const lastName = data.lastName;
-    this.studentService.downloadForm(petitionId, tokenId, firstName, lastName, capacity, studentId)
+    this.studentService.downloadForm(petitionId, tokenId, firstName, lastName, capacity, studentId, classType)
   }
 
   ngOnInit() {

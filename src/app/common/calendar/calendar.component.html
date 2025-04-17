@@ -33,7 +33,7 @@
                 {{ day.date }}
             </button>
             <button *ngIf="day.date && day.clicked==true"
-                (click)="checkClick(); dayIsClicked(day.date.toString(),day.clicked)"
+                (click)="checkClick(); dayIsClicked(day.date.toString(),day.clicked,categoryText)"
                 class="text-gray-50 w-full h-full bg-red-800 font-semibold justify-center align-center border  ">
                 {{ day.date }}
             </button>
@@ -53,12 +53,20 @@
             </div>
             <div class="w-full flex justify-center gap-x-2 border-2 border-red-700 p-2">
                 <label>To:</label>
-                <input [(ngModel)]="toTime" id="toTime" class="w-full outline-none" name="toTime"
-                    type="time" min="06:00" max="21:00">
+                <input [(ngModel)]="toTime" id="toTime" class="w-full outline-none" name="toTime" type="time"
+                    min="06:00" max="21:00">
+            </div>
+            <div class="w-full flex justify-center gap-x-2 border-2 border-red-700 p-2">
+                <label>Category:</label>
+                <select [(ngModel)]="categoryText" class="w-full outline-none">
+                    <option disabled selected>Class</option>
+                    <option value="class">Class</option>
+                    <option value="lab">Lab</option>
+                </select>
             </div>
         </div>
         <div class="w-full h-full flex justify-center items-center border-2 border-red-700">
-            <button (click)="dayIsClicked(realDate.toString(),clickDate)">Submit</button>
+            <button (click)="dayIsClicked(realDate.toString(),clickDate, categoryText)">Submit</button>
         </div>
         <div class="w-full col-span-2 text-center">
             {{extras.errorMessage}}

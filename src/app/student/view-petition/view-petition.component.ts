@@ -6,6 +6,7 @@ import { Extras, Subjects } from '../../common/libraries/environment';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { dataViewer } from '../../common/libraries/data-viewer';
 import { EncryptData } from '../../common/libraries/encrypt-data';
+import { EmailService } from '../../services/email.service';
 @Component({
   selector: 'app-view-petition',
   standalone: true,
@@ -24,14 +25,24 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
   tupvId: string = '';
   fullName: string = '';
   isFail: string = '';
+  faculty: string = '';
   isFourthYear: string = '';
+  programList: string[] = Object.keys(Subjects.programs);
+  programName: string = '';
   studentId: string = '';
   classId: string = '';
+  yearSection: string = "";
+  overLoad: string = "";
   isSuccesful: boolean = false;
+  type: string = "";
   isNotTyped: boolean = false;
   successText: string = '';
+  term: string = 'Term';
+  schoolYear: string = 'School Year';
+  reasons: string = '';
+  years: number[] = [];
   constructor(private studentService: StudentService, private encryptData: EncryptData,
-    private renderer: Renderer2, private cdr: ChangeDetectorRef) {
+    private renderer: Renderer2, private cdr: ChangeDetectorRef, private emailService:EmailService) {
     this.extras = Extras
   }
   extras = Extras;
@@ -88,6 +99,13 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
     });
   }
 
+
+  formatYear() {
+    if (this.schoolYear) {
+      const date = new Date(this.schoolYear);
+      this.schoolYear = date.getFullYear().toString(); // Extract only the year
+    }
+  }
   loadStudentData() {
     const data = this.encryptData.decryptData('student') ?? ''
     this.tupvId = data.tupvId;
@@ -105,6 +123,12 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
   }
 
   submitPetitionApplication() {
+    this.yearSection = Extras.toUpperCaseSafe(this.yearSection)
+    this.overLoad = Extras.toUpperCaseSafe(this.overLoad)
+    this.faculty = Extras.toTitleCaseSafe(this.faculty);
+    if (this.isFourthYear == "" || this.isFourthYear == "no") {
+      this.overLoad = 'no';
+    }
     let data = this.encryptData.decryptData('student') ?? ''
     Extras.load = true;
     this.studentService.classChecker(data.studentId, data.tokenId, this.classId).subscribe({
@@ -116,13 +140,14 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
           this.successText = 'You have transferred into other program, go to track petition for details. petition was not created.';
           this.isApply = false;
         } else {
-          this.studentService.petitionApplicatipon(data.studentId, this.classId).subscribe({
+          this.studentService.petitionApplicatipon(data.studentId, this.classId, this.overLoad, this.faculty, this.yearSection).subscribe({
             next: (response: any) => {
               Extras.load = false;
               if (response.success) {
                 this.isSuccesful = true;
                 this.successText = 'You have successfully applied your petition';
                 this.isApply = false;
+                this.reasons = ''
                 this.fetchClass();
               } else {
                 Extras.isError(response.message.toString());
@@ -147,6 +172,14 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
     Extras.load = true;
     this.subjectCode = this.subjectCode.toLocaleUpperCase();
     this.subjectName = this.subjectName.toLocaleUpperCase();
+    this.yearSection = Extras.toUpperCaseSafe(this.yearSection)
+    this.overLoad = Extras.toUpperCaseSafe(this.overLoad)
+
+    if (this.term == "Term" || this.schoolYear == 'School Year') {
+      Extras.isError('All fields are required');
+      return;
+    }
+    this.faculty = Extras.toTitleCaseSafe(this.faculty);
     this.studentService.classChecker(data.studentId, data.tokenId, this.classId).subscribe({
       next: (response: any) => {
         Extras.load = false;
@@ -159,15 +192,34 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
           if (!Number(this.subjectUnits)) {
             Extras.load = false
             Extras.isError('Units must be a valid units');
-            return; 
+            return;
           }
-          this.studentService.petitionCreation(data.studentId, this.subjectCode, this.subjectName, this.subjectUnits.toString(), data.program).subscribe({
+
+          if (this.isFourthYear == "" || this.isFourthYear == "no") {
+            this.overLoad = "no";
+          }
+          this.studentService.petitionCreation(data.studentId, this.subjectCode, this.subjectName, this.subjectUnits.toString(), this.programName, this.overLoad, this.yearSection, this.faculty, this.reasons, this.schoolYear, this.term).subscribe({
             next: (response: any) => {
-              Extras.load = false;
               if (response.success) {
+                
+                this.emailService.emailNotification(this.classId, this.subjectName, this.subjectCode, this.program, data.tokenId).subscribe({
+                  next:(data:any)=>{
+                    console.log(this.subjectName)
+                    if (data.success){
+                      
+                   Extras.load=false
+                    }
+                  }
+                })
                 this.isSuccesful = true;
                 this.successText = 'You have successfully submitted your petition';
                 this.isAddPetition = false;
+                this.faculty = ''
+                this.yearSection = ''
+                this.overLoad = ''
+                this.schoolYear = 'School Year'
+                this.term = "Term"
+                this.reasons = ''
                 this.fetchClass();
               } else {
                 Extras.isError(response.message.toString());
@@ -175,6 +227,7 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
             },
             error: (error: any) => {
               Extras.load = false;
+              console.log(error)
               Extras.errorMessage = "Error in parsing";
             },
           });
@@ -184,6 +237,7 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
       error: (error: any) => {
         Extras.load = false;
         Extras.errorMessage = "Error in parsing";
+        console.log(error)
       },
 
     });
@@ -200,6 +254,10 @@ export class ViewPetitionComponent implements OnInit, AfterViewInit {
     this.isSuccesful = data.isSuccesful;
     this.successText = data.successText;
     this.fetchClass();
+    const currentYear = new Date().getFullYear();
+    for (let i = currentYear; i >= 2012; i--) { // Generates years from current year down to 1900
+      this.years.push(i);
+    }
     this.loadStudentData();
     dataViewer.searchText = '';
     dataViewer.isFilterOn = false;

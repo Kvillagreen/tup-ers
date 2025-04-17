@@ -14,7 +14,6 @@ export const Subjects = {
     programs: {
         'BS-ECE': {},
         'BS-ME': {},
-        'BS-CHEM': {},
         'BS-ELECTRICAL': {},
         'BS-COMP ENG': {},
     } as any,
@@ -24,7 +23,7 @@ export const Subjects = {
             "Registrar",
             "ADAA",
             "Program Head",
-            "College Deans",
+            "College Dean",
             "Faculty Staff"
         ]
     },
@@ -150,6 +149,24 @@ export class restrictService {
         }
     }
 
+    public isAdminReport() {
+        const data = this.encrypData.decryptData('faculty');
+        if (data.facultyType !== 'Registrar' && data.facultyType !== 'Admin' && data.facultyType !== 'Program Head') {
+            this.router.navigate(['/faculty/dashboard']);
+
+        }
+    }
+
+    public isAdminReportViewable(){
+        const data = this.encrypData.decryptData('faculty');
+                if (data.facultyType !== 'Registrar' && data.facultyType !== 'Admin' && data.facultyType !== 'Program Head') {
+                    return false;
+                }
+                else {
+                    return true
+                }
+    }
+
     public isAdminViewable() {
         const data = this.encrypData.decryptData('faculty');
         if (data.facultyType !== 'Registrar' && data.facultyType !== 'Admin') {
@@ -233,7 +250,7 @@ export const Extras = {
         return tupvIdFormat.test(tupvId);
     },
     formatFacultyEmail(facultyEmail: string): boolean {
-        const emailPattern = /^[a-zA-Z0-9._%+-]+@tupv\.edu$/;
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@tup\.edu\.ph$/;
         return emailPattern.test(facultyEmail);
     },
     isError(message: string) {

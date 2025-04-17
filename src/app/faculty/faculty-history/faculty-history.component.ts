@@ -68,34 +68,37 @@ export class FacultyHistoryComponent {
   fetchClass() {
     Extras.load = true;
     const tokenId = this.data.tokenId ?? '';
-    this.facultyService.getClass(tokenId).subscribe((response: any) => {
+    const id = this.data.facultyId ?? '';
+    this.facultyService.getClassHistory(tokenId).subscribe((response: any) => {
       Extras.load = false;
       if (response.success && response.data) {
+        console.log(response.data)
         if (this.facultyType == 'Admin') {
-          dataViewer.facultyClassHistoryList = response.data.filter((listOfClass: any) => listOfClass.status == 'denied' || listOfClass.status == 'finished');
+          dataViewer.facultyClassHistoryList = response.data.filter((listOfClass: any) => 
+            listOfClass.status == 'denied' || listOfClass.status == 'finished');
         }
         if (this.facultyType == 'Program Head') {
           dataViewer.facultyClassHistoryList = response.data.filter((listOfClass: any) => listOfClass.program === this.facultyProgram && listOfClass.status == 'denied' || listOfClass.status == 'finished');
         }
         // making petition still available if Program Head approved  after approval
         if (this.facultyType == 'Faculty Staff') {
-          dataViewer.classList = response.data.filter((listOfClass: any) => ((listOfClass.location != 'Program Head' && listOfClass.schedule == '[[]]') || (listOfClass.location == 'Program Head' && listOfClass.schedule != '[[]]')) && listOfClass.status == 'denied' || listOfClass.status == 'finished');
+          dataViewer.facultyClassHistoryList = response.data.filter((listOfClass: any) => ((listOfClass.status == 'denied' || listOfClass.status == 'finished' )&& listOfClass.faculty_id == id));
         }
         // making petition still available College Dean after approval
         if (this.facultyType == 'College Dean') {
-          dataViewer.classList = response.data.filter((listOfClass: any) =>
+          dataViewer.facultyClassHistoryList = response.data.filter((listOfClass: any) =>
             (listOfClass.location != 'Faculty Staff' && listOfClass.location != 'Program Head')
             && listOfClass.status == 'denied' || listOfClass.status == 'finished');
         }
         // making petition still available Registrar after approval
         if (this.facultyType == 'Registrar') {
-          dataViewer.classList = response.data.filter((listOfClass: any) =>
+          dataViewer.facultyClassHistoryList = response.data.filter((listOfClass: any) => 
             (listOfClass.location != 'Faculty Staff' && listOfClass.location != 'Program Head' && listOfClass.location != 'College Dean')
             && listOfClass.status == 'denied' || listOfClass.status == 'finished');
-        }
+}
         // making petition still available ADAA after approval
         if (this.facultyType == 'ADAA') {
-          dataViewer.classList = response.data.filter((listOfClass: any) =>
+          dataViewer.facultyClassHistoryList = response.data.filter((listOfClass: any) =>
             (listOfClass.location == 'Students: Approved' || listOfClass.location == 'ADAA')
             && listOfClass.status == 'denied' || listOfClass.status == 'finished');
         }

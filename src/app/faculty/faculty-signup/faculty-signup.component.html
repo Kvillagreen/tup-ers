@@ -63,7 +63,7 @@
                     </div>
                     <select required id="faculty" class="outline-none font-semibold w-full h-full bg-transparent "
                         name="faculty" [(ngModel)]="faculty" required>
-                        <option class="w-full bg-gray-800" value="" disabled selected>Select Your Program</option>
+                        <option class="w-full bg-gray-800" value="" disabled selected>Select Your Role</option>
                         <option *ngFor="let list of facultyList" [value]="list" class="w-full bg-gray-800">{{list}}
                         </option>
                     </select>

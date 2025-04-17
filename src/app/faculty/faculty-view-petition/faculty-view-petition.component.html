@@ -46,18 +46,20 @@
                 </div>
             </div>
         </div>
-        <div
-            class="px-[5px] grid grid-cols-7 w-full h-12 bg-red-800 text-center  text-xs md:text-[16px] text-white rounded-t-md font-semibold justify-center items-center">
+        <div [ngClass]="{'grid-cols-9': facultyType=='Program Head', 'grid-cols-8':facultyType!='Program Head'}"
+            class="px-[5px] grid  w-full h-12 bg-red-800 text-center  text-xs md:text-[16px] text-white rounded-t-md font-semibold justify-center items-center">
             <div class="leading-none">Date</div>
             <div class="leading-none">Subject Code</div>
             <div class="leading-none col-span-2">Subject Name</div>
             <div class="leading-none">Units</div>
             <div class="leading-none">No. of Students</div>
-            <div class="leading-none">View</div>
+            <div class="leading-none col-span-2" [ngClass]>View</div>
+            <div *ngIf="facultyType=='Program Head'" class="leading-none">Duplicate</div>
         </div>
         <div *ngIf="dataViewer.getViewPetitionToDisplay().length!=0">
             <div *ngFor="let class of dataViewer.getViewPetitionToDisplay()">
-                <div class="px-[5px] mt-2 grid grid-cols-7 w-full h-12 bg-red-300 text-center text-[12px] md:text-[14px] text-gray-900
+                <div [ngClass]="{'grid-cols-9': facultyType=='Program Head', 'grid-cols-8':facultyType!='Program Head'}"
+                    class="px-[5px] mt-2 grid  w-full h-12 bg-red-300 text-center text-[12px] md:text-[14px] text-gray-900
                 justify-center items-center">
                     <div class=" leading-none">
                         <span class="text-center">{{extras.formatDate(class.date_created)}}</span>
@@ -68,13 +70,13 @@
                     <div class="leading-none">{{class.units}}</div>
                     <div [ngClass]="{'text-red-600': class.petition_count >=50,'text-green-600': class.petition_count <50 }"
                         class="font-bold leading-none">{{class.petition_count}}</div>
-                    <div class="flex justify-center items-center w-full ">
+                    <div class="flex justify-center items-center w-full col-span-2">
                         <button
                             (click)="isView=true;
                     subjectName=class.subject_name;dataViewer.pageIndex=0 ;modalfacultyProgram=class.program;
-                        modalsubjectCode=class.subject_code;modalStatus=class.status;
-                        modalsubjectName=class.subject_name; modalsubjectUnits=class.units;modalclassId=class.class_id;
-                        classSchedule=class.schedule;classLocation=class.location;fetchPetition(class.class_id);fetchDeniedPetition(); toApprove= class.class_id;fetchDepartment(class.class_id)"
+                        modalsubjectCode=class.subject_code;modalStatus=class.status;classSession=class.class_session;
+                        modalsubjectName=class.subject_name; modalsubjectUnits=class.units;modalclassId=class.class_id;facultyName=class.name;
+                        classSchedule=class.schedule;classLocation=class.location;fetchPetition(class.class_id);fetchDeniedPetition(); toApprove= class.class_id;fetchDepartment(class.class_id); modalType=class.class_type"
                             class="w-3/4 flex md:gap-x-2 justify-center items-center h-full py-2 bg-red-500 hover:bg-red-800 rounded-md text-gray-50  hover:text-gray-300">
                             <p>View</p>
                             <span
@@ -118,6 +120,10 @@
                                 </svg></span>
                         </button>
                     </div>
+                    <button *ngIf="facultyType=='Program Head'" class="flex justify-center items-center w-full"
+                        (click)="duplicatePetition(class.class_id)">
+                        <img src="../../../assets/svg/duplicate.svg" class=" size-6  ">
+                    </button>
                 </div>
             </div>
         </div>
@@ -148,13 +154,20 @@
             class="w-full md:w-3/4 h-5/6 flex flex-col  bg-red-300  px-2 border-2 shadow-md shadow-red-900 border-red-400 rounded-md overflow-y-auto text-red-800 ">
             <!-- Header Section -->
             <div class="mt-auto sticky top-0 flex justify-between w-full bg-red-300 h-20 py-4 items-center">
-
+                <button *ngIf="facultyType=='Program Head'" (click)="warning=true"
+                    class="flex size-10 py-1 bg-red-500  text-gray-50  hover:bg-red-800 hover:text-gray-300 rounded-full items-center justify-center text-[16px]">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                    </svg>
+                </button>
                 <p class="text-center text-xl md:text-3xl font-bold w-full leading-none ">
                     {{extras.toTitleCaseSafe(subjectName)}}
                 </p>
                 <!-- Close Button -->
-                <button (click)="isView=false;departmentList=[]"
-                    class="flex w-8 h-8 py-1 bg-red-500  text-gray-50  hover:bg-red-800 hover:text-gray-300 rounded-full items-center justify-center text-[16px]">
+                <button (click)="isView=false;departmentList=[];selectedFaculty=''"
+                    class="flex size-10 py-1 bg-red-500  text-gray-50  hover:bg-red-800 hover:text-gray-300 rounded-full items-center justify-center text-[16px]">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                         stroke="currentColor" class="size-4 stroke-red-50 hover:stroke-gray-300">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -163,10 +176,16 @@
             </div>
             <div
                 class="mt-auto sticky top-0 flex px-2 justify-between w-full bg-red-300  h-20 md:h-16 py-2 items-center ">
-                <p class="text-lg leading-none md:text-xl text-left font-semibold w-full">List of Students:</p>
+                <div class="text-lg leading-none md:text-xl text-left font-semibold w-full">
+                    <div class="flex flex-col">
+                        <span>Faculty Name: {{extras.toTitleCaseSafe(facultyName)}}</span>
+                        <span>List of Students: </span>
+                    </div>
+                </div>
 
                 <div class=" h-full flex justify-between gap-x-2">
-                    <button *ngIf="classLocation==facultyType && facultyType!='Faculty Staff'"
+                    <button
+                        *ngIf="classLocation==facultyType && facultyType!='Faculty Staff'&& facultyType!='Program Head'"
                         (click)="generalApproval()"
                         class="flex justify-between items-center w-52  h-full px-8 bg-red-500    hover:bg-red-800 text-gray-50  hover:text-gray-300 rounded-md font-semibold leading-none text-sm md:text-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
@@ -177,9 +196,20 @@
                         </svg>
                         <span>Approve</span>
                     </button>
+                    <button
+                        *ngIf="classLocation=='Program Head' && facultyType=='Program Head' && classSchedule!='[[]]'"
+                        (click)="generalApproval()"
+                        class="flex justify-between items-center w-52  h-full px-8 bg-red-500    hover:bg-red-800 text-gray-50  hover:text-gray-300 rounded-md font-semibold leading-none text-sm md:text-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                            class="size-6 justify-center">
+                            <path fill-rule="evenodd"
+                                d="M8.603 3.799A4.49 4.49 0 0 1 12 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 0 1 3.498 1.307 4.491 4.491 0 0 1 1.307 3.497A4.49 4.49 0 0 1 21.75 12a4.49 4.49 0 0 1-1.549 3.397 4.491 4.491 0 0 1-1.307 3.497 4.491 4.491 0 0 1-3.497 1.307A4.49 4.49 0 0 1 12 21.75a4.49 4.49 0 0 1-3.397-1.549 4.49 4.49 0 0 1-3.498-1.306 4.491 4.491 0 0 1-1.307-3.498A4.49 4.49 0 0 1 2.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 0 1 1.307-3.497 4.49 4.49 0 0 1 3.497-1.307Zm7.007 6.387a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span>Send To Dean</span>
+                    </button>
                     <!-- faculty staff will add schedule-->
-                    <button *ngIf="facultyType=='Faculty Staff' && classSchedule=='[[]]'"
-                        (click)="isCalendarOpen=!isCalendarOpen"
+                    <button *ngIf="facultyType=='Faculty Staff'" (click)="isCalendarOpen=!isCalendarOpen"
                         class="flex justify-between items-center w-52  h-full px-8 bg-red-500    hover:bg-red-800 text-gray-50  hover:text-gray-300 rounded-md font-semibold leading-none text-sm md:text-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
                             class="size-6 justify-center fill-gray-50  hover:fill-gray-300">
@@ -189,7 +219,8 @@
                                 d="M4.75 1a.75.75 0 0 0-.75.75V3a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2V1.75a.75.75 0 0 0-1.5 0V3h-5V1.75A.75.75 0 0 0 4.75 1ZM3.5 7a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v4.5a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1V7Z"
                                 clip-rule="evenodd" />
                         </svg>
-                        <span>Add Schedule</span>
+                        <span *ngIf="classSchedule =='[[]]' ">Add Schedule</span>
+                        <span *ngIf="classSchedule !='[[]]' ">Edit Schedule</span>
                     </button>
                 </div>
             </div>
@@ -198,9 +229,11 @@
                     <div
                         class="grid grid-cols-12 h-12 overflow-hidden justify-center items-center text-center md:text-xl font-semibold ">
                         <p
-                            class="col-span-3 p-2 h-full w-full bg-red-400 border-l-2 border-y-2 rounded-xl rounded-b-none rounded-r-none">
+                            class="col-span-2 p-2 h-full w-full bg-red-400 border-l-2 border-y-2 rounded-xl rounded-b-none rounded-r-none">
                             Tupv ID</p>
-                        <p class="col-span-6 h-full w-full bg-red-400 border-y-2 p-2">Full Name</p>
+                        <p class="col-span-3 h-full w-full bg-red-400 border-y-2 p-2">
+                            Prev. Faculty</p>
+                        <p class="col-span-4 h-full w-full bg-red-400 border-y-2 p-2">Full Name</p>
                         <p class="col-span-2 h-full w-full bg-red-400 border-y-2 p-2">
                             Action</p>
                         <p
@@ -210,14 +243,17 @@
                     <div *ngFor="let list of dataViewer.getFacultyViewStudent() let i=index">
                         <div
                             class="grid grid-cols-12 bg-red-400 h-12 mt-2 text-center text-xs md:text-xl font-semibold">
-                            <div class="col-span-3 flex justify-center items-center">
+                            <div class="col-span-2 flex justify-center items-center">
                                 <p class="">{{list.tupv_id}}</p>
                             </div>
-                            <div class="col-span-6 flex justify-center items-center">
+                            <div class="col-span-3 flex justify-center items-center">
+                                <p class="">{{list.faculty}}</p>
+                            </div>
+                            <div class="col-span-4 flex justify-center items-center">
                                 <p class="">{{extras.toTitleCaseSafe(list.first_name+' '+list.last_name)}}</p>
                             </div>
                             <div class="col-span-2 h-full w-full text-lg flex justify-center items-center">
-                                <button
+                                <button *ngIf="facultyType=='Program Head' || facultyType=='Registrar'"
                                     (click)="openModal=true; classId=list.class_id;petitionId=list.petition_id;studentId= list.student_id"
                                     class="flex justify-center items-center size-8">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
@@ -230,10 +266,12 @@
                             <div class="flex h-full w-full text-[12px] justify-center items-center">
                                 <select *ngIf="facultyType=='Program Head'"
                                     (change)="statusChange($event,list.petition_id)"
-                                    class="outline-none border-red-700 border-2">
+                                    class="outline-none w-16 border-red-700 border-2">
                                     <option disabled selected>Transfer</option>
                                     <option *ngFor="let department of departmentList" [value]="department.class_id">
-                                        {{department.program}}
+                                        Name: {{department.subject_name}} <br>
+                                        Code: ({{department.subject_code}}) <br>
+                                        Program: ({{department.program}})
                                     </option>
                                 </select>
                             </div>
@@ -257,13 +295,20 @@
                     <div class="grid grid-cols-12 text-center pr-2 md:text-xl font-semibold ">
                         <p class="col-span-6 text-lg text-left font-semibold">Denied Students:</p>
                         <div class="col-span-6 w-full gap-x-2 flex justify-end items-center">
-                            <span class="text-lg font-semibold ">Change Class Status:</span>
+                            <span class="text-lg font-semibold ">Class Status:</span>
                             <select (change)="classStatusChange($event)"
-                                class="w-1/4 outline-none text-xs h-8 border-2 border-red-800">
+                                class="w-1/8 outline-none text-xs h-8 border-2 border-red-800">
                                 <option selected disabled>{{extras.toTitleCaseSafe(modalStatus)}}</option>
-                                <option value="denied">Disable</option>
+                                <option value="denied">Denied</option>
                                 <option value="finished">Finish</option>
                                 <option value="pending">Pending</option>
+                            </select>
+                            <span *ngIf="facultyType=='Program Head'" class="text-lg font-semibold ">Class Type:</span>
+                            <select *ngIf="facultyType=='Program Head'" (change)="classTypeChange($event)"
+                                class="w-1/8 outline-none text-xs h-8 border-2 border-red-800">
+                                <option selected disabled>{{extras.toTitleCaseSafe(modalType)}}</option>
+                                <option value="tutorial class">Tutorial Class</option>
+                                <option value="special class">Special Class</option>
                             </select>
                         </div>
                         <p class="col-span-3">Tupv ID</p>
@@ -281,7 +326,7 @@
                                         '+list.last_name)}}</p>
                                 </div>
                                 <div class="col-span-3 h-full w-full flex justify-center items-center">
-                                    <button
+                                    <button *ngIf="facultyType=='Program Head' || facultyType == 'Registrar'"
                                         (click)="updateStudentPetition(list.petition_id,'pending','','',list.student_id)"
                                         class="flex justify-center items-center size-8">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
@@ -301,6 +346,37 @@
                             </div>
                         </div>
                     </div>
+                    <div class="absolute bottom-0 h-16 w-full flex justify-between items-center pb-8">
+
+                        <div *ngIf=" classLocation == 'Program Head' && facultyType== 'Program Head' && classSchedule == '[[]]'"
+                            class="flex h-16 w-full text-[12px] justify-center items-center">
+                            <select *ngIf="facultyType=='Program Head'" (change)="selectedFacultyId($event)"
+                                class="outline-none h-16 border-red-700 border-2">
+                                <option disabled selected>Select Faculty</option>
+                                <option *ngFor="let list of selectionList" [value]="list.faculty_id">
+                                    {{list.first_name+' '+list.last_name}}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="w-full flex justify-center items-center ">
+
+                            <button
+                                *ngIf="classLocation=='Program Head' && facultyType=='Program Head' && classSchedule=='[[]]'"
+                                (click)="generalApproval()"
+                                [ngClass]="{ 'bg-gray-400 hover:bg-gray-600': !selectedFaculty , 'bg-red-500 hover:bg-red-800': selectedFaculty  }"
+                                [disabled]=" ! selectedFaculty "
+                                class="flex justify-center items-center w-52  h-16 px-8  text-gray-50  hover:text-gray-300 rounded-md font-semibold leading-none text-sm md:text-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                    class="size-6 justify-center">
+                                    <path fill-rule="evenodd"
+                                        d="M8.603 3.799A4.49 4.49 0 0 1 12 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 0 1 3.498 1.307 4.491 4.491 0 0 1 1.307 3.497A4.49 4.49 0 0 1 21.75 12a4.49 4.49 0 0 1-1.549 3.397 4.491 4.491 0 0 1-1.307 3.497 4.491 4.491 0 0 1-3.497 1.307A4.49 4.49 0 0 1 12 21.75a4.49 4.49 0 0 1-3.397-1.549 4.49 4.49 0 0 1-3.498-1.306 4.491 4.491 0 0 1-1.307-3.498A4.49 4.49 0 0 1 2.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 0 1 1.307-3.497 4.49 4.49 0 0 1 3.497-1.307Zm7.007 6.387a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                <span>Send To Staff</span>
+                            </button>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -311,9 +387,13 @@
     class="animate-fadeInNew fixed inset-0 flex items-center  justify-center bg-gray-900 bg-opacity-50 z-[100] ">
     <div
         class=" w-full md:w-[480px] h-[480px] flex flex-col overflow-auto scrollbar-container gap-y-2 p-8 items-start justify-center  bg-red-300  border-2 shadow-md shadow-red-900 border-red-400 rounded-md overflow-y-auto text-red-800 ">
-        <div class="text-2xl text-center font-bold w-full">
+        <div *ngIf="!classStatus" class="text-2xl text-center font-bold w-full">
             Removal of student
         </div>
+        <div *ngIf="classStatus" class="text-2xl text-center font-bold w-full">
+            Denying of students
+        </div>
+
         <div class="flex flex-col justify-center text-left gap-y-2 items-center h-full w-full">
             <div class="flex flex-col  h-full w-full">
                 <label>Reason</label>
@@ -330,11 +410,16 @@
             <p *ngIf="extras.errorMessage">{{extras.errorMessage}}</p>
         </div>
         <div class="flex justify-between w-full gap-x-4 pt-2">
-            <button (click)="openModal=false"
+            <button (click)="openModal=false; classStatus=''"
                 class="flex bg-orange-500 rounded-md text-gray-50  hover:bg-orange-800 hover:text-gray-300 justify-center items-center w-full h-12">
                 Cancel
             </button>
-            <button (click)="updateStudentPetition(petitionId,'denied',message,reasons,studentId)"
+            <button *ngIf="classStatus!='denied'"
+                (click)="updateStudentPetition(petitionId,'denied',message,reasons,studentId)"
+                class="flex bg-red-500  text-gray-50 rounded-md hover:bg-red-800 hover:text-gray-300 justify-center items-center w-full h-12">
+                Submit
+            </button>
+            <button *ngIf="classStatus=='denied'" (click)="updateClassPetition('denied',message,reasons)"
                 class="flex bg-red-500  text-gray-50 rounded-md hover:bg-red-800 hover:text-gray-300 justify-center items-center w-full h-12">
                 Submit
             </button>
@@ -378,6 +463,55 @@
                     Approve
                 </button>
             </div>
+        </div>
+    </div>
+</div>
+
+
+<div *ngIf="isCalendarOpen">
+    <!--View Calendar Function-->
+
+</div>
+
+
+<div *ngIf="warning">
+    <div class="animate-fadeInNew fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-[100]">
+        <div
+            class="w-[350px] h-[350px] bg-red-300 border-2 shadow-md shadow-red-900 border-red-400 rounded-md text-red-900 p-8 flex flex-col align-center relative">
+            <div class="flex w-full justify-center items-center text-center text-lg md:text-xl font-semibold h-[200px]">
+                <p>Are you sure you want to delete this ?</p>
+            </div>
+            <div class="flex justify-between items-center w-full  font-semibold">
+                <button (click)="deleteClass(toApprove)"
+                    class="w-32 px-2 py-3 h-full bg-green-500 text-white hover:text-gray-300  hover:bg-green-700  rounded-md">
+                    Yes
+                </button><button (click)="warning=false"
+                    class="w-32 px-2 py-3 h-full bg-red-500 text-white hover:text-gray-300  hover:bg-red-900  rounded-md">
+                    No
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<div *ngIf="approvalWarn">
+    <div class="animate-fadeInNew fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-[100]">
+        <div
+            class="w-[350px] h-[350px] bg-red-300 border-2 shadow-md shadow-red-900 border-red-400 rounded-md text-red-900 p-8 flex flex-col align-center relative">
+            <div class="flex w-full justify-center items-center text-center text-lg md:text-xl font-semibold h-[200px]">
+                <p>Kindly check your email to verify your approval.</p>
+            </div>
+            <div class="flex justify-end items-center w-full  font-semibold">
+            
+                <button (click)="approvalWarn=false"
+                    class="w-32 px-2 py-3 h-full bg-red-500 text-white hover:text-gray-300  hover:bg-red-900  rounded-md">
+                    Confirm
+                </button>
+            </div>
+
         </div>
     </div>
 </div>

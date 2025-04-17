@@ -33,7 +33,7 @@ export const routes: Routes = [
       { path: 'signup', component: SignupComponent, canActivate: [PreventLoginGuard] },
       { path: 'forget-password', component: ForgetPasswordComponent, canActivate: [PreventLoginGuard] },
       { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-      { path: 'receive-petition', component: ReceivePetitionComponent, canActivate: [AuthGuard] },
+      { path: 'received-petition', component: ReceivePetitionComponent, canActivate: [AuthGuard] },
       { path: 'view-petition', component: ViewPetitionComponent, canActivate: [AuthGuard] },
       { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
       { path: 'history', component: HistoryComponent, canActivate: [AuthGuard] },

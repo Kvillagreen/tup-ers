@@ -51,11 +51,6 @@ export class FacultyLoginComponent implements OnInit {
       return;
     }
 
-    if (!Extras.formatFacultyEmail(this.email)) {
-      Extras.isError('Please input valid email.');
-      Extras.load = false;  // Stop loading
-      return;
-    }
     if (this.rememberMe) {
       localStorage.setItem('isFacultyRemember', this.rememberMe.toString())
       localStorage.setItem('email', this.email.toString())
