@@ -176,11 +176,12 @@
             </div>
             <div
                 class="mt-auto sticky top-0 flex px-2 justify-between w-full bg-red-300  h-20 md:h-16 py-2 items-center ">
-                <div class="text-lg leading-none md:text-xl text-left font-semibold w-full">
-                    <div class="flex flex-col">
+                <div class="text-lg flex justify-between leading-none md:text-xl text-left font-semibold w-full">
+                    <div class="flex flex-col h-full ">
                         <span>Faculty Name: {{extras.toTitleCaseSafe(facultyName)}}</span>
                         <span>List of Students: </span>
                     </div>
+
                 </div>
 
                 <div class=" h-full flex justify-between gap-x-2">
@@ -196,6 +197,17 @@
                         </svg>
                         <span>Approve</span>
                     </button>
+                    <button *ngIf="this.facultyType=='Registrar' || this.facultyType =='ADAA'"
+                        (click)="setClassId(); seeSched=true "
+                        class="flex justify-between items-center w-52  h-full px-8 bg-red-500    hover:bg-red-800 text-gray-50  hover:text-gray-300 rounded-md font-semibold leading-none text-sm md:text-lg">
+                        <svg class="size-6 justify-center" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                            <path d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
+                            <path fill-rule="evenodd"
+                                d="M.664 10.59a1.651 1.651 0 0 1 0-1.186A10.004 10.004 0 0 1 10 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0 1 10 17c-4.257 0-7.893-2.66-9.336-6.41ZM14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span>View Schedule</span>
+                    </button>
                     <button
                         *ngIf="classLocation=='Program Head' && facultyType=='Program Head' && classSchedule!='[[]]'"
                         (click)="generalApproval()"
@@ -210,7 +222,7 @@
                     </button>
                     <!-- faculty staff will add schedule-->
                     <button *ngIf="facultyType=='Faculty Staff'" (click)="isCalendarOpen=!isCalendarOpen"
-                        class="flex justify-between items-center w-52  h-full px-8 bg-red-500    hover:bg-red-800 text-gray-50  hover:text-gray-300 rounded-md font-semibold leading-none text-sm md:text-lg">
+                        class="flex justify-between items-center w-40  h-full px-8 bg-red-500    hover:bg-red-800 text-gray-50  hover:text-gray-300 rounded-md font-semibold leading-none text-sm md:text-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
                             class="size-6 justify-center fill-gray-50  hover:fill-gray-300">
                             <path
@@ -468,11 +480,22 @@
 </div>
 
 
-<div *ngIf="isCalendarOpen">
-    <!--View Calendar Function-->
-
+<div *ngIf="seeSched">
+    <div class="animate-fadeInNew fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-[100]">
+        <div
+            class="w-3/4 h-3/4 bg-red-300 border-2 shadow-md shadow-red-900 border-red-400 rounded-md text-red-900 p-8 flex flex-col align-center relative">
+            <button (click)="seeSched=false"
+                class="absolute size-8 bg-red-500 text-white text-xl rounded-full top-2 right-2 flex justify-center items-center">
+                <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                        <path
+                            d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+                    </svg>
+                </span>
+            </button>
+            <app-faculty-dashboard></app-faculty-dashboard>
+        </div>
+    </div>
 </div>
-
 
 <div *ngIf="warning">
     <div class="animate-fadeInNew fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-[100]">
@@ -505,7 +528,7 @@
                 <p>Kindly check your email to verify your approval.</p>
             </div>
             <div class="flex justify-end items-center w-full  font-semibold">
-            
+
                 <button (click)="approvalWarn=false"
                     class="w-32 px-2 py-3 h-full bg-red-500 text-white hover:text-gray-300  hover:bg-red-900  rounded-md">
                     Confirm

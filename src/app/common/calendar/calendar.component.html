@@ -33,7 +33,7 @@
                 {{ day.date }}
             </button>
             <button *ngIf="day.date && day.clicked==true"
-                (click)="checkClick(); dayIsClicked(day.date.toString(),day.clicked,categoryText)"
+                (click)="checkClick(); dayIsClicked(toInt(day.date.toString()),day.clicked,categoryText)"
                 class="text-gray-50 w-full h-full bg-red-800 font-semibold justify-center align-center border  ">
                 {{ day.date }}
             </button>
@@ -66,7 +66,7 @@
             </div>
         </div>
         <div class="w-full h-full flex justify-center items-center border-2 border-red-700">
-            <button (click)="dayIsClicked(realDate.toString(),clickDate, categoryText)">Submit</button>
+            <button (click)="dayIsClicked(toInt(realDate.toString()),clickDate, categoryText)">Submit</button>
         </div>
         <div class="w-full col-span-2 text-center">
             {{extras.errorMessage}}

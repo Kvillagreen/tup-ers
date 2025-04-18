@@ -61,7 +61,12 @@ export const Subjects = {
     }
 
 };
+import { BehaviorSubject } from 'rxjs';
 
+@Injectable({ providedIn: 'root' })
+export class SharedService {
+  classId: string = '';
+}
 
 export const Calendar = {
     isTime: false,
@@ -133,7 +138,6 @@ export class NotificationService {
         });
     }
 }
-
 
 @Injectable({
     providedIn: 'root',

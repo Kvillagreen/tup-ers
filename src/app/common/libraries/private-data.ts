@@ -8,7 +8,7 @@ import { Injectable } from '@angular/core';
 
 export class privateData {
     //url = 'http://localhost/tup-ers/php-folder/'
-    url = 'https://tup-ers.infotech3c.com/services/'
+    url = 'https://tupv-serve.ptspec.com/services/'
     get studentUrl(): string {
         return this.url + 'student';
     }
@@ -25,8 +25,8 @@ export class privateData {
 
     studentSecretKey = ''
     facultySecretKey = ''
-    hostEmail = 'admin@tup-ers.infotech3c.com'
-    hostPassword = 'Villagreen23.'
+    hostEmail = 'admin@tupv-serve.ptspec.com'
+    hostPassword = 'n5NabnD~&uZ#'
 
     generateCustomApiKey(variableKey: string): string {
         const monthAbbreviations = [

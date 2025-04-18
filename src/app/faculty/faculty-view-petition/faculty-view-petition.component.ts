@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, ChangeDetectorRef, AfterViewInit, ElementRef, Renderer2, ViewChild } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { FormsModule } from '@angular/forms';
-import { Extras, restrictService, Subjects } from '../../common/libraries/environment';
+import { Extras, restrictService, SharedService, Subjects } from '../../common/libraries/environment';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FacultyService } from '../../services/faculty.service';
 import { CalendarComponent } from '../../common/calendar/calendar.component';
@@ -10,9 +10,10 @@ import { Calendar } from '../../common/libraries/environment';
 import { dataViewer } from '../../common/libraries/data-viewer';
 import { EncryptData } from '../../common/libraries/encrypt-data';
 import { EmailService } from '../../services/email.service';
+import { FacultyDashboardComponent } from '../faculty-dashboard/faculty-dashboard.component';
 @Component({
   selector: 'app-faculty-view-petition',
-  imports: [CommonModule, FormsModule, HttpClientTestingModule, CalendarComponent],
+  imports: [CommonModule, FormsModule, HttpClientTestingModule, CalendarComponent, FacultyDashboardComponent],
   templateUrl: './faculty-view-petition.component.html',
   styleUrl: './faculty-view-petition.component.css'
 })
@@ -46,6 +47,7 @@ export class FacultyViewPetitionComponent {
   petitionListDenied: any[] = [];
   departmentList: any[] = [];
   totalHours: string = '';
+  seeSched: boolean = false;
   openModal: boolean = false;
   modalType: string = "";
   data: any;
@@ -58,7 +60,7 @@ export class FacultyViewPetitionComponent {
   warning: boolean = false;
   constructor(private facultyService: FacultyService, private emailService: EmailService,
     private renderer: Renderer2, private cookieService: CookieService, private restrictService: restrictService,
-    private encryptData: EncryptData
+    private encryptData: EncryptData, private sharedService: SharedService
   ) { }
   extras = Extras;
   subject = Subjects;
@@ -72,6 +74,10 @@ export class FacultyViewPetitionComponent {
 
   @ViewChild('filterDownView') filterDownView!: ElementRef;
   private clickListener: (() => void) | undefined = undefined;
+
+  setClassId() {
+    this.sharedService.classId=this.toApprove;
+  }
 
   ngAfterViewInit() {
     this.clickListener = this.renderer.listen('document', 'click', (event: MouseEvent) => {
@@ -264,7 +270,7 @@ export class FacultyViewPetitionComponent {
         }
         // making petition still available if Program Head approved  after approval
         if (this.facultyType == 'Faculty Staff') {
-          dataViewer.classList = response.data.filter((listOfClass: any) => (listOfClass.faculty_id == id) && (listOfClass.status == 'pending') || (listOfClass.faculty_id ==id) && (listOfClass.status == 'approved'));
+          dataViewer.classList = response.data.filter((listOfClass: any) => (listOfClass.faculty_id == id) && (listOfClass.status == 'pending') || (listOfClass.faculty_id == id) && (listOfClass.status == 'approved'));
         }
         // making petition still available College Dean after approval
         if (this.facultyType == 'College Dean') {
@@ -302,7 +308,7 @@ export class FacultyViewPetitionComponent {
       console.log(response)
       if (response.success) {
         this.selectedFaculty = '';
-        this.approvalWarn= true;
+        this.approvalWarn = true;
       }
     })
   }
@@ -332,7 +338,7 @@ export class FacultyViewPetitionComponent {
       console.log(this.toApprove)
       console.log(details)
       if (response.success) {
-        this.approvalWarn= true;
+        this.approvalWarn = true;
       }
       else {
         return;
@@ -381,7 +387,7 @@ export class FacultyViewPetitionComponent {
         const email = this.data.email ?? '';
         const facultyId = this.data.facultyId ?? '';
         console.log(this.classSession)
-        this.facultyService.updateClassSchedule( tokenId, this.toApprove, this.calendar.calendarList, facultyId).subscribe((response: any) => {
+        this.facultyService.updateClassSchedule(tokenId, this.toApprove, this.calendar.calendarList, facultyId).subscribe((response: any) => {
           Extras.load = false;
           console.log(response)
           if (response.success) {

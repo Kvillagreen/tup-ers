@@ -82,14 +82,9 @@ export class FacultyService {
         return this.http.post<any[]>(`${this.apiUrl}/fetch-student-management.php`, credentials);
     }
 
-    fetchSchedule(tokenId: string, facultyId: string) {
-        const credentials = { tokenId, facultyId }
+    fetchSchedule(tokenId: string, classId: string, facultyId: string, facultyType: string) {
+        const credentials = { tokenId, classId, facultyId, facultyType}
         return this.http.post<any[]>(`${this.apiUrl}/fetch-schedule.php`, credentials);
-    }
-
-    fetchScheduleRegistrar(tokenId: string) {
-        const credentials = { tokenId }
-        return this.http.post<any[]>(`${this.apiUrl}/fetch-schedule-registrar.php`, credentials);
     }
 
     updateTrackerPetitioon(tokenId: string, classId: string, facultyType: string) {

@@ -97,7 +97,7 @@ export class CalendarComponent implements OnInit {
       this.toTime = '';
 
       // Mark the day as clicked
-      const dayNumber = parseInt(day, 10);
+      const dayNumber = parseInt(String(day), 10);
       this.calendarDays = this.calendarDays.map((d) =>
         d.date === dayNumber ? { ...d, clicked: true, category: category } : d
       );
@@ -113,7 +113,7 @@ export class CalendarComponent implements OnInit {
       };
 
       Calendar.addCalendarList(calendarEntry);
-      const dayNumber = parseInt(day, 10);
+      const dayNumber = parseInt(String(day), 10);
       this.calendarDays = this.calendarDays.map((d) =>
         d.date === dayNumber ? { ...d, clicked: false, category: '' } : d
       );
@@ -134,6 +134,10 @@ export class CalendarComponent implements OnInit {
     const formattedDate = realDate.toISOString().split("T")[0];
 
     return formattedDate;
+  }
+
+  toInt(num:string){
+    return parseInt(num)
   }
 
 

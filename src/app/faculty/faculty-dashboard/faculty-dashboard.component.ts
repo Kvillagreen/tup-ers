@@ -6,6 +6,7 @@ import { EncryptData } from '../../common/libraries/encrypt-data';
 import { Extras } from '../../common/libraries/environment';
 import { FacultyService } from '../../services/faculty.service';
 import { Router } from '@angular/router';
+import { SharedService } from '../../common/libraries/environment';
 import e from 'cors';
 @Component({
   selector: 'app-faculty-dashboard',
@@ -25,7 +26,8 @@ export class FacultyDashboardComponent implements OnInit {
   fullName: string = '';
   data: any;
   extras = Extras;
-  constructor(private encryptData: EncryptData, private facultyService: FacultyService, private router: Router) { }
+  classId: string = '';
+  constructor(private encryptData: EncryptData, private sharedService: SharedService, private facultyService: FacultyService, private router: Router) { }
 
 
   formatMonthAndYear(date: Date): string {
@@ -95,49 +97,39 @@ export class FacultyDashboardComponent implements OnInit {
 
   // 🔄 Fetch the student's schedule from the backend
   fetchSchedule(): void {
-    const data = this.encryptData.decryptData('faculty') ?? '';
+    let data = this.encryptData.decryptData('faculty') ?? '';
     Extras.load = true;
-    if(data.facultyType == 'Registrar' || this.facultyType == 'ADAA'){
-      this.facultyService.fetchScheduleRegistrar(data.tokenId).subscribe(
-        (response: any) => {
-          Extras.load = false;
-          if (response.success && response.data) {
-            this.scheduleData = response.data;  // ✅ Correctly store fetched data
-            this.generateCalendar();            // ✅ Refresh calendar with new data
-          } else {
-            console.error('Failed to fetch schedule');
-          }
-        },
-        (error) => {
-          Extras.load = false;
-          console.error('Error fetching schedule:', error);
+    this.facultyService.fetchSchedule(data.tokenId, this.sharedService.classId, data.facultyId, data.facultyType).subscribe(
+      (response: any) => {
+        Extras.load = false;
+        if (response.success && response.data) {
+          this.scheduleData = response.data;  // ✅ Correctly store fetched data
+          this.generateCalendar();            // ✅ Refresh calendar with new data
+        } else {
+          console.error('Failed to fetch schedule');
         }
-      );
+      },
+      (error) => {
+        Extras.load = false;
+        console.error('Error fetching schedule:', error);
+      }
+    );
+  }
+
+  checkUrl() {
+    if (this.router.url.includes('faculty/dashboard') && this.facultyType != 'Faculty Staff') {
+      return true
     }
-    else{
-      this.facultyService.fetchSchedule(data.tokenId, data.facultyId).subscribe(
-        (response: any) => {
-          Extras.load = false;
-  
-          if (response.success && response.data) {
-            this.scheduleData = response.data;  // ✅ Correctly store fetched data
-            this.generateCalendar();            // ✅ Refresh calendar with new data
-          } else {
-            console.error('Failed to fetch schedule');
-          }
-        },
-        (error) => {
-          Extras.load = false;
-          console.error('Error fetching schedule:', error);
-        }
-      );
-    }
-    
+    return false;
   }
 
   ngOnInit(): void {
     this.data = this.encryptData.decryptData('faculty');
     this.loadFacultyData();
+    this.classId = String(this.sharedService.classId);
+    if (this.router.url.includes('faculty/dashboard') && this.facultyType != 'Faculty Staff') {
+      this.router.navigate(['/faculty/view-petition'])
+    }
     if (this.facultyType == 'Faculty Staff' || this.facultyType == 'Registrar' || this.facultyType == 'ADAA') {
       this.generateCalendar();
       this.fetchSchedule();
@@ -145,7 +137,6 @@ export class FacultyDashboardComponent implements OnInit {
     else {
       this.router.navigate(['/faculty/view-petition'])
     }
-
   }
 
   convertTimeTo12Hour(time: string): string {
