@@ -65,7 +65,7 @@ import { BehaviorSubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class SharedService {
-  classId: string = '';
+    classId: string = '';
 }
 
 export const Calendar = {
@@ -81,9 +81,10 @@ export const Calendar = {
                 item.toTime === entry.toTime
         );
 
-        if (index !== -1) {
-            // If the entry exists, remove it
-            this.calendarList.splice(index, 1);
+        if (index !== -1) { 
+            this.calendarList = this.calendarList.filter(item => item.date !== entry.date);
+            console.log(this.calendarList)
+
         } else {
             this.calendarList.push(entry);
         }
@@ -161,14 +162,14 @@ export class restrictService {
         }
     }
 
-    public isAdminReportViewable(){
+    public isAdminReportViewable() {
         const data = this.encrypData.decryptData('faculty');
-                if (data.facultyType !== 'Registrar' && data.facultyType !== 'Admin' && data.facultyType !== 'Program Head') {
-                    return false;
-                }
-                else {
-                    return true
-                }
+        if (data.facultyType !== 'Registrar' && data.facultyType !== 'Admin' && data.facultyType !== 'Program Head') {
+            return false;
+        }
+        else {
+            return true
+        }
     }
 
     public isAdminViewable() {

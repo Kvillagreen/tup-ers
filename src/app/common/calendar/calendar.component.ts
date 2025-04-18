@@ -29,6 +29,7 @@ export class CalendarComponent implements OnInit {
   numberOfHours: number = 0;
   clickDate: boolean = false;
   categoryText: string = "";
+  newOpen: boolean = true;
   daysOfWeek: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   months: string[] = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -40,7 +41,7 @@ export class CalendarComponent implements OnInit {
   tempData: any[] = [];
   constructor(private facultyService: FacultyService, private encryptData: EncryptData,
     private cookieService: CookieService, private facultyView: FacultyViewPetitionComponent) {
-    this.generateCalendarDays();
+    ;
   }
 
   checkClick() {
@@ -52,7 +53,7 @@ export class CalendarComponent implements OnInit {
   }
 
   dayIsClicked(day: number, click: boolean, category: string): void {
-    const realDate = this.convertToRealDate((day+1).toString());
+    const realDate = this.convertToRealDate((day +1).toString());
 
     if (click === false) {
       const calendarEntry = {
@@ -101,8 +102,6 @@ export class CalendarComponent implements OnInit {
       this.calendarDays = this.calendarDays.map((d) =>
         d.date === dayNumber ? { ...d, clicked: true, category: category } : d
       );
-
-      console.log(Calendar.calendarList);
     } else {
       // Mark the day as not clicked
       const calendarEntry = {
@@ -123,6 +122,20 @@ export class CalendarComponent implements OnInit {
     this.calendarData[monthKey] = this.calendarDays
     Calendar.isTime = false;
     this.numberOfHours = Number(Calendar.getTotalTimeInHours(Calendar.calendarList));
+    const calendarListFormat = this.calendarDays.map(item => {
+      const realDate = new Date(item.realDate).toISOString().split('T')[0]; // e.g. "2025-04-01"
+      const date = item.date ?? '';
+      const clicked = item.clicked ?? false;
+      const category = item.category ?? 'null';
+      return `${realDate}:${date}:${clicked}:${category}`;
+    });
+
+    // Save it
+    this.data.calendarList = Calendar.calendarList
+    this.data.calendarDays = calendarListFormat;
+    this.encryptData.encryptAndStoreData('faculty', this.data);
+
+
   }
 
   convertToRealDate(day: string) {
@@ -136,7 +149,7 @@ export class CalendarComponent implements OnInit {
     return formattedDate;
   }
 
-  toInt(num:string){
+  toInt(num: string) {
     return parseInt(num)
   }
 
@@ -207,9 +220,53 @@ export class CalendarComponent implements OnInit {
     return this.numberOfHoursUnits;
   }
 
+  convertToDate(time: string): Date {
+    const [hours, minutes] = time.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hours);
+    date.setMinutes(minutes);
+    date.setSeconds(0);
+    return date;
+  }
+
+  calculateTotalTime(): void {
+    let totalMinutes = 0;
+    Calendar.calendarList.forEach(entry => {
+      const fromTimeStr = entry.fromTime;
+      const toTimeStr = entry.toTime;
+
+      if (fromTimeStr && toTimeStr) {
+        const fromTime = this.convertToDate(fromTimeStr);
+        const toTime = this.convertToDate(toTimeStr);
+
+        if (toTime > fromTime) {
+          const timeDifference = (toTime.getTime() - fromTime.getTime()) / (1000 * 60); // convert to minutes
+          totalMinutes += timeDifference;
+        }
+      }
+    });
+
+    this.numberOfHours = totalMinutes / 60; 
+  }
+
   ngOnInit(): void {
+    this.data = this.encryptData.decryptData('faculty') || {};
     this.tempData = Calendar.calendarList;
     this.numberOfHours = Calendar.getTotalTimeInHours(Calendar.calendarList)
-
+    this.generateCalendarDays()
+    if (this.data.calendarDays && this.data.calendarList) {
+      const restoredCalendarDays = this.data.calendarDays.map((entry: string) => {
+        const [realDate, date, clicked, category] = entry.split(':');
+        return {
+          realDate: new Date(realDate).toISOString(),
+          date: date ? Number(date) : null,
+          clicked: clicked === 'true',
+          category: category !== 'null' ? category : null
+        };
+      });
+      this.calendarDays = restoredCalendarDays
+      Calendar.calendarList = this.data.calendarList; 
+      this.calculateTotalTime()
+    }
   }
 }

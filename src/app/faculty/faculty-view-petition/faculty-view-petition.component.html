@@ -200,7 +200,8 @@
                     <button *ngIf="this.facultyType=='Registrar' || this.facultyType =='ADAA'"
                         (click)="setClassId(); seeSched=true "
                         class="flex justify-between items-center w-52  h-full px-8 bg-red-500    hover:bg-red-800 text-gray-50  hover:text-gray-300 rounded-md font-semibold leading-none text-sm md:text-lg">
-                        <svg class="size-6 justify-center" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                        <svg class="size-6 justify-center" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                            fill="currentColor" class="size-5">
                             <path d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
                             <path fill-rule="evenodd"
                                 d="M.664 10.59a1.651 1.651 0 0 1 0-1.186A10.004 10.004 0 0 1 10 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0 1 10 17c-4.257 0-7.893-2.66-9.336-6.41ZM14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"
@@ -222,7 +223,7 @@
                     </button>
                     <!-- faculty staff will add schedule-->
                     <button *ngIf="facultyType=='Faculty Staff'" (click)="isCalendarOpen=!isCalendarOpen"
-                        class="flex justify-between items-center w-40  h-full px-8 bg-red-500    hover:bg-red-800 text-gray-50  hover:text-gray-300 rounded-md font-semibold leading-none text-sm md:text-lg">
+                        class="flex justify-between items-center w-52  h-full px-8 bg-red-500    hover:bg-red-800 text-gray-50  hover:text-gray-300 rounded-md font-semibold leading-none text-sm md:text-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
                             class="size-6 justify-center fill-gray-50  hover:fill-gray-300">
                             <path
@@ -449,7 +450,7 @@
                 Calendar Schedule
             </p>
             <button
-                (click)="isCalendarOpen=false; totalHours='';saveTotalHours();calendar.isTime=false; calendar.calendarList=[]"
+                (click)="closeModal();isCalendarOpen=false; totalHours='exit';saveTotalHours();calendar.isTime=false; calendar.calendarList=[]"
                 class="size-7 py-1 bg-red-500  flex text-gray-50  hover:bg-red-800 hover:text-gray-300 rounded-full items-center justify-center text-[16px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                     stroke="currentColor" class="size-4 stroke-red-50 hover:stroke-gray-300">
@@ -460,7 +461,7 @@
         <div class="flex flex-col  w-full h-full gap-x-2 gap-y-2 px-4 justify-center items-center">
             <app-calendar class="bg-white rounded-md w-full"></app-calendar>
             <p *ngIf="!calendar.isTime">{{extras.errorMessage}}</p>
-            <div *ngIf="checkNumberOfHours()==0" class="flex w-full gap-x-2 ">
+            <div *ngIf="checkNumberOfHours() <=0" class="flex w-full gap-x-2 ">
                 <input type="text" class="w-full rounded-md outline-none border-red-500 border-2 p-2" id="totolHours"
                     [(ngModel)]="totalHours" placeholder="Total number of Hours">
                 <button (click)="saveTotalHours()" class="w-full rounded-md p-2 text-red-200 font-semibold bg-red-500">

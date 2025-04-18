@@ -16,6 +16,13 @@ export class privateData {
         return this.url + 'faculty';
     }
 
+    get facultyProfileUrl(): string {
+        return this.url + 'assets/faculty/';
+    }
+
+    get studentProfileUrl(): string {
+        return this.url + 'assets/students/';
+    }
     get printableUrl(): string {
         return this.url + 'printable';
     }

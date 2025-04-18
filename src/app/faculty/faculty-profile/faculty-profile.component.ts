@@ -1,6 +1,6 @@
 
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, Injectable } from '@angular/core';
+import { Component, OnInit, Injectable, ElementRef, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 import { Extras } from '../../common/libraries/environment';
@@ -9,7 +9,8 @@ import { Route, Router } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { EncryptData } from '../../common/libraries/encrypt-data';
 import { FacultyService } from '../../services/faculty.service';
-
+import { privateData } from '../../common/libraries/private-data';
+import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-faculty-profile',
   imports: [CommonModule, FormsModule, HttpClientTestingModule],
@@ -39,13 +40,17 @@ export class FacultyProfileComponent implements OnInit {
   extras = Extras;
   strengthScore: number = 1;
   isLoggedIn: boolean = false;
-
+  profile: string = '';
+  @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
   constructor(
     private cookieService: CookieService,
     private router: Router,
     private facultyService: FacultyService,
-    private encryptData: EncryptData
+    private encryptData: EncryptData,
+    private PrivateData: privateData,
+    private http: HttpClient
   ) { }
+
 
   ngOnInit(): void {
     const data = this.encryptData.decryptData('faculty') ?? ''
@@ -55,8 +60,35 @@ export class FacultyProfileComponent implements OnInit {
     this.facultyType = data.facultyType;
     this.program = data.program;
     this.dateCreated = data.dateCreated;
+    this.profile = data.profile;
+    console.log(this.profile)
   }
-
+  /*
+    onFileSelected(event: Event) {
+      let data = this.encryptData.decryptData('faculty') ?? ''
+      const file = (event.target as HTMLInputElement)?.files?.[0];
+      if (file) {
+        const formData = new FormData();
+        formData.append('profile', file);
+        formData.append('facultyId', data.facultyId);
+        formData.append('tokenId', data.tokenId);
+        this.facultyService.updateProfile(formData).subscribe((response: any) => {
+          if (response.success) {
+            data.profile = response.filename
+            this.encryptData.encryptAndStoreData('faculty', data)
+            this.profile = response.filename
+          }
+        })
+      }
+    }
+  
+    triggerFileInput() {
+      this.fileInputRef.nativeElement.click();
+    }
+      */
+  getUrl() {
+    return this.PrivateData.facultyProfileUrl
+  }
   saveEmail() {
     const data = this.encryptData.decryptData('faculty') ?? ''
     if (!Extras.formatFacultyEmail(this.email)) {

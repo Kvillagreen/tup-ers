@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { privateData } from '../common/libraries/private-data';
+import { catchError } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { throwError } from 'rxjs';
 @Injectable({
     providedIn: 'root'
 })
@@ -18,6 +21,15 @@ export class FacultyService {
     updateClassSchedule(tokenId: string, classId: string, calendarList: any, facultyId: string) {
         const credentials = { tokenId, classId, calendarList, facultyId }
         return this.http.post<any[]>(`${this.apiUrl}/update-class-schedule.php`, credentials);
+    }
+
+    updateProfile(formData: FormData): Observable<any> {
+        return this.http.post(`${this.apiUrl}/update-profile.php`, formData).pipe(
+            catchError((error) => {
+                console.error('HTTP error:', error);
+                return throwError(() => new Error('Submission failed.'));
+            })
+        );
     }
 
     getClassHistory(tokenId: string) {
@@ -83,7 +95,7 @@ export class FacultyService {
     }
 
     fetchSchedule(tokenId: string, classId: string, facultyId: string, facultyType: string) {
-        const credentials = { tokenId, classId, facultyId, facultyType}
+        const credentials = { tokenId, classId, facultyId, facultyType }
         return this.http.post<any[]>(`${this.apiUrl}/fetch-schedule.php`, credentials);
     }
 

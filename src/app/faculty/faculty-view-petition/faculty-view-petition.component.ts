@@ -58,6 +58,7 @@ export class FacultyViewPetitionComponent {
   toApprove: string = '';
   classStatus: string = '';
   warning: boolean = false;
+  write: boolean = false;
   constructor(private facultyService: FacultyService, private emailService: EmailService,
     private renderer: Renderer2, private cookieService: CookieService, private restrictService: restrictService,
     private encryptData: EncryptData, private sharedService: SharedService
@@ -76,7 +77,7 @@ export class FacultyViewPetitionComponent {
   private clickListener: (() => void) | undefined = undefined;
 
   setClassId() {
-    this.sharedService.classId=this.toApprove;
+    this.sharedService.classId = this.toApprove;
   }
 
   ngAfterViewInit() {
@@ -91,11 +92,13 @@ export class FacultyViewPetitionComponent {
     });
   }
 
+
+
+
   duplicatePetition(classId: string) {
     const data = this.encryptData.decryptData('faculty') ?? ''
     this.facultyService.duplicatePetition(data.tokenId, classId).subscribe((response: any) => {
       Extras.load = false;
-      console.log(response)
       if (response.success) {
         this.isView = false;
         this.fetchClass()
@@ -108,7 +111,6 @@ export class FacultyViewPetitionComponent {
     const data = this.encryptData.decryptData('faculty') ?? ''
     this.facultyService.deleteClass(data.tokenId, classId).subscribe((response: any) => {
       Extras.load = false;
-      console.log(response)
       if (response.success) {
         this.isView = false;
         this.fetchClass()
@@ -130,7 +132,6 @@ export class FacultyViewPetitionComponent {
     const status = event.target.value;
     if (status == 'denied') {
       this.classStatus = 'denied';
-      console.log('clicked')
       this.openModal = true;
       return;
     }
@@ -154,7 +155,6 @@ export class FacultyViewPetitionComponent {
     this.facultyService.updateClassType(data.tokenId, this.modalclassId, type).subscribe((response: any) => {
       Extras.load = false;
       if (response.success) {
-        console.log(response)
         this.isView = false;
         this.fetchClass()
       }
@@ -166,7 +166,6 @@ export class FacultyViewPetitionComponent {
     const program = this.data.program ?? '';
     this.facultyService.fetchFacultySelection(tokenId, program).subscribe((response: any) => {
       Extras.load = false;
-      console.log(response)
       if (response.success) {
         this.selectionList = response.data;
       }
@@ -218,9 +217,10 @@ export class FacultyViewPetitionComponent {
       return;
     }
 
+
+
     this.facultyService.updateClassPetition(tokenId, this.classId, status, message, reasons, notedBy).subscribe((response: any) => {
       Extras.load = false;
-      console.log(response)
       if (response.success) {
         this.reasons = '';
         this.message = '';
@@ -246,7 +246,6 @@ export class FacultyViewPetitionComponent {
     const classId = status.target.value;
     this.facultyService.transferFaculty(data.tokenId, classId, petitionId).subscribe((response: any) => {
       Extras.load = false;
-      console.log(response)
       if (response.success) {
         this.fetchClass()
         this.fetchPetition(this.classId);
@@ -305,7 +304,6 @@ export class FacultyViewPetitionComponent {
 
     this.emailService.petitionApprovalHead(email, details, this.toApprove, tokenId, this.classSession, this.selectedFaculty).subscribe((response: any) => {
       Extras.load = false;
-      console.log(response)
       if (response.success) {
         this.selectedFaculty = '';
         this.approvalWarn = true;
@@ -320,7 +318,6 @@ export class FacultyViewPetitionComponent {
 
     this.emailService.petitionApprovalRegistrar(email, details, this.toApprove, tokenId, this.classSession).subscribe((response: any) => {
       Extras.load = false
-      console.log(response);
       if (response.success) {
         this.selectedFaculty = '';
         this.approvalWarn = true;
@@ -335,8 +332,6 @@ export class FacultyViewPetitionComponent {
 
     this.emailService.petitionApprovalGeneral(email, details, this.toApprove, tokenId, this.classSession).subscribe((response: any) => {
       Extras.load = false;
-      console.log(this.toApprove)
-      console.log(details)
       if (response.success) {
         this.approvalWarn = true;
       }
@@ -347,7 +342,6 @@ export class FacultyViewPetitionComponent {
   }
 
   generalApproval() {
-    console.log('clicjed')
     // from faculty head going faculty staff
     if (this.classSchedule == '[[]]') {
       if (this.facultyType == 'Program Head') {
@@ -361,14 +355,16 @@ export class FacultyViewPetitionComponent {
         const tokenId = this.data.tokenId ?? '';
         const email = this.data.email ?? '';
         const facultyId = this.data.facultyId ?? '';
-        console.log(this.classSession)
         this.emailService.petitionApprovalStaff(email, 'Program Head', this.toApprove, tokenId, this.classSession, this.calendar.calendarList, facultyId).subscribe((response: any) => {
           Extras.load = false;
-          console.log(response)
           if (response.success) {
             this.isCalendarOpen = false;
             this.openModal = false;
             this.isView = false;
+            this.data.totalHours = 'exit';
+            this.data.calendarDays = '';
+            this.data.calendarList = '';
+            this.encryptData.encryptAndStoreData('faculty',this.data)
           }
           else {
             return;
@@ -386,10 +382,8 @@ export class FacultyViewPetitionComponent {
         const tokenId = this.data.tokenId ?? '';
         const email = this.data.email ?? '';
         const facultyId = this.data.facultyId ?? '';
-        console.log(this.classSession)
         this.facultyService.updateClassSchedule(tokenId, this.toApprove, this.calendar.calendarList, facultyId).subscribe((response: any) => {
           Extras.load = false;
-          console.log(response)
           if (response.success) {
             this.isCalendarOpen = false;
             this.openModal = false;
@@ -489,12 +483,22 @@ export class FacultyViewPetitionComponent {
     this.facultyProgram = this.data.program;
     this.facultyType = this.data.facultyType;
   }
-
+  closeModal() {
+    this.data.totalHours = 'exit';
+    this.data.calendarDays = '';
+    this.data.calendarList = '';
+    this.encryptData.encryptAndStoreData('faculty',this.data)
+    
+  }
   saveTotalHours() {
     if (Number(this.totalHours) == 0) {
-      this.data.totalHours = '0';
-      this.encryptData.encryptAndStoreData('faculty', this.data)
+      Extras.isError('Total Hours is invalid.')
       return;
+    }
+    if (this.totalHours == 'exit') {
+      this.data.totalHours = '';
+      this.encryptData.encryptAndStoreData('faculty', this.data)
+      this.totalHours = ''
     }
     if (!Number(this.totalHours)) {
       Extras.isError('Total Hours is invalid.')
@@ -506,7 +510,7 @@ export class FacultyViewPetitionComponent {
 
 
   checkNumberOfHours() {
-    return Number(this.data.totalHours ?? '0')
+    return Number(this.data.totalHours ?? null)
   }
 
 
@@ -516,6 +520,7 @@ export class FacultyViewPetitionComponent {
     if (this.data.isSuccesful == 'true') {
       this.isSuccesful = true;
     }
+    this.totalHours = this.data.totalHours ?? 'exit';
     this.fetchSelection();
     this.successText = this.data.successText ?? '';
     this.loadFacultyData();
