@@ -8,6 +8,10 @@
     ],
     "rewrites": [
       {
+        "source": "/.well-known/acme-challenge/**",
+        "destination": "/.well-known/acme-challenge/index.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

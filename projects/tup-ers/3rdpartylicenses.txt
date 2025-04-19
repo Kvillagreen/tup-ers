@@ -32,7 +32,7 @@ THE SOFTWARE.
 Package: @canvasjs/charts
 License: "SEE LICENSE IN <LICENSE>"
 
-CanvasJS Chart - v3.12.3 GA - https://canvasjs.com/ 
+CanvasJS Chart - v3.12.10 GA - https://canvasjs.com/ 
 Copyright 2025 fenopix
 
 --------------------- License Information --------------------
